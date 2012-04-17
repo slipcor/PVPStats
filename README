@@ -1,0 +1,9 @@
+v0.1.1.3 - add config for the kill abuse check
+v0.1.1 - PVP Arena support
+v0.1.0 - SQL handler change
+v0.0.5.1 - fixed wrong display if more entries than selected
+v0.0.5 - /pvpstats {amount} shows the top x players, default: 10 ; added
+v0.0.4 - rewrite, abuse protect "not more than once in a row"
+v0.0.3 - Listener update to non-deprecated version
+v0.0.2 - Update Manager, Permission nodes
+v0.0.1 - first working version

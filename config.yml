@@ -1,0 +1,8 @@
+MySQL: false
+MySQLhost: host
+MySQLuser: user
+MySQLpass: pw
+MySQLdb: db
+
+PVPArena: false
+checkabuse: true

@@ -1,0 +1,19 @@
+name: pvpstats
+main: praxis.slipcor.pvpstats.PVPStats
+version: 0.1.1.3
+author: slipcor
+website: http://dev.bukkit.org/server-mods/pvp-stats/
+commands:
+    pvpstats:
+        description: display or reload
+        usage: |
+           /pvpstats - show the top 10 players
+           /pvpstats [amount] - show the top [amount] players
+           /pvpstats reload - reload the config
+permissions:
+    pvpstats.reload:
+        description: Ability to reload
+        default: op
+    pvpstats.count:
+        description: Permission to be counted
+        default: true
