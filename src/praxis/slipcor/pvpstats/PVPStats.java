@@ -95,8 +95,12 @@ public class PVPStats extends JavaPlugin {
 	
 	private boolean parsecommand(CommandSender sender, String[] args) {
 		if (args == null || args.length < 1) {
-			args = new String[1];
-			args[0] = "10";
+			String[] info = PSMySQL.info(sender.getName());
+			int i = 1;
+			for (String stat : info) {
+				sender.sendMessage(String.valueOf(i++) + ": "+stat);
+			}
+			return true;
 		}
 		try {
 			int count = Integer.parseInt(args[0]);
@@ -110,8 +114,12 @@ public class PVPStats extends JavaPlugin {
 			}
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+			String[] info = PSMySQL.info(args[0]);
+			int i = 1;
+			for (String stat : info) {
+				sender.sendMessage(String.valueOf(i++) + ": "+stat);
+			}
+			return true;
 		}
 	}
 

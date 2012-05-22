@@ -29,6 +29,9 @@ public class PSPAListener implements Listener {
 	
 	@EventHandler
 	public void onArenaDeath(PADeathEvent event) {
+		if (!event.isPVP()) {
+			return;
+		}
 		PSMySQL.incDeath(event.getPlayer());
 	}
 }

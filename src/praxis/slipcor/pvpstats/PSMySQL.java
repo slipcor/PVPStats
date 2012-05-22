@@ -146,4 +146,41 @@ public class PSMySQL {
 	private static Integer calcResult(int a, int b) {
 		return a - b;
 	}
+
+	public static String[] info(String string) {
+		if (!plugin.MySQL) {
+			plugin.getLogger().severe("MySQL is not set!");
+			return null;
+		}
+		ResultSet result = null;
+		try {
+			result = plugin.sqlHandler
+					.executeQuery("SELECT `name`,`kills`,`deaths` FROM `pvpstats` WHERE `name` LIKE '%"+string+"%' LIMIT 1;", false);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		String[] output = null;
+		try {
+			while (result != null && result.next()) {
+				output = new String[7];
+				output[0] = "---------------";
+				output[1] = "PVP Stats for §a"+string;
+				output[2] = "---------------";
+				output[3] = "Name: "+result.getString("name");
+				output[4] = "Kills: "+result.getInt("kills");
+				output[5] = "Deaths: "+result.getInt("deaths");
+				output[6] = "Ratio: "+calcResult(result.getInt("kills"),
+						result.getInt("deaths"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if (output != null) {
+			return output;
+		}
+		
+		output = new String[1];
+		output[0] = "Player not found: "+ string;
+		return output;
+	}
 }
