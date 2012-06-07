@@ -81,7 +81,7 @@ public class PSListener implements Listener {
 	
 	@EventHandler
 	public void onPluginEnable(PluginEnableEvent event) {
-		if (!plugin.getConfig().getBoolean("PVPArena") || plugin.paHandler != null) {
+		if (plugin.paHandler != null || !plugin.getConfig().getBoolean("PVPArena")) {
 			return;
 		}
 		if (!event.getPlugin().getName().equals("pvparena")) {
