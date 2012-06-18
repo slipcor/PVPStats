@@ -104,6 +104,9 @@ public class PVPStats extends JavaPlugin {
 		}
 		try {
 			int count = Integer.parseInt(args[0]);
+			if (count > 20) {
+				count = 20;
+			}
 			String[] top = PSMySQL.top(count);
 			sender.sendMessage("---------------");
 			sender.sendMessage("PVP Stats Top "+args[0]);
