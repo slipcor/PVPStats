@@ -1,3 +1,4 @@
+v0.1.2.3 - user PlayerDeathEvent instead of EntityDeathEvent
 v0.1.2.2 - change max output lines to 20
 v0.1.2 - add /pvpstats *name* to check a player's stats
 v0.1.1.3 - add config for the kill abuse check

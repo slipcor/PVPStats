@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 
@@ -18,7 +18,7 @@ import org.bukkit.event.server.PluginEnableEvent;
  * 
  * @author slipcor
  * 
- * @version v0.1.1
+ * @version v0.1.2
  *
  */
 
@@ -42,13 +42,8 @@ public class PSListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onEntityDeath(EntityDeathEvent event) {
-		Entity e = event.getEntity();
-		if (!(e instanceof Player)) {
-			return; // no PVP
-		}
-	
-		Player player = (Player) e;
+	public void onEntityDeath(PlayerDeathEvent event) {
+		Player player = event.getEntity();
 		
 		if (!(player.getLastDamageCause() instanceof EntityDamageByEntityEvent)) {
 			return; // no PVP
