@@ -81,7 +81,7 @@ public class MySQLConnection {
 	 */
 	public boolean connect(boolean printerror) {
 		try {
-			this.databaseConnection = DriverManager.getConnection("jdbc:mysql://" + this.dbUrl, this.dbUsername, this.dbPassword);
+			this.databaseConnection = DriverManager.getConnection("jdbc:mysql://" + this.dbUrl + "?autoReconnect=true", this.dbUsername, this.dbPassword);
 			if (this.databaseConnection==null) return false;
 			return true;
 		} catch (SQLException e) {
