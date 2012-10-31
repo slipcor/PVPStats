@@ -60,8 +60,8 @@ public class MySQLConnection {
 	 * @param password The password for the database
 	 * @return The resulting MySQLConnection. Returns null if there was an error.
 	 */
-	public static MySQLConnection newJDBCConnection(String host, String username, String password) {
-		return newJDBCConnection(host, 3306, "", username, password);
+	public static MySQLConnection newJDBCConnection(String host, String username, String password, int port) {
+		return newJDBCConnection(host, port, "", username, password);
 	}
 
 	public MySQLConnection(String host, int port, String database, String username, String password) throws InstantiationException, IllegalAccessException, ClassNotFoundException {

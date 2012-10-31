@@ -3,6 +3,7 @@ MySQLhost: host
 MySQLuser: user
 MySQLpass: pw
 MySQLdb: db
+MySQLport: 3306
 
 PVPArena: false
 checkabuse: true

@@ -17,7 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  * @author slipcor
  * 
- * @version: v0.1.1
+ * @version: v0.1.2
  * 
  */
 
@@ -33,6 +33,7 @@ public class PVPStats extends JavaPlugin {
 	String dbUser = null;
 	String dbPass = null;
 	String dbDatabase = null;
+	int dbPort = 3306;
 
 	private final PSListener entityListener = new PSListener(this);
 	final PSPAListener paListener = new PSPAListener(this);
@@ -138,6 +139,7 @@ public class PVPStats extends JavaPlugin {
  			this.dbUser = getConfig().getString("MySQLuser", "");
  			this.dbPass = getConfig().getString("MySQLpass", "");
  			this.dbDatabase = getConfig().getString("MySQLdb", "");
+ 			this.dbPort = getConfig().getInt("MySQLport", 3306);
  		}
  		
  		// Check Settings
@@ -152,7 +154,7 @@ public class PVPStats extends JavaPlugin {
  		if (this.MySQL) {
  			// Declare MySQL Handler
 			try {
-				sqlHandler = new lib.JesiKat.SQL.MySQLConnection(dbHost, 3306, dbDatabase, dbUser,
+				sqlHandler = new lib.JesiKat.SQL.MySQLConnection(dbHost, dbPort, dbDatabase, dbUser,
 						dbPass);
 			} catch (InstantiationException e1) {
 				e1.printStackTrace();
