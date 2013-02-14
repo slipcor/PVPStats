@@ -1,8 +1,6 @@
 package praxis.slipcor.pvpstats;
 
 import java.sql.SQLException;
-import java.util.logging.Logger;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,7 +20,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 
 public class PVPStats extends JavaPlugin {
-	static final Logger log = Logger.getLogger("Minecraft");
 	Plugin paHandler = null;
 	//mySQL access
 	protected lib.JesiKat.SQL.MySQLConnection sqlHandler; // MySQL handler
@@ -48,19 +45,19 @@ public class PVPStats extends JavaPlugin {
 		load_hooks();
 		
 		if (paHandler != null) {
-			log.info("[PVP Stats] registering PVP Arena events");
+			getLogger().info("registering PVP Arena events");
 			pm.registerEvents(paListener, this);
 		}
 		
 		UpdateManager.updateCheck(this);
 		
-		log.info("[PVP Stats] enabled. (version " + pdfFile.getVersion() + ")");
+		getLogger().info("enabled. (version " + pdfFile.getVersion() + ")");
 	}
 	
 	private void load_hooks() {
 		Plugin pa = getServer().getPluginManager().getPlugin("pvparena");
 		if (pa != null && pa.isEnabled()) {
-			log.info("[PVP Stats] <3 PVP Arena");
+			getLogger().info("<3 PVP Arena");
 			this.paHandler = pa;
 		}
 	}
@@ -164,14 +161,14 @@ public class PVPStats extends JavaPlugin {
 				e1.printStackTrace();
 			}
  			
-			log.info("[PVP Stats] MySQL Initializing");
+			getLogger().info("MySQL Initializing");
  			// Initialize MySQL Handler
  			
  				if (sqlHandler.connect(true)) {
- 					log.info("[PVP Stats] MySQL connection successful");
+ 					getLogger().info("MySQL connection successful");
  	 				// Check if the tables exist, if not, create them
  					if (!sqlHandler.tableExists(dbDatabase,"pvpstats")) {
- 						log.info("[PVP Stats] Creating table pvpstats");
+ 						getLogger().info("Creating table pvpstats");
  						String query = "CREATE TABLE `pvpstats` ( `id` int(5) NOT NULL AUTO_INCREMENT, `name` varchar(42) NOT NULL, `kills` int(8), `deaths` int(8), PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
  						try {
  							sqlHandler.executeQuery(query, true);
@@ -180,7 +177,7 @@ public class PVPStats extends JavaPlugin {
  						}
  					}
  				} else {
- 					log.severe("[PVP Stats] MySQL connection failed");
+ 					getLogger().severe("MySQL connection failed");
  					this.MySQL = false;
  				}
  			PSMySQL.plugin = this;
@@ -191,7 +188,7 @@ public class PVPStats extends JavaPlugin {
 
 	public void onDisable() {
 		PluginDescriptionFile pdfFile = getDescription();
-		log.info("[PVP Stats] disabled. (version " + pdfFile.getVersion() + ")");
+		getLogger().info("disabled. (version " + pdfFile.getVersion() + ")");
 	}
 
 }

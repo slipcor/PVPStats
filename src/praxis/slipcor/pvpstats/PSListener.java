@@ -2,13 +2,10 @@ package praxis.slipcor.pvpstats;
 
 import java.util.HashMap;
 
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.PluginEnableEvent;
@@ -31,7 +28,7 @@ public class PSListener implements Listener {
 		this.plugin = instance;
 	}
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
@@ -41,37 +38,27 @@ public class PSListener implements Listener {
 		UpdateManager.message(player);
 	}
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onEntityDeath(PlayerDeathEvent event) {
-		Player player = event.getEntity();
-		
-		if (!(player.getLastDamageCause() instanceof EntityDamageByEntityEvent)) {
-			return; // no PVP
-		}
-		EntityDamageByEntityEvent lastEvent = (EntityDamageByEntityEvent) player.getLastDamageCause();
-		
-		Entity attacker = lastEvent.getDamager();
-		if (lastEvent.getCause() == DamageCause.PROJECTILE) {
-			attacker = ((Projectile)attacker).getShooter();
+
+		if (event.getEntity() == null || event.getEntity().getKiller() == null) {
+			return;
 		}
 
-		if (!(attacker instanceof Player)) {
-			return; // no PVP
-		}
-		Player playera = (Player) attacker;
+		Player attacker = event.getEntity().getKiller();
+		Player player = event.getEntity();
 		
 		if (plugin.getConfig().getBoolean("checkabuse")) {
 			
-			if (lastKill.containsKey(playera.getName()) && lastKill.get(playera.getName()).equals(player.getName())) {
+			if (lastKill.containsKey(attacker.getName()) && lastKill.get(attacker.getName()).equals(player.getName())) {
 				return; // no logging!
 			}
 			
-			lastKill.put(playera.getName(), player.getName());
+			lastKill.put(attacker.getName(), player.getName());
 		}
-		
 		// here we go, PVP!
-		PSMySQL.incKill(playera);
 		PSMySQL.incDeath(player);
+		PSMySQL.incKill(attacker);
 	}
 	
 	@EventHandler
@@ -80,7 +67,7 @@ public class PSListener implements Listener {
 			return;
 		}
 		if (!event.getPlugin().getName().equals("pvparena")) {
-			PVPStats.log.info("[PVP Stats] <3 PVP Arena");
+			plugin.getLogger().info("<3 PVP Arena");
 			plugin.paHandler = event.getPlugin();
 			plugin.getServer().getPluginManager().registerEvents(plugin.paListener, plugin);
 		}
