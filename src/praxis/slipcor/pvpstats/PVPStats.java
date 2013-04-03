@@ -20,138 +20,202 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 
 public class PVPStats extends JavaPlugin {
-	Plugin paHandler = null;
-	//mySQL access
+	protected Plugin paHandler = null;
 	protected lib.JesiKat.SQL.MySQLConnection sqlHandler; // MySQL handler
 
 	// Settings Variables
-	Boolean MySQL = false;
-	String dbHost = null;
-	String dbUser = null;
-	String dbPass = null;
-	String dbDatabase = null;
-	int dbPort = 3306;
+	protected Boolean mySQL = false;
+	protected String dbHost = null;
+	protected String dbUser = null;
+	protected String dbPass = null;
+	protected String dbDatabase = null;
+	protected String dbTable = null;
+	protected int dbPort = 3306;
 
 	private final PSListener entityListener = new PSListener(this);
-	final PSPAListener paListener = new PSPAListener(this);
+	protected final PSPAListener paListener = new PSPAListener();
 	
 	public void onEnable() {
-		PluginDescriptionFile pdfFile = getDescription();
+		final PluginDescriptionFile pdfFile = getDescription();
 		
-		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents(entityListener, this);
+		getServer().getPluginManager().registerEvents(entityListener, this);
 		
-		load_config();
-		load_hooks();
+		loadConfig();
+		loadHooks();
 		
 		if (paHandler != null) {
 			getLogger().info("registering PVP Arena events");
-			pm.registerEvents(paListener, this);
+			getServer().getPluginManager().registerEvents(paListener, this);
 		}
 		
-		UpdateManager.updateCheck(this);
+		if (getConfig().getBoolean("updatecheck", true)) {
+			UpdateManager.updateCheck(this);
+		}
 		
 		getLogger().info("enabled. (version " + pdfFile.getVersion() + ")");
 	}
 	
-	private void load_hooks() {
-		Plugin pa = getServer().getPluginManager().getPlugin("pvparena");
-		if (pa != null && pa.isEnabled()) {
+	private void loadHooks() {
+		final Plugin paPlugin = getServer().getPluginManager().getPlugin("pvparena");
+		if (paPlugin != null && paPlugin.isEnabled()) {
 			getLogger().info("<3 PVP Arena");
-			this.paHandler = pa;
+			this.paHandler = paPlugin;
 		}
 	}
 
-	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		if (!commandLabel.equals("pvpstats"))
-			return true;
+	public boolean onCommand(final CommandSender sender, final Command cmd, final String commandLabel, final String[] args) {
 		
 		if (args == null || args.length < 1 || !args[0].equalsIgnoreCase("reload")) {
 			return parsecommand(sender, args);
 		}
 		
-		try {
-			Player p = (Player) sender;
-			if (!p.isOp() && !p.hasPermission("pvpstats.reload")) {
-				p.sendMessage("[PVP Stats] No permission to reload!");
-				return true;
-			}
-		} catch (Exception e) {
-			// nothing
+		if (!sender.hasPermission("pvpstats.reload")) {
+			sender.sendMessage("[PVP Stats] No permission to reload!");
+			return true;
 		}
-		
-		if (args[0].equalsIgnoreCase("reload")) {
-			load_config();
-		} else {
-			return false; // show command
-		}
+
+		loadConfig();
 		
 		sender.sendMessage("[PVP Stats] config reloaded!");
 		
 		return true;
 	}
 	
-	private boolean parsecommand(CommandSender sender, String[] args) {
+	private boolean parsecommand(final CommandSender sender, final String[] args) {
 		if (args == null || args.length < 1) {
-			String[] info = PSMySQL.info(sender.getName());
-			int i = 1;
+			
+			// /pvpstats - show your pvp stats
+			
+			final String[] info = PSMySQL.info(sender.getName());
+			int pos = 1;
 			for (String stat : info) {
-				sender.sendMessage(String.valueOf(i++) + ": "+stat);
+				sender.sendMessage(pos++ + ": "+stat);
 			}
 			return true;
 		}
+		
+		if (args[0].equals("?") || args[0].equals("help")) {
+			return false;
+		}
+		
+		int legacyTop = 0;
+		
 		try {
-			int count = Integer.parseInt(args[0]);
-			if (count > 20) {
-				count = 20;
-			}
-			String[] top = PSMySQL.top(count);
-			sender.sendMessage("---------------");
-			sender.sendMessage("PVP Stats Top "+args[0]);
-			sender.sendMessage("---------------");
-			int i = 1;
-			for (String stat : top) {
-				sender.sendMessage(String.valueOf(i++) + ": "+stat);
-			}
-			return true;
+			legacyTop = Integer.parseInt(args[0]);
 		} catch (Exception e) {
-			String[] info = PSMySQL.info(args[0]);
-			int i = 1;
-			for (String stat : info) {
-				sender.sendMessage(String.valueOf(i++) + ": "+stat);
-			}
-			return true;
+			
 		}
+		
+		if (args[0].equals("top") || legacyTop > 0) {
+		
+			if (args.length > 1) {
+				int amount = -1;
+				
+				try {
+					amount = Integer.parseInt(args[1]);
+				} catch (Exception e) {
+					
+
+					if (args.length > 2) {
+				        // /pvpstats top [type] [amount] - show the top [amount] players of the type
+						try {
+							amount = Integer.parseInt(args[2]);
+						} catch (Exception e2) {
+							amount = 10;
+						}
+					}
+					
+			        //   /pvpstats top [type] - show the top 10 players of the type
+					
+					String[] top = null;
+					if (args[1].equals("kills")) {
+						top = PSMySQL.top(amount, "KILLS");
+						sender.sendMessage("---------------");
+						sender.sendMessage("PVP Stats Top "+amount+" Kills");
+						sender.sendMessage("---------------");
+					} else if (args[1].equals("deaths")) {
+						top = PSMySQL.top(amount, "DEATHS");
+						sender.sendMessage("---------------");
+						sender.sendMessage("PVP Stats Top "+amount+" Deaths");
+						sender.sendMessage("---------------");
+					} else if (args[1].equals("streak")) {
+
+						top = PSMySQL.top(amount, "STREAK");
+						sender.sendMessage("---------------");
+						sender.sendMessage("PVP Stats Top "+amount+" Streaks");
+						sender.sendMessage("---------------");
+					} else {
+						return false;
+					}
+					int pos = 1;
+					for (String stat : top) {
+						sender.sendMessage(pos++ + ": "+stat);
+					}
+					return true;
+				}
+		        //   /pvpstats top [amount] - show the top [amount] players (K-D)
+				args[0] = args[1];
+			}
+			
+			// /pvpstats [amount] - show the top [amount] players (K-D)
+			try {
+				int count = legacyTop==0?10:Integer.parseInt(args[0]);
+				if (count > 20) {
+					count = 20;
+				}
+				final String[] top = PSMySQL.top(count, "K-D");
+				sender.sendMessage("---------------");
+				sender.sendMessage("PVP Stats Top "+args[0]);
+				sender.sendMessage("---------------");
+				int pos = 1;
+				for (String stat : top) {
+					sender.sendMessage(String.valueOf(pos++) + ": "+stat);
+				}
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		
+		}
+		// /pvpstats [player] - show player's pvp stats
+		
+		final String[] info = PSMySQL.info(args[0]);
+		int pos = 1;
+		for (String stat : info) {
+			sender.sendMessage(pos++ + ": "+stat);
+		}
+		return true;
 	}
 
-	private void load_config() {
+	private void loadConfig() {
 
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 
 		// get variables from settings handler
  		if (getConfig().getBoolean("MySQL", false)) {
- 			this.MySQL = getConfig().getBoolean("MySQL", false);
+ 			this.mySQL = getConfig().getBoolean("MySQL", false);
  			this.dbHost = getConfig().getString("MySQLhost", "");
  			this.dbUser = getConfig().getString("MySQLuser", "");
  			this.dbPass = getConfig().getString("MySQLpass", "");
  			this.dbDatabase = getConfig().getString("MySQLdb", "");
+ 			this.dbTable = getConfig().getString("MySQLtable", "pvpstats");
  			this.dbPort = getConfig().getInt("MySQLport", 3306);
  		}
  		
  		// Check Settings
- 		if (this.MySQL) {
- 			if (this.dbHost.equals("")) { this.MySQL = false;  }
- 			else if (this.dbUser.equals("")) { this.MySQL = false; }
- 			else if (this.dbPass.equals("")) { this.MySQL = false; }
- 			else if (this.dbDatabase.equals("")) { this.MySQL = false; }
+ 		if (this.mySQL) {
+ 			if (this.dbHost.equals("")) { this.mySQL = false;  }
+ 			else if (this.dbUser.equals("")) { this.mySQL = false; }
+ 			else if (this.dbPass.equals("")) { this.mySQL = false; }
+ 			else if (this.dbDatabase.equals("")) { this.mySQL = false; }
  		}
  		
  		// Enabled SQL/MySQL
- 		if (this.MySQL) {
+ 		if (this.mySQL) {
  			// Declare MySQL Handler
 			try {
-				sqlHandler = new lib.JesiKat.SQL.MySQLConnection(dbHost, dbPort, dbDatabase, dbUser,
+				sqlHandler = new lib.JesiKat.SQL.MySQLConnection(dbTable, dbHost, dbPort, dbDatabase, dbUser,
 						dbPass);
 			} catch (InstantiationException e1) {
 				e1.printStackTrace();
@@ -167,28 +231,48 @@ public class PVPStats extends JavaPlugin {
  				if (sqlHandler.connect(true)) {
  					getLogger().info("MySQL connection successful");
  	 				// Check if the tables exist, if not, create them
- 					if (!sqlHandler.tableExists(dbDatabase,"pvpstats")) {
- 						getLogger().info("Creating table pvpstats");
- 						String query = "CREATE TABLE `pvpstats` ( `id` int(5) NOT NULL AUTO_INCREMENT, `name` varchar(42) NOT NULL, `kills` int(8), `deaths` int(8), PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
+ 					if (!sqlHandler.tableExists(dbDatabase,dbTable)) {
+ 						getLogger().info("Creating table "+dbTable);
+ 						final String query = "CREATE TABLE `"+dbTable+"` ( `id` int(5) NOT NULL AUTO_INCREMENT, `name` varchar(42) NOT NULL, `kills` int(8) not null default 0, `deaths` int(8) not null default 0, `streak` int(8) not null default 0, PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
  						try {
  							sqlHandler.executeQuery(query, true);
  						} catch (SQLException e) {
  							e.printStackTrace();
  						}
+ 					} else {
+ 						final String query = "SELECT streak FROM `"+dbTable+"` WHERE 1 ;";
+ 						try {
+ 							sqlHandler.executeQuery(query, false);
+ 						} catch (SQLException e) {
+ 							if (e.getMessage().contains("Unknown column")) {
+ 								final String queryA = "ALTER TABLE `"+dbTable+"` ADD `streak` int(8) not null default 0; ";
+								final String queryB = "ALTER TABLE `"+dbTable+"` CHANGE `deaths` `deaths` INT( 8 ) NOT NULL DEFAULT 0;";
+								final String queryC = "ALTER TABLE `"+dbTable+"` CHANGE `kills` `kills` INT( 8 ) NOT NULL DEFAULT 0;";
+	 	 						try {
+	 	 							sqlHandler.executeQuery(queryA, true);
+	 	 		 					getLogger().info("Added 'streak' column to MySQL!");
+	 	 							sqlHandler.executeQuery(queryB, true);
+	 	 		 					getLogger().info("Updated MySQL field 'deaths'");
+	 	 							sqlHandler.executeQuery(queryC, true);
+	 	 		 					getLogger().info("Updated MySQL field 'kills'");
+	 	 						} catch (SQLException e2) {
+	 	 							e2.printStackTrace();
+	 	 						}
+ 							}
+ 						}
  					}
  				} else {
  					getLogger().severe("MySQL connection failed");
- 					this.MySQL = false;
+ 					this.mySQL = false;
  				}
- 			PSMySQL.plugin = this;
+ 			PSMySQL.initiate(this);
  		} else {
  			Bukkit.getServer().getPluginManager().disablePlugin(this);
 		}
 	}
 
 	public void onDisable() {
-		PluginDescriptionFile pdfFile = getDescription();
-		getLogger().info("disabled. (version " + pdfFile.getVersion() + ")");
+		getLogger().info("disabled. (version " + getDescription().getVersion() + ")");
 	}
 
 }

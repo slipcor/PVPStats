@@ -1,6 +1,7 @@
 package praxis.slipcor.pvpstats;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,33 +21,30 @@ import org.bukkit.event.server.PluginEnableEvent;
  */
 
 public class PSListener implements Listener {
-	public PVPStats plugin;
+	private final PVPStats plugin;
 	
-	private HashMap<String, String> lastKill = new HashMap<String, String>();
+	private final Map<String, String> lastKill = new HashMap<String, String>();
 
-	public PSListener(PVPStats instance) {
+	public PSListener(final PVPStats instance) {
 		this.plugin = instance;
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-
-		if (!player.isOp()) {
-			return; // no OP => OUT
+	public void onPlayerJoin(final PlayerJoinEvent event) {
+		if (event.getPlayer().isOp()) {
+			UpdateManager.message(event.getPlayer());
 		}
-		UpdateManager.message(player);
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-	public void onEntityDeath(PlayerDeathEvent event) {
+	public void onPlayerDeath(final PlayerDeathEvent event) {
 
 		if (event.getEntity() == null || event.getEntity().getKiller() == null) {
 			return;
 		}
 
-		Player attacker = event.getEntity().getKiller();
-		Player player = event.getEntity();
+		final Player attacker = event.getEntity().getKiller();
+		final Player player = event.getEntity();
 		
 		if (plugin.getConfig().getBoolean("checkabuse")) {
 			
@@ -62,7 +60,7 @@ public class PSListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onPluginEnable(PluginEnableEvent event) {
+	public void onPluginEnable(final PluginEnableEvent event) {
 		if (plugin.paHandler != null || !plugin.getConfig().getBoolean("PVPArena")) {
 			return;
 		}

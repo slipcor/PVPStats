@@ -4,6 +4,8 @@ MySQLuser: user
 MySQLpass: pw
 MySQLdb: db
 MySQLport: 3306
+MySQLtable: pvpstats
 
 PVPArena: false
 checkabuse: true
+updatecheck: true

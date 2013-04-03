@@ -1,3 +1,6 @@
+v0.2.0 - killstreaks, command system rewrite 
+v0.1.3.2 - add configurable SQL table name
+v0.1.3.1 - code improvement
 v0.1.3.0 - remove some unnecessary code
 v0.1.2.5 - customize the port
 v0.1.2.4 - maybe fix a MYSQL connection issue

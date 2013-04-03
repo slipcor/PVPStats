@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class MySQLConnection {
 	/*The host for the database, the username for the database, and the password*/
-	private final String dbUrl,	dbUsername, dbPassword;
+	private final String dbUrl,	dbUsername, dbPassword, dbTable;
 
 	/*The connection object*/
 	private Connection databaseConnection;
@@ -35,9 +35,9 @@ public class MySQLConnection {
 	 * @param password The password for the database
 	 * @return The resulting MySQLConnection. Returns null if there was an error.
 	 */
-	public static MySQLConnection newJDBCConnection(String host, int port, String database, String username, String password) {
+	public static MySQLConnection newJDBCConnection(String table, String host, int port, String database, String username, String password) {
 		try {
-			return new MySQLConnection(host, port, database, username, password);
+			return new MySQLConnection(table, host, port, database, username, password);
 		} catch (Exception e) {
 			return null;
 		}
@@ -50,8 +50,8 @@ public class MySQLConnection {
 	 * @param password The password for the database
 	 * @return The resulting MySQLConnection. Returns null if there was an error
 	 */
-	public static MySQLConnection newJDBCConnection(String host, int port, String username, String password) {
-		return newJDBCConnection(host, port, "", username, password);
+	public static MySQLConnection newJDBCConnection(String table, String host, int port, String username, String password) {
+		return newJDBCConnection(table, host, port, "", username, password);
 	}
 	/**
 	 * 
@@ -60,11 +60,12 @@ public class MySQLConnection {
 	 * @param password The password for the database
 	 * @return The resulting MySQLConnection. Returns null if there was an error.
 	 */
-	public static MySQLConnection newJDBCConnection(String host, String username, String password, int port) {
-		return newJDBCConnection(host, port, "", username, password);
+	public static MySQLConnection newJDBCConnection(String table, String host, String username, String password, int port) {
+		return newJDBCConnection(table, host, port, "", username, password);
 	}
 
-	public MySQLConnection(String host, int port, String database, String username, String password) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+	public MySQLConnection(String table, String host, int port, String database, String username, String password) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		this.dbTable = table;
 		this.dbUrl = host + ":" + port + "/" + database;
 		this.dbUsername = username;
 		this.dbPassword = password;

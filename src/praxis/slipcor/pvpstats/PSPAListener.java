@@ -16,19 +16,14 @@ import org.bukkit.event.Listener;
  */
 
 public class PSPAListener implements Listener {
-	public PVPStats plugin;
-
-	public PSPAListener(PVPStats instance) {
-		this.plugin = instance;
-	}
 	
 	@EventHandler
-	public void onArenaKill(PAKillEvent event) {
+	public void onArenaKill(final PAKillEvent event) {
 		PSMySQL.incKill(event.getPlayer());
 	}
 	
 	@EventHandler
-	public void onArenaDeath(PADeathEvent event) {
+	public void onArenaDeath(final PADeathEvent event) {
 		if (!event.isPVP()) {
 			return;
 		}
