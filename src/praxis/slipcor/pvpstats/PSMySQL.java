@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -64,13 +66,18 @@ public final class PSMySQL {
 			if (streaks.containsKey(player.getName())) {
 				final int streak = streaks.get(player.getName())+1;
 				streaks.put(player.getName(), streak);
-				if (maxStreaks.get(player.getName())<streak) {
-					maxStreaks.put(player.getName(), Math.max(maxStreaks.get(player.getName()), streak));
-					incStreak = true;
+				if (maxStreaks.containsKey(player.getName())) {
+					if (maxStreaks.get(player.getName())<streak) {
+						maxStreaks.put(player.getName(), Math.max(maxStreaks.get(player.getName()), streak));
+						incStreak = true;
+					}
+				} else {
+					maxStreaks.put(player.getName(), streak);
 				}
 			} else {
 				streaks.put(player.getName(), 1);
 				maxStreaks.put(player.getName(), 1);
+				incStreak = true;
 			}
 			checkAndDo(player.getName(), true, incStreak);
 		}
@@ -128,11 +135,11 @@ public final class PSMySQL {
 		try {
 			while (result != null && result.next()) {
 				if (sort.equals("KILLS")) {
-					sortedValues.add(result.getString("name") + ": " + result.getInt(order));
+					sortedValues.add("§c" + result.getString("name") + ":§7 " + result.getInt(order));
 				} else if (sort.equals("DEATHS")) {
-					sortedValues.add(result.getString("name") + ": " + result.getInt(order));
+					sortedValues.add("§c" + result.getString("name") + ":§7 " + result.getInt(order));
 				} else if (sort.equals("STREAK")) {
-					sortedValues.add(result.getString("name") + ": " + result.getInt(order));
+					sortedValues.add("§c" + result.getString("name") + ":§7 " + result.getInt(order));
 				} else {
 					results.put(
 							result.getString("name"),
@@ -167,7 +174,7 @@ public final class PSMySQL {
 
 		for (String key : results.keySet()) {
 			sort[pos] = results.get(key);
-			result[pos] = key + ": " + sort[pos];
+			result[pos] = "§c" + key + ":§7 " + sort[pos];
 			pos++;
 		}
 
@@ -222,16 +229,19 @@ public final class PSMySQL {
 		String[] output = null;
 		try {
 			while (result != null && result.next()) {
-				output = new String[8];
-				output[0] = "---------------";
-				output[1] = "PVP Stats for §a"+string;
-				output[2] = "---------------";
-				output[3] = "Name: "+result.getString("name");
-				output[4] = "Kills: "+result.getInt("kills");
-				output[5] = "Deaths: "+result.getInt("deaths");
-				output[6] = "Ratio: "+calcResult(result.getInt("kills"),
+				String name = result.getString("name");
+				Integer streak = streaks.get(name);
+				if (streak == null) {
+					streak = 0;
+				}
+				output = new String[6];
+				output[0] = "§cName: §7"+name;
+				output[1] = "§cKills: §7"+result.getInt("kills");
+				output[2] = "§cDeaths: §7"+result.getInt("deaths");
+				output[3] = "§cRatio: §7"+calcResult(result.getInt("kills"),
 						result.getInt("deaths"));
-				output[7] = "Max Streak: "+result.getInt("streak");
+				output[4] = "§cStreak: §7"+streak;
+				output[5] = "§cMax Streak: §7"+result.getInt("streak");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

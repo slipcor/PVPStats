@@ -87,10 +87,7 @@ public class PVPStats extends JavaPlugin {
 			// /pvpstats - show your pvp stats
 			
 			final String[] info = PSMySQL.info(sender.getName());
-			int pos = 1;
-			for (String stat : info) {
-				sender.sendMessage(pos++ + ": "+stat);
-			}
+			sender.sendMessage(info);
 			return true;
 		}
 		
@@ -126,24 +123,26 @@ public class PVPStats extends JavaPlugin {
 					}
 					
 			        //   /pvpstats top [type] - show the top 10 players of the type
-					
+					if (amount == -1) {
+						amount = 10;
+					}
 					String[] top = null;
 					if (args[1].equals("kills")) {
 						top = PSMySQL.top(amount, "KILLS");
-						sender.sendMessage("---------------");
-						sender.sendMessage("PVP Stats Top "+amount+" Kills");
-						sender.sendMessage("---------------");
+						sender.sendMessage("§7---------------");
+						sender.sendMessage("§cPVP Stats Top §7"+amount+"§c Kills");
+						sender.sendMessage("§7---------------");
 					} else if (args[1].equals("deaths")) {
 						top = PSMySQL.top(amount, "DEATHS");
-						sender.sendMessage("---------------");
-						sender.sendMessage("PVP Stats Top "+amount+" Deaths");
-						sender.sendMessage("---------------");
+						sender.sendMessage("§7---------------");
+						sender.sendMessage("§cPVP Stats Top §7"+amount+"§c Deaths");
+						sender.sendMessage("§7---------------");
 					} else if (args[1].equals("streak")) {
 
 						top = PSMySQL.top(amount, "STREAK");
-						sender.sendMessage("---------------");
-						sender.sendMessage("PVP Stats Top "+amount+" Streaks");
-						sender.sendMessage("---------------");
+						sender.sendMessage("§7---------------");
+						sender.sendMessage("§cPVP Stats Top §7"+amount+"§c Streaks");
+						sender.sendMessage("§7---------------");
 					} else {
 						return false;
 					}
@@ -163,10 +162,13 @@ public class PVPStats extends JavaPlugin {
 				if (count > 20) {
 					count = 20;
 				}
+				if (legacyTop == 0) {
+					args[0] = String.valueOf(count);
+				}
 				final String[] top = PSMySQL.top(count, "K-D");
-				sender.sendMessage("---------------");
-				sender.sendMessage("PVP Stats Top "+args[0]);
-				sender.sendMessage("---------------");
+				sender.sendMessage("§7---------------");
+				sender.sendMessage("§cPVP Stats Top §7"+args[0]);
+				sender.sendMessage("§7---------------");
 				int pos = 1;
 				for (String stat : top) {
 					sender.sendMessage(String.valueOf(pos++) + ": "+stat);
@@ -180,10 +182,7 @@ public class PVPStats extends JavaPlugin {
 		// /pvpstats [player] - show player's pvp stats
 		
 		final String[] info = PSMySQL.info(args[0]);
-		int pos = 1;
-		for (String stat : info) {
-			sender.sendMessage(pos++ + ": "+stat);
-		}
+		sender.sendMessage(info);
 		return true;
 	}
 
