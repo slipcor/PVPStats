@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -56,27 +54,14 @@ public final class PSMySQL {
 		}
 		return false;
 	}
-
-	private static Map<String, Integer> streaks = new HashMap<String, Integer>();
-	private static Map<String, Integer> maxStreaks = new HashMap<String, Integer>();
-	
 	public static void incKill(final Player player) {
 		if (player.hasPermission("pvpstats.count")) {
 			boolean incStreak = false;
-			if (streaks.containsKey(player.getName())) {
-				final int streak = streaks.get(player.getName())+1;
-				streaks.put(player.getName(), streak);
-				if (maxStreaks.containsKey(player.getName())) {
-					if (maxStreaks.get(player.getName())<streak) {
-						maxStreaks.put(player.getName(), Math.max(maxStreaks.get(player.getName()), streak));
-						incStreak = true;
-					}
-				} else {
-					maxStreaks.put(player.getName(), streak);
-				}
+			if (PVPData.hasStreak(player.getName())) {
+				incStreak = PVPData.addStreak(player.getName());
 			} else {
-				streaks.put(player.getName(), 1);
-				maxStreaks.put(player.getName(), 1);
+				PVPData.setStreak(player.getName(), 1);
+				PVPData.setMaxStreak(player.getName(), 1);
 				incStreak = true;
 			}
 			checkAndDo(player.getName(), true, incStreak);
@@ -85,7 +70,7 @@ public final class PSMySQL {
 
 	public static void incDeath(final Player player) {
 		if (player.hasPermission("pvpstats.count")) {
-			streaks.put(player.getName(), 0);
+			PVPData.setStreak(player.getName(), 0);
 			checkAndDo(player.getName(), false, false);
 		}
 	}
@@ -93,12 +78,18 @@ public final class PSMySQL {
 	private static void checkAndDo(final String sPlayer, final boolean kill, final boolean addStreak) {
 		if (!mysqlExists("SELECT * FROM `"+plugin.dbTable+"` WHERE `name` = '" + sPlayer
 				+ "';")) {
+			final int kills = kill?1:0;
+			final int deaths = kill?0:1;
 			mysqlQuery("INSERT INTO `"+plugin.dbTable+"` (`name`,`kills`,`deaths`) VALUES ('"
-					+ sPlayer + "', 0, 0)");
+					+ sPlayer + "', "+kills+", "+deaths+")");
+			PVPData.setKills(sPlayer, kills);
+			PVPData.setDeaths(sPlayer, deaths);
+			return;
+		} else {
+			final String var = kill ? "kills" : "deaths";
+			mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `" + var + "` = `" + var
+					+ "`+1 WHERE `name` = '" + sPlayer + "'");
 		}
-		final String var = kill ? "kills" : "deaths";
-		mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `" + var + "` = `" + var
-				+ "`+1 WHERE `name` = '" + sPlayer + "'");
 		if (addStreak && kill) {
 			mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `streak` = `streak`+1 WHERE `name` = '" + sPlayer + "'");
 		}
@@ -109,6 +100,7 @@ public final class PSMySQL {
 			plugin.getLogger().severe("MySQL is not set!");
 			return null;
 		}
+		sort = sort.toUpperCase();
 		ResultSet result = null;
 		final Map<String, Integer> results = new HashMap<String, Integer>();
 		
@@ -230,7 +222,7 @@ public final class PSMySQL {
 		try {
 			while (result != null && result.next()) {
 				String name = result.getString("name");
-				Integer streak = streaks.get(name);
+				Integer streak = PVPData.getStreak(name);
 				if (streak == null) {
 					streak = 0;
 				}
@@ -253,6 +245,40 @@ public final class PSMySQL {
 		output = new String[1];
 		output[0] = "Player not found: "+ string;
 		return output;
+	}
+	
+	public static Integer getEntry(String player, String entry) {
+		if (entry == null) {
+			throw new IllegalArgumentException("entry can not be null!");
+		}
+		
+		if (!entry.equals("kills") &&
+				!entry.equals("deaths") &&
+				!entry.equals("streak")) {
+			throw new IllegalArgumentException("entry can not be '"+entry+"'. Valid values: kills, deaths, streak");
+		}
+		
+		if (!plugin.mySQL) {
+			plugin.getLogger().severe("MySQL is not set!");
+			return null;
+		}
+		ResultSet result = null;
+		try {
+			result = plugin.sqlHandler
+					.executeQuery("SELECT `"+entry+"` FROM `"+plugin.dbTable+"` WHERE `name` LIKE '%"+player+"%' LIMIT 1;", false);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			while (result != null && result.next()) {
+				return result.getInt(entry);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
 	}
 
 	public static void initiate(final PVPStats pvpStats) {
