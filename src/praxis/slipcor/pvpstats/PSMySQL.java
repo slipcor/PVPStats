@@ -284,4 +284,18 @@ public final class PSMySQL {
 	public static void initiate(final PVPStats pvpStats) {
 		plugin = pvpStats;
 	}
+
+	public static void wipe(final String name) {
+		if (name == null) {
+			mysqlQuery("DELETE FROM `"+plugin.dbTable+"` WHERE 1;");
+		} else {
+			PVPData.setDeaths(name, 0);
+			PVPData.setKills(name, 0);
+			PVPData.setMaxStreak(name, 0);
+			PVPData.setStreak(name, 0);
+			
+			mysqlQuery("DELETE FROM `"+plugin.dbTable+"` WHERE `name` = '" + name
+					+ "';");
+		}
+	}
 }

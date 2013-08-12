@@ -63,8 +63,25 @@ public class PVPStats extends JavaPlugin {
 
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String commandLabel, final String[] args) {
 		
-		if (args == null || args.length < 1 || !args[0].equalsIgnoreCase("reload")) {
+		if (args == null || args.length < 1 || !(args[0].equalsIgnoreCase("reload")||args[0].equalsIgnoreCase("wipe"))) {
 			return parsecommand(sender, args);
+		}
+		
+		if (args[0].equalsIgnoreCase("wipe")) {
+			if (!sender.hasPermission("pvpstats.wipe")) {
+				sender.sendMessage("[PVP Stats] No permission to wipe!");
+				return true;
+			}
+			
+			if (args.length < 2) {
+				PSMySQL.wipe(null);
+				sender.sendMessage("[PVP Stats] statistics wiped!");
+			} else {
+				PSMySQL.wipe(args[1]);
+				sender.sendMessage("[PVP Stats] statistics wiped for "+args[1]+"!");
+			}
+			
+			return true;
 		}
 		
 		if (!sender.hasPermission("pvpstats.reload")) {

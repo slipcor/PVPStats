@@ -1,6 +1,6 @@
 name: pvpstats
 main: praxis.slipcor.pvpstats.PVPStats
-version: 0.3.0.0
+version: 0.3.0.1
 author: slipcor
 website: http://dev.bukkit.org/server-mods/pvp-stats/
 commands:
@@ -18,6 +18,9 @@ commands:
 permissions:
     pvpstats.reload:
         description: Ability to reload
+        default: op
+    pvpstats.wipe:
+        description: Ability to wipe
         default: op
     pvpstats.count:
         description: Permission to be counted

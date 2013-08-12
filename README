@@ -1,3 +1,4 @@
+v0.3.0.1 - add /command wipe {player}
 v0.3.0.0 - PVPData class for easy stats access
 v0.2.0.2 - fixing small NPE
 v0.2.0 - killstreaks, command system rewrite 
