@@ -9,14 +9,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.server.PluginEnableEvent;
+import praxis.slipcor.pvpstats.Updater.UpdateResult;
 
 /**
  * Listener class
  * 
  * @author slipcor
- * 
- * @version v0.1.2
  *
  */
 
@@ -31,8 +29,20 @@ public class PSListener implements Listener {
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onPlayerJoin(final PlayerJoinEvent event) {
-		if (event.getPlayer().isOp()) {
-			UpdateManager.message(event.getPlayer());
+		if (event.getPlayer().isOp() && plugin.getUpdater() != null) {
+			
+			final UpdateResult test = plugin.getUpdater().getResult();
+			
+			switch (test) {
+			case SUCCESS:
+				event.getPlayer().sendMessage(Language.MSG_UPDATED.toString());
+				break;
+			case UPDATE_AVAILABLE:
+				event.getPlayer().sendMessage(Language.MSG_UPDATE.toString());
+			default:
+				break;
+			}
+		
 		}
 	}
 	
@@ -57,17 +67,5 @@ public class PSListener implements Listener {
 		// here we go, PVP!
 		PSMySQL.incDeath(player);
 		PSMySQL.incKill(attacker);
-	}
-	
-	@EventHandler
-	public void onPluginEnable(final PluginEnableEvent event) {
-		if (plugin.paHandler != null || !plugin.getConfig().getBoolean("PVPArena")) {
-			return;
-		}
-		if (!event.getPlugin().getName().equals("pvparena")) {
-			plugin.getLogger().info("<3 PVP Arena");
-			plugin.paHandler = event.getPlugin();
-			plugin.getServer().getPluginManager().registerEvents(plugin.paListener, plugin);
-		}
 	}
 }

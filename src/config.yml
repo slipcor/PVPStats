@@ -9,3 +9,4 @@ MySQLtable: pvpstats
 PVPArena: false
 checkabuse: true
 updatecheck: true
+autodownload: true

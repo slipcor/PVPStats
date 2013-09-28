@@ -7,12 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 /**
- * stats access class
- * 
- * @version v0.1.0
+ * MySQL access class
  * 
  * @author slipcor
  * 
@@ -54,6 +53,7 @@ public final class PSMySQL {
 		}
 		return false;
 	}
+	
 	public static void incKill(final Player player) {
 		if (player.hasPermission("pvpstats.count")) {
 			boolean incStreak = false;
@@ -100,6 +100,7 @@ public final class PSMySQL {
 			plugin.getLogger().severe("MySQL is not set!");
 			return null;
 		}
+		
 		sort = sort.toUpperCase();
 		ResultSet result = null;
 		final Map<String, Integer> results = new HashMap<String, Integer>();
@@ -120,18 +121,18 @@ public final class PSMySQL {
 			}
 			
 			result = plugin.sqlHandler
-					.executeQuery("SELECT `name`,`kills`,`deaths`,`streak` FROM `"+plugin.dbTable+"` WHERE 1 ORDER BY `"+order+"` DESC;", false);
+					.executeQuery("SELECT `name`,`kills`,`deaths`,`streak` FROM `"+plugin.dbTable+"` WHERE 1 ORDER BY `"+order+"` DESC LIMIT "+count+";", false);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		try {
 			while (result != null && result.next()) {
 				if (sort.equals("KILLS")) {
-					sortedValues.add("§c" + result.getString("name") + ":§7 " + result.getInt(order));
+					sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
 				} else if (sort.equals("DEATHS")) {
-					sortedValues.add("§c" + result.getString("name") + ":§7 " + result.getInt(order));
+					sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
 				} else if (sort.equals("STREAK")) {
-					sortedValues.add("§c" + result.getString("name") + ":§7 " + result.getInt(order));
+					sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
 				} else {
 					results.put(
 							result.getString("name"),
@@ -166,7 +167,7 @@ public final class PSMySQL {
 
 		for (String key : results.keySet()) {
 			sort[pos] = results.get(key);
-			result[pos] = "§c" + key + ":§7 " + sort[pos];
+			result[pos] = ChatColor.RED + key + ":" + ChatColor.GRAY + " " + sort[pos];
 			pos++;
 		}
 
@@ -227,13 +228,25 @@ public final class PSMySQL {
 					streak = 0;
 				}
 				output = new String[6];
-				output[0] = "§cName: §7"+name;
-				output[1] = "§cKills: §7"+result.getInt("kills");
-				output[2] = "§cDeaths: §7"+result.getInt("deaths");
-				output[3] = "§cRatio: §7"+calcResult(result.getInt("kills"),
-						result.getInt("deaths"));
-				output[4] = "§cStreak: §7"+streak;
-				output[5] = "§cMax Streak: §7"+result.getInt("streak");
+				
+				output[0] = Language.INFO_FORMAT.toString(
+						Language.INFO_NAME.toString(),
+						name);
+				output[1] = Language.INFO_FORMAT.toString(
+						Language.INFO_KILLS.toString(),
+						String.valueOf(result.getInt("kills")));
+				output[2] = Language.INFO_FORMAT.toString(
+						Language.INFO_DEATHS.toString(),
+						String.valueOf(result.getInt("deaths")));
+				output[3] = Language.INFO_FORMAT.toString(
+						Language.INFO_RATIO.toString(),
+						String.valueOf(calcResult(result.getInt("kills"), result.getInt("deaths"))));
+				output[4] = Language.INFO_FORMAT.toString(
+						Language.INFO_STREAK.toString(),
+						String.valueOf(streak));
+				output[5] = Language.INFO_FORMAT.toString(
+						Language.INFO_MAXSTREAK.toString(),
+						String.valueOf(result.getInt("streak")));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -243,7 +256,7 @@ public final class PSMySQL {
 		}
 		
 		output = new String[1];
-		output[0] = "Player not found: "+ string;
+		output[0] = Language.INFO_PLAYERNOTFOUND.toString(string);
 		return output;
 	}
 	

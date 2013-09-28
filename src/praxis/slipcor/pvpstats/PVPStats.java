@@ -1,19 +1,23 @@
 package praxis.slipcor.pvpstats;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import praxis.slipcor.pvpstats.Updater.UpdateType;
 
 /**
  * main class
  * 
  * @author slipcor
- * 
- * @version: v0.1.2
  * 
  */
 
@@ -32,6 +36,9 @@ public class PVPStats extends JavaPlugin {
 
 	private final PSListener entityListener = new PSListener(this);
 	protected final PSPAListener paListener = new PSPAListener();
+	private PSPAPluginListener paPluginListener;
+	
+	private Updater updater = null;
 	
 	public void onEnable() {
 		final PluginDescriptionFile pdfFile = getDescription();
@@ -41,24 +48,64 @@ public class PVPStats extends JavaPlugin {
 		loadConfig();
 		loadHooks();
 		
-		if (paHandler != null) {
-			getLogger().info("registering PVP Arena events");
-			getServer().getPluginManager().registerEvents(paListener, this);
+		if (getConfig().getBoolean("PVPArena")) {
+			if (getServer().getPluginManager().isPluginEnabled("pvparena")) {
+				getServer().getPluginManager().registerEvents(paListener, this);
+			} else {
+				paPluginListener = new PSPAPluginListener(this);
+				getServer().getPluginManager().registerEvents(paPluginListener, this);
+			}
 		}
 		
 		if (getConfig().getBoolean("updatecheck", true)) {
-			UpdateManager.updateCheck(this);
+			
+			if (getConfig().getBoolean("autodownload", true)) {
+				updater = new Updater(this, "pvpstats", this.getFile(), UpdateType.NO_DOWNLOAD, false);
+			} else {
+				updater = new Updater(this, "pvpstats", this.getFile(), UpdateType.DEFAULT, false);
+			}
 		}
+		
+		loadLanguage();
 		
 		getLogger().info("enabled. (version " + pdfFile.getVersion() + ")");
 	}
 	
+	private void loadLanguage() {
+		final File langFile = new File(this.getDataFolder(), "lang.yml");
+		if (!langFile.exists()) {
+			try {
+				langFile.createNewFile();
+			} catch (IOException e) {
+				this.getLogger().warning("Language file could not be created. Using defaults!");
+				e.printStackTrace();
+			}
+		}
+		final YamlConfiguration cfg = YamlConfiguration.loadConfiguration(langFile);
+		if (Language.load(cfg)) {
+			try {
+				cfg.save(langFile);
+			} catch (IOException e) {
+				this.getLogger().warning("Language file could not be written. Using defaults!");
+				e.printStackTrace();
+			}
+		}
+	}
+
 	private void loadHooks() {
 		final Plugin paPlugin = getServer().getPluginManager().getPlugin("pvparena");
 		if (paPlugin != null && paPlugin.isEnabled()) {
 			getLogger().info("<3 PVP Arena");
 			this.paHandler = paPlugin;
 		}
+	}
+	
+	public Updater getUpdater() {
+		return updater;
+	}
+	
+	public void sendPrefixed(final CommandSender sender, final String message) {
+		sender.sendMessage(Language.MSG_PREFIX + message);
 	}
 
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String commandLabel, final String[] args) {
@@ -69,29 +116,29 @@ public class PVPStats extends JavaPlugin {
 		
 		if (args[0].equalsIgnoreCase("wipe")) {
 			if (!sender.hasPermission("pvpstats.wipe")) {
-				sender.sendMessage("[PVP Stats] No permission to wipe!");
+				sendPrefixed(sender, Language.MSG_NOPERMWIPE.toString());
 				return true;
 			}
 			
 			if (args.length < 2) {
 				PSMySQL.wipe(null);
-				sender.sendMessage("[PVP Stats] statistics wiped!");
+				sendPrefixed(sender, Language.MSG_WIPED.toString());
 			} else {
 				PSMySQL.wipe(args[1]);
-				sender.sendMessage("[PVP Stats] statistics wiped for "+args[1]+"!");
+				sendPrefixed(sender, Language.MSG_WIPED.toString(args[1]));
 			}
 			
 			return true;
 		}
 		
 		if (!sender.hasPermission("pvpstats.reload")) {
-			sender.sendMessage("[PVP Stats] No permission to reload!");
+			sendPrefixed(sender, Language.MSG_NOPERMRELOAD.toString());
 			return true;
 		}
 
 		loadConfig();
-		
-		sender.sendMessage("[PVP Stats] config reloaded!");
+		loadLanguage();
+		sendPrefixed(sender, Language.MSG_RELOADED.toString());
 		
 		return true;
 	}
@@ -144,20 +191,26 @@ public class PVPStats extends JavaPlugin {
 					String[] top = null;
 					if (args[1].equals("kills")) {
 						top = PSMySQL.top(amount, "KILLS");
-						sender.sendMessage("§7---------------");
-						sender.sendMessage("§cPVP Stats Top §7"+amount+"§c Kills");
-						sender.sendMessage("§7---------------");
+						sender.sendMessage(Language.HEAD_LINE.toString());
+						sender.sendMessage(Language.HEAD_HEADLINE.toString(
+								String.valueOf(amount),
+								Language.HEAD_KILLS.toString()));
+						sender.sendMessage(Language.HEAD_LINE.toString());
 					} else if (args[1].equals("deaths")) {
 						top = PSMySQL.top(amount, "DEATHS");
-						sender.sendMessage("§7---------------");
-						sender.sendMessage("§cPVP Stats Top §7"+amount+"§c Deaths");
-						sender.sendMessage("§7---------------");
+						sender.sendMessage(Language.HEAD_LINE.toString());
+						sender.sendMessage(Language.HEAD_HEADLINE.toString(
+								String.valueOf(amount),
+								Language.HEAD_DEATHS.toString()));
+						sender.sendMessage(Language.HEAD_LINE.toString());
 					} else if (args[1].equals("streak")) {
 
 						top = PSMySQL.top(amount, "STREAK");
-						sender.sendMessage("§7---------------");
-						sender.sendMessage("§cPVP Stats Top §7"+amount+"§c Streaks");
-						sender.sendMessage("§7---------------");
+						sender.sendMessage(Language.HEAD_LINE.toString());
+						sender.sendMessage(Language.HEAD_HEADLINE.toString(
+								String.valueOf(amount),
+								Language.HEAD_STREAKS.toString()));
+						sender.sendMessage(Language.HEAD_LINE.toString());
 					} else {
 						return false;
 					}
@@ -169,6 +222,7 @@ public class PVPStats extends JavaPlugin {
 				}
 		        //   /pvpstats top [amount] - show the top [amount] players (K-D)
 				args[0] = args[1];
+				legacyTop = 1;
 			}
 			
 			// /pvpstats [amount] - show the top [amount] players (K-D)
@@ -181,9 +235,11 @@ public class PVPStats extends JavaPlugin {
 					args[0] = String.valueOf(count);
 				}
 				final String[] top = PSMySQL.top(count, "K-D");
-				sender.sendMessage("§7---------------");
-				sender.sendMessage("§cPVP Stats Top §7"+args[0]);
-				sender.sendMessage("§7---------------");
+				sender.sendMessage(Language.HEAD_LINE.toString());
+				sender.sendMessage(Language.HEAD_HEADLINE.toString(
+						args[0],
+						Language.HEAD_RATIO.toString()));
+				sender.sendMessage(Language.HEAD_LINE.toString());
 				int pos = 1;
 				for (String stat : top) {
 					sender.sendMessage(String.valueOf(pos++) + ": "+stat);

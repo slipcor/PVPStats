@@ -9,9 +9,7 @@ import org.bukkit.event.Listener;
 /**
  * PVP Arena listener class
  * 
- * @author slipcor
- * 
- * @version v0.1.1
+ * Checks the PVP Arena events to possibly ignore kills happening there
  *
  */
 

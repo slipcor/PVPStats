@@ -1,7 +1,8 @@
 name: pvpstats
 main: praxis.slipcor.pvpstats.PVPStats
-version: 0.3.0.1
+version: 0.4.1
 author: slipcor
+soft-depends: pvparena
 website: http://dev.bukkit.org/server-mods/pvp-stats/
 commands:
     pvpstats:
@@ -14,7 +15,7 @@ commands:
             /pvpstats top [amount] - show the top [amount] players (K-D)
             /pvpstats top [type] - show the top 10 players of the type
             /pvpstats top [type] [amount] - show the top [amount] players of the type
-            /pvpstats reload - reload the config
+            /pvpstats reload - reload the configs
 permissions:
     pvpstats.reload:
         description: Ability to reload
