@@ -1,6 +1,6 @@
 name: pvpstats
 main: praxis.slipcor.pvpstats.PVPStats
-version: 0.4.1
+version: 0.4.2
 author: slipcor
 soft-depends: pvparena
 website: http://dev.bukkit.org/server-mods/pvp-stats/
@@ -25,4 +25,7 @@ permissions:
         default: op
     pvpstats.count:
         description: Permission to be counted
+        default: true
+    pvpstats.top:
+        description: Permission to get global stats
         default: true
