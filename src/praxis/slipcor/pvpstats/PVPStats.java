@@ -177,7 +177,7 @@ public class PVPStats extends JavaPlugin {
 			
 		}
 		
-		if (args[0].equals("top") || legacyTop > 0) {
+		if (sender.hasPermission("pvpstats.top") && (args[0].equals("top") || legacyTop > 0)) {
 		
 			if (args.length > 1) {
 				int amount = -1;

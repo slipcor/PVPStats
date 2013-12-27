@@ -26,3 +26,6 @@ permissions:
     pvpstats.count:
         description: Permission to be counted
         default: true
+    pvpstats.top:
+        description: Permission to get global stats
+        default: true
