@@ -8,7 +8,7 @@ public enum Language {
 	HEAD_HEADLINE("head.headline", "&cPVP Stats Top &7%0% &c%1%"),
 	HEAD_KILLS("head.kills", "Kills"),
 	HEAD_DEATHS("head.deaths", "Deaths"),
-	HEAD_STREAKS("head.streaks", "Streaks"),
+	HEAD_STREAK("head.streaks", "Streaks"),
 	HEAD_RATIO("head.ratio", ""),
 	INFO_FORMAT("info.format", "&c%0%: &7%1%"),
 	INFO_NAME("info.name", "Name"),

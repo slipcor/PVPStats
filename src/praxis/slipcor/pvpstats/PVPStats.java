@@ -3,6 +3,9 @@ package praxis.slipcor.pvpstats;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -32,6 +35,7 @@ public class PVPStats extends JavaPlugin {
 	protected String dbPass = null;
 	protected String dbDatabase = null;
 	protected String dbTable = null;
+	protected String dbKillTable = null;
 	protected int dbPort = 3306;
 
 	private final PSListener entityListener = new PSListener(this);
@@ -60,9 +64,9 @@ public class PVPStats extends JavaPlugin {
 		if (getConfig().getBoolean("updatecheck", true)) {
 			
 			if (getConfig().getBoolean("autodownload", true)) {
-				updater = new Updater(this, "pvpstats", this.getFile(), UpdateType.NO_DOWNLOAD, false);
+				updater = new Updater(this, 32908, this.getFile(), UpdateType.NO_DOWNLOAD, false);
 			} else {
-				updater = new Updater(this, "pvpstats", this.getFile(), UpdateType.DEFAULT, false);
+				updater = new Updater(this, 32908, this.getFile(), UpdateType.DEFAULT, false);
 			}
 		}
 		
@@ -148,8 +152,16 @@ public class PVPStats extends JavaPlugin {
 			
 			// /pvpstats - show your pvp stats
 			
-			final String[] info = PSMySQL.info(sender.getName());
-			sender.sendMessage(info);
+			class TellLater implements Runnable {
+
+				@Override
+				public void run() {
+					final String[] info = PSMySQL.info(sender.getName());
+					sender.sendMessage(info);
+				}
+				
+			}
+			Bukkit.getScheduler().runTaskAsynchronously(this, new TellLater());
 			return true;
 		}
 		
@@ -188,36 +200,42 @@ public class PVPStats extends JavaPlugin {
 					if (amount == -1) {
 						amount = 10;
 					}
-					String[] top = null;
-					if (args[1].equals("kills")) {
-						top = PSMySQL.top(amount, "KILLS");
-						sender.sendMessage(Language.HEAD_LINE.toString());
-						sender.sendMessage(Language.HEAD_HEADLINE.toString(
-								String.valueOf(amount),
-								Language.HEAD_KILLS.toString()));
-						sender.sendMessage(Language.HEAD_LINE.toString());
-					} else if (args[1].equals("deaths")) {
-						top = PSMySQL.top(amount, "DEATHS");
-						sender.sendMessage(Language.HEAD_LINE.toString());
-						sender.sendMessage(Language.HEAD_HEADLINE.toString(
-								String.valueOf(amount),
-								Language.HEAD_DEATHS.toString()));
-						sender.sendMessage(Language.HEAD_LINE.toString());
-					} else if (args[1].equals("streak")) {
+					
+					class RunLater implements Runnable {
+						final String name;
+						final int amount;
+						RunLater(String name, int amount) {
+							this.name = name;
+							this.amount = amount;
+						}
+						@Override
+						public void run() {
+							String[] top = PSMySQL.top(amount, name);
+							sender.sendMessage(Language.HEAD_LINE.toString());
+							sender.sendMessage(Language.HEAD_HEADLINE.toString(
+									String.valueOf(amount),
+									Language.valueOf("HEAD_"+name).toString()));
+							sender.sendMessage(Language.HEAD_LINE.toString());
+							
 
-						top = PSMySQL.top(amount, "STREAK");
-						sender.sendMessage(Language.HEAD_LINE.toString());
-						sender.sendMessage(Language.HEAD_HEADLINE.toString(
-								String.valueOf(amount),
-								Language.HEAD_STREAKS.toString()));
-						sender.sendMessage(Language.HEAD_LINE.toString());
+							int pos = 1;
+							for (String stat : top) {
+								sender.sendMessage(pos++ + ": "+stat);
+							}
+						}
+						
+					}
+					
+					if (args[1].equals("kills")) {
+						Bukkit.getScheduler().runTaskAsynchronously(this, new RunLater("KILLS", amount));
+					} else if (args[1].equals("deaths")) {
+						Bukkit.getScheduler().runTaskAsynchronously(this, new RunLater("DEATHS", amount));
+					} else if (args[1].equals("streak")) {
+						Bukkit.getScheduler().runTaskAsynchronously(this, new RunLater("STREAK", amount));
 					} else {
 						return false;
 					}
-					int pos = 1;
-					for (String stat : top) {
-						sender.sendMessage(pos++ + ": "+stat);
-					}
+					
 					return true;
 				}
 		        //   /pvpstats top [amount] - show the top [amount] players (K-D)
@@ -234,16 +252,28 @@ public class PVPStats extends JavaPlugin {
 				if (legacyTop == 0) {
 					args[0] = String.valueOf(count);
 				}
-				final String[] top = PSMySQL.top(count, "K-D");
-				sender.sendMessage(Language.HEAD_LINE.toString());
-				sender.sendMessage(Language.HEAD_HEADLINE.toString(
-						args[0],
-						Language.HEAD_RATIO.toString()));
-				sender.sendMessage(Language.HEAD_LINE.toString());
-				int pos = 1;
-				for (String stat : top) {
-					sender.sendMessage(String.valueOf(pos++) + ": "+stat);
+				class RunLater implements Runnable {
+					int count;
+					RunLater(int i) {
+						count= i;
+					}
+					@Override
+					public void run() {
+						final String[] top = PSMySQL.top(count, "K-D");
+						sender.sendMessage(Language.HEAD_LINE.toString());
+						sender.sendMessage(Language.HEAD_HEADLINE.toString(
+								args[0],
+								Language.HEAD_RATIO.toString()));
+						sender.sendMessage(Language.HEAD_LINE.toString());
+						int pos = 1;
+						for (String stat : top) {
+							sender.sendMessage(String.valueOf(pos++) + ": "+stat);
+						}
+					}
+					
 				}
+				Bukkit.getScheduler().runTaskAsynchronously(this, new RunLater(count));
+				
 				return true;
 			} catch (Exception e) {
 				return false;
@@ -252,8 +282,16 @@ public class PVPStats extends JavaPlugin {
 		}
 		// /pvpstats [player] - show player's pvp stats
 		
-		final String[] info = PSMySQL.info(args[0]);
-		sender.sendMessage(info);
+		class TellLater implements Runnable {
+
+			@Override
+			public void run() {
+				final String[] info = PSMySQL.info(args[0]);
+				sender.sendMessage(info);
+			}
+			
+		}
+		Bukkit.getScheduler().runTaskAsynchronously(this, new TellLater());
 		return true;
 	}
 
@@ -270,6 +308,7 @@ public class PVPStats extends JavaPlugin {
  			this.dbPass = getConfig().getString("MySQLpass", "");
  			this.dbDatabase = getConfig().getString("MySQLdb", "");
  			this.dbTable = getConfig().getString("MySQLtable", "pvpstats");
+ 			this.dbKillTable = getConfig().getString("MySQLkilltable", "pvpkillstats");
  			this.dbPort = getConfig().getInt("MySQLport", 3306);
  		}
  		
@@ -302,20 +341,41 @@ public class PVPStats extends JavaPlugin {
  					getLogger().info("MySQL connection successful");
  	 				// Check if the tables exist, if not, create them
  					if (!sqlHandler.tableExists(dbDatabase,dbTable)) {
+ 						// normal table doesnt exist, create both
+ 						
  						getLogger().info("Creating table "+dbTable);
- 						final String query = "CREATE TABLE `"+dbTable+"` ( `id` int(5) NOT NULL AUTO_INCREMENT, `name` varchar(42) NOT NULL, `kills` int(8) not null default 0, `deaths` int(8) not null default 0, `streak` int(8) not null default 0, PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
+ 						final String query = "CREATE TABLE `"+dbTable+"` ( " +
+ 								"`id` int(5) NOT NULL AUTO_INCREMENT, " +
+ 								"`name` varchar(42) NOT NULL, " +
+ 								"`kills` int(8) not null default 0, " +
+ 								"`deaths` int(8) not null default 0, " +
+ 								"`streak` int(8) not null default 0, " +
+ 								"PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
  						try {
  							sqlHandler.executeQuery(query, true);
  						} catch (SQLException e) {
  							e.printStackTrace();
  						}
- 					} else {
- 						final String query = "SELECT streak FROM `"+dbTable+"` WHERE 1 ;";
+ 						
+ 						getLogger().info("Creating table "+dbKillTable);
+ 						final String query2 = "CREATE TABLE `"+dbKillTable+"` ( " +
+ 								"`id` int(16) NOT NULL AUTO_INCREMENT, " +
+ 								"`name` varchar(42) NOT NULL, " +
+ 								"`kill` int(1) not null default 0, " +
+ 								"`time` int(16) not null default 0, " +
+ 								"PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
  						try {
- 							sqlHandler.executeQuery(query, false);
+ 							sqlHandler.executeQuery(query2, true);
  						} catch (SQLException e) {
- 							if (e.getMessage().contains("Unknown column")) {
- 								final String queryA = "ALTER TABLE `"+dbTable+"` ADD `streak` int(8) not null default 0; ";
+ 							e.printStackTrace();
+ 						}
+ 					} else {
+ 						// normal exists, do we need to update?
+ 						try {
+							List<String> columns = Arrays.asList(sqlHandler.getColumns(dbDatabase, dbTable));
+							
+							if (!columns.contains("streak")) {
+								final String queryA = "ALTER TABLE `"+dbTable+"` ADD `streak` int(8) not null default 0; ";
 								final String queryB = "ALTER TABLE `"+dbTable+"` CHANGE `deaths` `deaths` INT( 8 ) NOT NULL DEFAULT 0;";
 								final String queryC = "ALTER TABLE `"+dbTable+"` CHANGE `kills` `kills` INT( 8 ) NOT NULL DEFAULT 0;";
 	 	 						try {
@@ -328,8 +388,48 @@ public class PVPStats extends JavaPlugin {
 	 	 						} catch (SQLException e2) {
 	 	 							e2.printStackTrace();
 	 	 						}
- 							}
- 						}
+							}
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+ 						
+ 						if (!sqlHandler.tableExists(dbDatabase,dbKillTable)) {
+ 	 						// second table doesnt exist, create that
+ 	 						
+ 	 						getLogger().info("Creating table "+dbKillTable);
+ 	 						final String query = "CREATE TABLE `"+dbKillTable+"` ( " +
+ 	 								"`id` int(16) NOT NULL AUTO_INCREMENT, " +
+ 	 								"`name` varchar(42) NOT NULL, " +
+ 	 								"`kill` int(1) not null default 0, " +
+ 	 								"`time` int(16) not null default 0, " +
+ 	 								"PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
+ 	 						try {
+ 	 							sqlHandler.executeQuery(query, true);
+ 	 						} catch (SQLException e) {
+ 	 							e.printStackTrace();
+ 	 						}
+ 	 					} else {
+ 	 						// did we really add the "tine" ??!!
+ 	 						
+ 							List<String> columns = new ArrayList<String>();
+							try {
+								columns = Arrays.asList(sqlHandler.getColumns(dbDatabase, dbKillTable));
+							} catch (SQLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							
+							if (columns.contains("tine")) {
+								final String query = "ALTER TABLE `"+dbTable+"` CHANGE `tine` `time` INT( 16 ) NOT NULL DEFAULT 0;";
+								
+	 	 						try {
+	 	 							sqlHandler.executeQuery(query, true);
+	 	 		 					getLogger().info("Fixed MySQL field 'time'");
+	 	 						} catch (SQLException e2) {
+	 	 							e2.printStackTrace();
+	 	 						}
+							}
+ 	 					}
  					}
  				} else {
  					getLogger().severe("MySQL connection failed");

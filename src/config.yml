@@ -5,6 +5,7 @@ MySQLpass: pw
 MySQLdb: db
 MySQLport: 3306
 MySQLtable: pvpstats
+MySQLkilltable: pvpkillstats
 
 PVPArena: false
 checkabuse: true

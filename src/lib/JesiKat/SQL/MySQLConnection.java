@@ -65,7 +65,6 @@ public class MySQLConnection {
 	}
 
 	public MySQLConnection(String table, String host, int port, String database, String username, String password) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		//this.dbTable = table;
 		this.dbUrl = host + ":" + port + "/" + database;
 		this.dbUsername = username;
 		this.dbPassword = password;
@@ -115,7 +114,9 @@ public class MySQLConnection {
 	 * @return If {@value modifies} is true, returns a valid ResultSet obtained from the Query. If {@value modifies} is false, returns null.
 	 * @throws SQLException if the Query had an error or there was not a valid connection.
 	 */
-	public ResultSet executeQuery(String query, boolean modifies) throws SQLException {
+	public ResultSet executeQuery(final String query, final boolean modifies) throws SQLException {
+		
+		
 		Statement statement = this.databaseConnection.createStatement();
 		if (modifies) {
 			statement.execute(query);

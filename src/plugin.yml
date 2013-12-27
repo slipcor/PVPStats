@@ -1,6 +1,6 @@
 name: pvpstats
 main: praxis.slipcor.pvpstats.PVPStats
-version: 0.4.1
+version: 0.6.1
 author: slipcor
 soft-depends: pvparena
 website: http://dev.bukkit.org/server-mods/pvp-stats/

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -25,7 +26,7 @@ public final class PSMySQL {
 
 	private static PVPStats plugin = null;
 
-	public static void mysqlQuery(final String query) {
+	private static void mysqlQuery(final String query) {
 		if (plugin.mySQL) {
 			try {
 				plugin.sqlHandler.executeQuery(query, true);
@@ -35,7 +36,7 @@ public final class PSMySQL {
 		}
 	}
 
-	public static boolean mysqlExists(final String query) {
+	private static boolean mysqlExists(final String query) {
 		ResultSet result = null;
 		if (plugin.mySQL) {
 			try {
@@ -43,17 +44,20 @@ public final class PSMySQL {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		}
-		try {
-			while (result != null && result.next()) {
-				return true;
+			try {
+				while (result != null && result.next()) {
+					return true;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 		return false;
 	}
-	
+
+	/**
+	 * @param player
+	 */
 	public static void incKill(final Player player) {
 		if (player.hasPermission("pvpstats.count")) {
 			boolean incStreak = false;
@@ -93,8 +97,15 @@ public final class PSMySQL {
 		if (addStreak && kill) {
 			mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `streak` = `streak`+1 WHERE `name` = '" + sPlayer + "'");
 		}
+		mysqlQuery("INSERT INTO "+plugin.dbKillTable+" (`name`,`kill`,`time`) VALUES(" +
+				"'"+sPlayer+"', '"+(kill?1:0)+"', '"+(int) System.currentTimeMillis()/1000+"')");
 	}
 
+	/**
+	 * @param count the amount to fetch
+	 * @param sort sorting string
+	 * @return a sorted array
+	 */
 	public static String[] top(final int count, String sort) {
 		if (!plugin.mySQL) {
 			plugin.getLogger().severe("MySQL is not set!");
@@ -207,6 +218,10 @@ public final class PSMySQL {
 		return a - b;
 	}
 
+	/**
+	 * @param string the player name to get
+	 * @return the player info
+	 */
 	public static String[] info(final String string) {
 		if (!plugin.mySQL) {
 			plugin.getLogger().severe("MySQL is not set!");
@@ -301,13 +316,16 @@ public final class PSMySQL {
 	public static void wipe(final String name) {
 		if (name == null) {
 			mysqlQuery("DELETE FROM `"+plugin.dbTable+"` WHERE 1;");
+			mysqlQuery("DELETE FROM `"+plugin.dbKillTable+"` WHERE 1;");
 		} else {
 			PVPData.setDeaths(name, 0);
 			PVPData.setKills(name, 0);
 			PVPData.setMaxStreak(name, 0);
 			PVPData.setStreak(name, 0);
-			
+
 			mysqlQuery("DELETE FROM `"+plugin.dbTable+"` WHERE `name` = '" + name
+					+ "';");
+			mysqlQuery("DELETE FROM `"+plugin.dbKillTable+"` WHERE `name` = '" + name
 					+ "';");
 		}
 	}
