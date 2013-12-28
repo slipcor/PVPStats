@@ -331,7 +331,11 @@ public class PVPStats extends JavaPlugin {
  			this.dbPass = getConfig().getString("MySQLpass", "");
  			this.dbDatabase = getConfig().getString("MySQLdb", "");
  			this.dbTable = getConfig().getString("MySQLtable", "pvpstats");
- 			this.dbKillTable = getConfig().getString("MySQLkilltable", "pvpkillstats");
+ 			
+ 			if (getConfig().getBoolean("collectprecise")) {
+ 				this.dbKillTable = getConfig().getString("MySQLkilltable", "pvpkillstats");
+ 			}
+ 			
  			this.dbPort = getConfig().getInt("MySQLport", 3306);
  		}
  		
@@ -380,17 +384,20 @@ public class PVPStats extends JavaPlugin {
  							e.printStackTrace();
  						}
  						
- 						getLogger().info("Creating table "+dbKillTable);
- 						final String query2 = "CREATE TABLE `"+dbKillTable+"` ( " +
- 								"`id` int(16) NOT NULL AUTO_INCREMENT, " +
- 								"`name` varchar(42) NOT NULL, " +
- 								"`kill` int(1) not null default 0, " +
- 								"`time` int(16) not null default 0, " +
- 								"PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
- 						try {
- 							sqlHandler.executeQuery(query2, true);
- 						} catch (SQLException e) {
- 							e.printStackTrace();
+ 						if (dbKillTable != null) {
+ 						
+	 						getLogger().info("Creating table "+dbKillTable);
+	 						final String query2 = "CREATE TABLE `"+dbKillTable+"` ( " +
+	 								"`id` int(16) NOT NULL AUTO_INCREMENT, " +
+	 								"`name` varchar(42) NOT NULL, " +
+	 								"`kill` int(1) not null default 0, " +
+	 								"`time` int(16) not null default 0, " +
+	 								"PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
+	 						try {
+	 							sqlHandler.executeQuery(query2, true);
+	 						} catch (SQLException e) {
+	 							e.printStackTrace();
+	 						}
  						}
  					} else {
  						// normal exists, do we need to update?
@@ -416,7 +423,7 @@ public class PVPStats extends JavaPlugin {
 							e1.printStackTrace();
 						}
  						
- 						if (!sqlHandler.tableExists(dbDatabase,dbKillTable)) {
+ 						if (dbKillTable != null && !sqlHandler.tableExists(dbDatabase,dbKillTable)) {
  	 						// second table doesnt exist, create that
  	 						
  	 						getLogger().info("Creating table "+dbKillTable);
@@ -431,7 +438,7 @@ public class PVPStats extends JavaPlugin {
  	 						} catch (SQLException e) {
  	 							e.printStackTrace();
  	 						}
- 	 					} else {
+ 	 					} else if (dbKillTable != null){
  	 						// did we really add the "tine" ??!!
  	 						
  							List<String> columns = new ArrayList<String>();

@@ -97,8 +97,10 @@ public final class PSMySQL {
 		if (addStreak && kill) {
 			mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `streak` = `streak`+1 WHERE `name` = '" + sPlayer + "'");
 		}
-		mysqlQuery("INSERT INTO "+plugin.dbKillTable+" (`name`,`kill`,`time`) VALUES(" +
+		if (plugin.dbKillTable != null) {
+			mysqlQuery("INSERT INTO "+plugin.dbKillTable+" (`name`,`kill`,`time`) VALUES(" +
 				"'"+sPlayer+"', '"+(kill?1:0)+"', '"+(int) System.currentTimeMillis()/1000+"')");
+		}
 	}
 
 	/**
@@ -316,7 +318,9 @@ public final class PSMySQL {
 	public static void wipe(final String name) {
 		if (name == null) {
 			mysqlQuery("DELETE FROM `"+plugin.dbTable+"` WHERE 1;");
-			mysqlQuery("DELETE FROM `"+plugin.dbKillTable+"` WHERE 1;");
+			if (plugin.dbKillTable != null) {
+				mysqlQuery("DELETE FROM `"+plugin.dbKillTable+"` WHERE 1;");
+			}
 		} else {
 			PVPData.setDeaths(name, 0);
 			PVPData.setKills(name, 0);
@@ -325,8 +329,10 @@ public final class PSMySQL {
 
 			mysqlQuery("DELETE FROM `"+plugin.dbTable+"` WHERE `name` = '" + name
 					+ "';");
-			mysqlQuery("DELETE FROM `"+plugin.dbKillTable+"` WHERE `name` = '" + name
+			if (plugin.dbKillTable != null) {
+				mysqlQuery("DELETE FROM `"+plugin.dbKillTable+"` WHERE `name` = '" + name
 					+ "';");
+			}
 		}
 	}
 

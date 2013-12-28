@@ -12,3 +12,4 @@ checkabuse: true
 updatecheck: true
 autodownload: true
 tracker: true
+collectprecise: true
