@@ -143,8 +143,8 @@ public class PVPStats extends JavaPlugin {
 				if (sender.hasPermission("pvpstats.cleanup")) {
 					sender.sendMessage("/pvpstats cleanup - removes multi entries");
 				}
-				return true;
 			}
+			return true;
 		}
 		
 		if (args[0].equalsIgnoreCase("wipe")) {
@@ -179,6 +179,7 @@ public class PVPStats extends JavaPlugin {
 			return true;
 		}
 
+		this.reloadConfig();
 		loadConfig();
 		loadLanguage();
 		sendPrefixed(sender, Language.MSG_RELOADED.toString());
@@ -315,6 +316,7 @@ public class PVPStats extends JavaPlugin {
 				
 				return true;
 			} catch (Exception e) {
+				e.printStackTrace();
 				return false;
 			}
 		
@@ -466,7 +468,7 @@ public class PVPStats extends JavaPlugin {
 							}
 							
 							if (columns.contains("tine")) {
-								final String query = "ALTER TABLE `"+dbTable+"` CHANGE `tine` `time` INT( 16 ) NOT NULL DEFAULT 0;";
+								final String query = "ALTER TABLE `"+dbKillTable+"` CHANGE `tine` `time` INT( 16 ) NOT NULL DEFAULT 0;";
 								
 	 	 						try {
 	 	 							sqlHandler.executeQuery(query, true);

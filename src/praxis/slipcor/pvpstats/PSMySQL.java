@@ -229,10 +229,12 @@ public final class PSMySQL {
 		
 		String string = plugin.getConfig().getString("kdcalculation");
 
-		string.replaceAll("&k", "("+kills+")");
-		string.replaceAll("&d", "("+deaths+")");
-		string.replaceAll("&s", "("+streak+")");
-		string.replaceAll("&m", "("+maxstreak+")");
+		string = string.replaceAll("&k", "("+kills+")");
+		string = string.replaceAll("&d", "("+deaths+")");
+		string = string.replaceAll("&s", "("+streak+")");
+		string = string.replaceAll("&m", "("+maxstreak+")");
+
+		plugin.getLogger().severe("String: " + string.toString());
 		
 		ScriptEngineManager mgr = new ScriptEngineManager();
 		ScriptEngine engine = mgr.getEngineByName("JavaScript");
