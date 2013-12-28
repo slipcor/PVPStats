@@ -16,9 +16,13 @@ commands:
             /pvpstats top [type] - show the top 10 players of the type
             /pvpstats top [type] [amount] - show the top [amount] players of the type
             /pvpstats reload - reload the configs
+            /pvpstats cleanup - removes multi entries
 permissions:
     pvpstats.reload:
         description: Ability to reload
+        default: op
+    pvpstats.cleanup:
+        description: Ability to cleanup
         default: op
     pvpstats.wipe:
         description: Ability to wipe

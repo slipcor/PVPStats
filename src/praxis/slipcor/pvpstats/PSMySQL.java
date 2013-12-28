@@ -329,4 +329,66 @@ public final class PSMySQL {
 					+ "';");
 		}
 	}
+
+	public static int clean() {
+		if (!plugin.mySQL) {
+			plugin.getLogger().severe("MySQL is not set!");
+			return 0;
+		}
+		ResultSet result = null;
+		
+		List<Integer> ints = new ArrayList<Integer>();
+		Map<String, Integer> players = new HashMap<String, Integer>();
+		
+		try {
+			
+			result = plugin.sqlHandler
+					.executeQuery("SELECT `id`, `name` FROM `"+plugin.dbTable+"` WHERE 1 ORDER BY `kills` DESC;", false);
+			
+			while (result != null && result.next()) {
+				String playerName = result.getString("name");
+				
+				if (players.containsKey(playerName)) {
+					ints.add(result.getInt("id"));
+					players.put(playerName, players.get(playerName)+1);
+				} else {
+					players.put(playerName, 1);
+				}
+			}
+
+			if (ints.size() > 0) {
+				StringBuffer buff = new StringBuffer("DELETE FROM `");
+				buff.append(plugin.dbTable);
+				buff.append("` WHERE `id` IN (");
+				
+				boolean first = true;
+				
+				for (Integer i : ints) {
+					if (!first) {
+						buff.append(',');
+					}
+					first = false;
+					buff.append(i);
+				}
+				
+				buff.append(");");
+				
+				mysqlQuery(buff.toString());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		int i = 10;
+		
+		for (String name : players.keySet()) {
+			plugin.getLogger().info(name+": "+players.get(name));
+			if (--i < 0) {
+				plugin.getLogger().info("...");
+				break;
+			}
+		}
+		
+		return ints.size();
+	}
 }

@@ -72,6 +72,19 @@ public class PVPStats extends JavaPlugin {
 		
 		loadLanguage();
 		
+		class RunLater implements Runnable {
+			@Override
+			public void run() {
+				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pvpstats cleanup");
+			}
+			
+		}
+		
+		final Tracker tracker = new Tracker(this);
+        tracker.start();
+        
+		Bukkit.getScheduler().runTaskLater(this, new RunLater(), 5000L);
+		
 		getLogger().info("enabled. (version " + pdfFile.getVersion() + ")");
 	}
 	
@@ -114,7 +127,7 @@ public class PVPStats extends JavaPlugin {
 
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String commandLabel, final String[] args) {
 		
-		if (args == null || args.length < 1 || !(args[0].equalsIgnoreCase("reload")||args[0].equalsIgnoreCase("wipe"))) {
+		if (args == null || args.length < 1 || !(args[0].equalsIgnoreCase("reload")||args[0].equalsIgnoreCase("wipe")||args[0].equalsIgnoreCase("cleanup"))) {
 			return parsecommand(sender, args);
 		}
 		
@@ -131,6 +144,16 @@ public class PVPStats extends JavaPlugin {
 				PSMySQL.wipe(args[1]);
 				sendPrefixed(sender, Language.MSG_WIPED.toString(args[1]));
 			}
+			
+			return true;
+		} else if (args[0].equalsIgnoreCase("cleanup")) {
+			if (!sender.hasPermission("pvpstats.cleanup")) {
+				sendPrefixed(sender, Language.MSG_NOPERMCLEANUP.toString());
+				return true;
+			}
+
+			final int count = PSMySQL.clean();
+			sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
 			
 			return true;
 		}

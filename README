@@ -1,3 +1,5 @@
+v0.6.3 - add Tracker
+v0.6.2 - add /pvpstats cleanup - removes duplicate entries
 v0.6.1 - rewrite the backend to support more precise stats
 v0.4.2 - add permission pvpstats.top (defaulting to true!)
 v0.4.1 - make the reload command reload the language; 
