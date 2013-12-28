@@ -128,7 +128,23 @@ public class PVPStats extends JavaPlugin {
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String commandLabel, final String[] args) {
 		
 		if (args == null || args.length < 1 || !(args[0].equalsIgnoreCase("reload")||args[0].equalsIgnoreCase("wipe")||args[0].equalsIgnoreCase("cleanup"))) {
-			return parsecommand(sender, args);
+			if (!parsecommand(sender, args)) {
+				sender.sendMessage("/pvpstats - show your pvp stats");
+				sender.sendMessage("/pvpstats [player] - show player's pvp stats");
+				sender.sendMessage("/pvpstats [amount] - show the top [amount] players (K-D)");
+				if (sender.hasPermission("pvpstats.top")) {
+					sender.sendMessage("/pvpstats top [amount] - show the top [amount] players (K-D)");
+					sender.sendMessage("/pvpstats top [type] - show the top 10 players of the type");
+					sender.sendMessage("/pvpstats top [type] [amount] - show the top [amount] players of the type");
+				}
+				if (sender.hasPermission("pvpstats.reload")) {
+					sender.sendMessage("/pvpstats reload - reload the configs");
+				}
+				if (sender.hasPermission("pvpstats.cleanup")) {
+					sender.sendMessage("/pvpstats cleanup - removes multi entries");
+				}
+				return true;
+			}
 		}
 		
 		if (args[0].equalsIgnoreCase("wipe")) {
