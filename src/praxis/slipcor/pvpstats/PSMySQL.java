@@ -2,10 +2,15 @@ package praxis.slipcor.pvpstats;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -116,7 +121,7 @@ public final class PSMySQL {
 		
 		sort = sort.toUpperCase();
 		ResultSet result = null;
-		final Map<String, Integer> results = new HashMap<String, Integer>();
+		final Map<String, Double> results = new HashMap<String, Double>();
 		
 		final List<String> sortedValues = new ArrayList<String>();
 
@@ -150,7 +155,8 @@ public final class PSMySQL {
 					results.put(
 							result.getString("name"),
 							calcResult(result.getInt("kills"),
-									result.getInt("deaths")));
+									result.getInt("deaths"),
+									result.getInt("streak"), PVPData.getStreak(result.getString("name"))));
 				}
 			}
 		} catch (SQLException e) {
@@ -171,16 +177,18 @@ public final class PSMySQL {
 		return output;
 	}
 
-	private static String[] sortParse(final Map<String, Integer> results,
+	private static String[] sortParse(final Map<String, Double> results,
 			final int count) {
 		String[] result = new String[results.size()];
-		Integer[] sort = new Integer[results.size()];
+		Double[] sort = new Double[results.size()];
 
 		int pos = 0;
 
+		DecimalFormat df = new DecimalFormat("#.##");
+		
 		for (String key : results.keySet()) {
 			sort[pos] = results.get(key);
-			result[pos] = ChatColor.RED + key + ":" + ChatColor.GRAY + " " + sort[pos];
+			result[pos] = ChatColor.RED + key + ":" + ChatColor.GRAY + " " + df.format(sort[pos]);
 			pos++;
 		}
 
@@ -193,7 +201,7 @@ public final class PSMySQL {
 				if (sort[i] < sort[i + 1]) {
 					// exchange elements
 
-					final int tempI = sort[i];
+					final double tempI = sort[i];
 					sort[i] = sort[i + 1];
 					sort[i + 1] = tempI;
 
@@ -216,8 +224,52 @@ public final class PSMySQL {
 		return output;
 	}
 
-	private static Integer calcResult(final int a, final int b) {
-		return a - b;
+	private static Double calcResult(final int kills, final int deaths, final int streak,
+			final int maxstreak) {
+		
+		String string = plugin.getConfig().getString("kdcalculation");
+
+		string.replaceAll("&k", "("+kills+")");
+		string.replaceAll("&d", "("+deaths+")");
+		string.replaceAll("&s", "("+streak+")");
+		string.replaceAll("&m", "("+maxstreak+")");
+		
+		ScriptEngineManager mgr = new ScriptEngineManager();
+		ScriptEngine engine = mgr.getEngineByName("JavaScript");
+		StringBuffer saneString = new StringBuffer();
+		
+		for (char c : string.toCharArray()) {
+			switch (c) {
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+			case '-':
+			case '+':
+			case '*':
+			case '/':
+			case '(':
+			case ')':
+				saneString.append(c);
+				break;
+			default:
+				continue;
+			}
+		}
+		
+		try {
+			return (Double) engine.eval(saneString.toString());
+		} catch (ScriptException e) {
+			plugin.getLogger().severe("SaneString: " + saneString.toString());
+			e.printStackTrace();
+			return 0d;
+		}
 	}
 
 	/**
@@ -257,7 +309,7 @@ public final class PSMySQL {
 						String.valueOf(result.getInt("deaths")));
 				output[3] = Language.INFO_FORMAT.toString(
 						Language.INFO_RATIO.toString(),
-						String.valueOf(calcResult(result.getInt("kills"), result.getInt("deaths"))));
+						String.valueOf(calcResult(result.getInt("kills"), result.getInt("deaths"), result.getInt("streak"), streak)));
 				output[4] = Language.INFO_FORMAT.toString(
 						Language.INFO_STREAK.toString(),
 						String.valueOf(streak));

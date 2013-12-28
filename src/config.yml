@@ -1,3 +1,11 @@
+# the K-D ratio is configurable to what you want it to be
+# the following placeholders exists:
+# &k - kills
+# &d - deaths
+# &s - current streak value
+# &m - max streak value
+
+
 MySQL: false
 MySQLhost: host
 MySQLuser: user
@@ -13,3 +21,4 @@ updatecheck: true
 autodownload: true
 tracker: true
 collectprecise: true
+kdcalculation: &k-&d
