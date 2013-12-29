@@ -72,18 +72,20 @@ public class PVPStats extends JavaPlugin {
 		
 		loadLanguage();
 		
-		class RunLater implements Runnable {
-			@Override
-			public void run() {
-				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pvpstats cleanup");
-			}
-			
-		}
-		
 		final Tracker tracker = new Tracker(this);
         tracker.start();
-        
-		Bukkit.getScheduler().runTaskLater(this, new RunLater(), 5000L);
+		
+		if (getConfig().getBoolean("clearonstart", true)) {
+
+			class RunLater implements Runnable {
+				@Override
+				public void run() {
+					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pvpstats cleanup");
+				}
+				
+			}
+			Bukkit.getScheduler().runTaskLater(this, new RunLater(), 5000L);
+		}
 		
 		getLogger().info("enabled. (version " + pdfFile.getVersion() + ")");
 	}

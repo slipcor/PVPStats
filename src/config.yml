@@ -20,4 +20,5 @@ updatecheck: true
 autodownload: true
 tracker: true
 collectprecise: true
+clearonstart: true
 kdcalculation: '&k/(&d+1)'
