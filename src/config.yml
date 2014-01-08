@@ -22,3 +22,5 @@ tracker: true
 collectprecise: true
 clearonstart: true
 kdcalculation: '&k/(&d+1)'
+ignoreworlds:
+- doNotTrack

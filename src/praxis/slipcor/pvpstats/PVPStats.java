@@ -39,7 +39,7 @@ public class PVPStats extends JavaPlugin {
 	protected int dbPort = 3306;
 
 	private final PSListener entityListener = new PSListener(this);
-	protected final PSPAListener paListener = new PSPAListener();
+	protected final PSPAListener paListener = new PSPAListener(this);
 	private PSPAPluginListener paPluginListener;
 	
 	private Updater updater = null;
@@ -493,6 +493,13 @@ public class PVPStats extends JavaPlugin {
 
 	public void onDisable() {
 		getLogger().info("disabled. (version " + getDescription().getVersion() + ")");
+	}
+
+	public boolean ignoresWorld(final String name) {
+		if (!getConfig().contains("ignoreworlds")) {
+			return false;
+		}
+		return getConfig().getStringList("ignoreworlds").contains(name);
 	}
 
 }

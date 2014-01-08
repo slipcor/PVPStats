@@ -48,8 +48,9 @@ public class PSListener implements Listener {
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onPlayerDeath(final PlayerDeathEvent event) {
-
-		if (event.getEntity() == null || event.getEntity().getKiller() == null) {
+		
+		if (event.getEntity() == null || event.getEntity().getKiller() == null ||
+				plugin.ignoresWorld(event.getEntity().getWorld().getName())) {
 			return;
 		}
 
