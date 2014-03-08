@@ -104,7 +104,7 @@ public final class PSMySQL {
 		}
 		if (plugin.dbKillTable != null) {
 			mysqlQuery("INSERT INTO "+plugin.dbKillTable+" (`name`,`kill`,`time`) VALUES(" +
-				"'"+sPlayer+"', '"+(kill?1:0)+"', '"+(int) System.currentTimeMillis()/1000+"')");
+				"'"+sPlayer+"', '"+(kill?1:0)+"', '"+(long) System.currentTimeMillis()/1000+"')");
 		}
 	}
 
@@ -134,12 +134,19 @@ public final class PSMySQL {
 				order = "deaths";
 			} else if (sort.equals("STREAK")) {
 				order = "streak";
+			} else if (sort.equals("K-D")) {
+				order = "kd";
 			} else {
 				order = "kills";
 			}
 			
+			int limit = order.equals("kd")?50:count;
+			
+			String query = "SELECT `name`,`kills`,`deaths`,`streak` FROM `"+
+					plugin.dbTable+"` WHERE 1 ORDER BY `"+order+"` DESC LIMIT "+limit+";";
+			
 			result = plugin.sqlHandler
-					.executeQuery("SELECT `name`,`kills`,`deaths`,`streak` FROM `"+plugin.dbTable+"` WHERE 1 ORDER BY `"+order+"` DESC LIMIT "+count+";", false);
+					.executeQuery(query, false);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

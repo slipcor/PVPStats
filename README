@@ -1,3 +1,5 @@
+v0.7.0 - add "abuseseconds" to allow abuse nerfing
+v0.6.9 - maybe fix /ps top not displaying the top K/D
 v0.6.8 - add worlds ignoring PVP
 v0.6.7 - allow disabling of the startup cleanup
 v0.6.6 - allow to specify how the KD ratio is being calculated

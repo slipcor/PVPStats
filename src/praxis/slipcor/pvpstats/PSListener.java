@@ -3,12 +3,15 @@ package praxis.slipcor.pvpstats;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitTask;
+
 import praxis.slipcor.pvpstats.Updater.UpdateResult;
 
 /**
@@ -22,6 +25,7 @@ public class PSListener implements Listener {
 	private final PVPStats plugin;
 	
 	private final Map<String, String> lastKill = new HashMap<String, String>();
+	private final Map<String, BukkitTask> killTask = new HashMap<String, BukkitTask>();
 
 	public PSListener(final PVPStats instance) {
 		this.plugin = instance;
@@ -64,6 +68,25 @@ public class PSListener implements Listener {
 			}
 			
 			lastKill.put(attacker.getName(), player.getName());
+			int abusesec = plugin.getConfig().getInt("abuseseconds");
+			if (abusesec > 0) {
+				class RemoveLater implements Runnable {
+
+					@Override
+					public void run() {
+						lastKill.remove(attacker.getName());
+						killTask.remove(attacker.getName());
+					}
+					
+				}
+				BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, new RemoveLater(), abusesec * 20L);
+				
+				if (killTask.containsKey(attacker.getName())) {
+					killTask.get(attacker.getName()).cancel();
+				}
+				
+				killTask.put(attacker.getName(), task);
+			}
 		}
 		// here we go, PVP!
 		PSMySQL.incDeath(player);

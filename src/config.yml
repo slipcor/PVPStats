@@ -16,6 +16,7 @@ MySQLkilltable: pvpkillstats
 
 PVPArena: false
 checkabuse: true
+abuseseconds: -1
 updatecheck: true
 autodownload: true
 tracker: true
