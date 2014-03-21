@@ -135,12 +135,12 @@ public final class PSMySQL {
 			} else if (sort.equals("STREAK")) {
 				order = "streak";
 			} else if (sort.equals("K-D")) {
-				order = "kd";
+				order = "kills";
 			} else {
 				order = "kills";
 			}
 			
-			int limit = order.equals("kd")?50:count;
+			int limit = sort.equals("K-D")?50:count;
 			
 			String query = "SELECT `name`,`kills`,`deaths`,`streak` FROM `"+
 					plugin.dbTable+"` WHERE 1 ORDER BY `"+order+"` DESC LIMIT "+limit+";";
