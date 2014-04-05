@@ -16,6 +16,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import praxis.slipcor.pvpstats.Updater.UpdateType;
+import praxis.slipcor.pvpstats.uuid.UUIDUpdater;
 
 /**
  * main class
@@ -342,6 +343,7 @@ public class PVPStats extends JavaPlugin {
 
 		getConfig().options().copyDefaults(true);
 		saveConfig();
+		PSMySQL.initiate(this);
 
 		// get variables from settings handler
  		if (getConfig().getBoolean("MySQL", false)) {
@@ -394,6 +396,7 @@ public class PVPStats extends JavaPlugin {
  						final String query = "CREATE TABLE `"+dbTable+"` ( " +
  								"`id` int(5) NOT NULL AUTO_INCREMENT, " +
  								"`name` varchar(42) NOT NULL, " +
+ 								"`uid` varchar(42), " +
  								"`kills` int(8) not null default 0, " +
  								"`deaths` int(8) not null default 0, " +
  								"`streak` int(8) not null default 0, " +
@@ -410,6 +413,7 @@ public class PVPStats extends JavaPlugin {
 	 						final String query2 = "CREATE TABLE `"+dbKillTable+"` ( " +
 	 								"`id` int(16) NOT NULL AUTO_INCREMENT, " +
 	 								"`name` varchar(42) NOT NULL, " +
+	 								"`uid` varchar(42), " +
 	 								"`kill` int(1) not null default 0, " +
 	 								"`time` int(16) not null default 0, " +
 	 								"PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
@@ -428,6 +432,7 @@ public class PVPStats extends JavaPlugin {
 								final String queryA = "ALTER TABLE `"+dbTable+"` ADD `streak` int(8) not null default 0; ";
 								final String queryB = "ALTER TABLE `"+dbTable+"` CHANGE `deaths` `deaths` INT( 8 ) NOT NULL DEFAULT 0;";
 								final String queryC = "ALTER TABLE `"+dbTable+"` CHANGE `kills` `kills` INT( 8 ) NOT NULL DEFAULT 0;";
+								final String queryD = "ALTER TABLE `"+dbTable+"` ADD `uid` varchar(42); ";
 	 	 						try {
 	 	 							sqlHandler.executeQuery(queryA, true);
 	 	 		 					getLogger().info("Added 'streak' column to MySQL!");
@@ -435,9 +440,21 @@ public class PVPStats extends JavaPlugin {
 	 	 		 					getLogger().info("Updated MySQL field 'deaths'");
 	 	 							sqlHandler.executeQuery(queryC, true);
 	 	 		 					getLogger().info("Updated MySQL field 'kills'");
+	 	 							sqlHandler.executeQuery(queryD, true);
+	 	 		 					getLogger().info("Added 'uid' column to MySQL!");
+		 	 						new UUIDUpdater(dbTable);
 	 	 						} catch (SQLException e2) {
 	 	 							e2.printStackTrace();
 	 	 						}
+							} else if (!columns.contains("uid")) {
+								final String queryD = "ALTER TABLE `"+dbTable+"` ADD `uid` varchar(42); ";
+	 	 						try {
+	 	 							sqlHandler.executeQuery(queryD, true);
+	 	 		 					getLogger().info("Added 'uid' column to MySQL!");
+	 	 						} catch (SQLException e2) {
+	 	 							e2.printStackTrace();
+	 	 						}
+	 	 						new UUIDUpdater(dbTable);
 							}
 						} catch (SQLException e1) {
 							e1.printStackTrace();
@@ -450,6 +467,7 @@ public class PVPStats extends JavaPlugin {
  	 						final String query = "CREATE TABLE `"+dbKillTable+"` ( " +
  	 								"`id` int(16) NOT NULL AUTO_INCREMENT, " +
  	 								"`name` varchar(42) NOT NULL, " +
+ 	 								"`uid` varchar(42), " +
  	 								"`kill` int(1) not null default 0, " +
  	 								"`time` int(16) not null default 0, " +
  	 								"PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
@@ -471,13 +489,27 @@ public class PVPStats extends JavaPlugin {
 							
 							if (columns.contains("tine")) {
 								final String query = "ALTER TABLE `"+dbKillTable+"` CHANGE `tine` `time` INT( 16 ) NOT NULL DEFAULT 0;";
+								final String queryD = "ALTER TABLE `"+dbKillTable+"` ADD `uid` varchar(42); ";
 								
 	 	 						try {
 	 	 							sqlHandler.executeQuery(query, true);
 	 	 		 					getLogger().info("Fixed MySQL field 'time'");
+	 	 							sqlHandler.executeQuery(queryD, true);
+	 	 		 					getLogger().info("Added field 'uid'");
 	 	 						} catch (SQLException e2) {
 	 	 							e2.printStackTrace();
 	 	 						}
+	 	 						new UUIDUpdater(dbKillTable);
+							} else if (!columns.contains("uid")) {
+								final String queryD = "ALTER TABLE `"+dbKillTable+"` ADD `uid` varchar(42); ";
+								
+	 	 						try {
+	 	 							sqlHandler.executeQuery(queryD, true);
+	 	 		 					getLogger().info("Added field 'uid'");
+	 	 						} catch (SQLException e2) {
+	 	 							e2.printStackTrace();
+	 	 						}
+	 	 						new UUIDUpdater(dbKillTable);
 							}
  	 					}
  					}
@@ -485,7 +517,6 @@ public class PVPStats extends JavaPlugin {
  					getLogger().severe("MySQL connection failed");
  					this.mySQL = false;
  				}
- 			PSMySQL.initiate(this);
  		} else {
  			Bukkit.getServer().getPluginManager().disablePlugin(this);
 		}

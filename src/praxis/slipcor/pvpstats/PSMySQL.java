@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.Map.Entry;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -72,38 +74,38 @@ public final class PSMySQL {
 				PVPData.setMaxStreak(player.getName(), 1);
 				incStreak = true;
 			}
-			checkAndDo(player.getName(), true, incStreak);
+			checkAndDo(player.getName(), player.getUniqueId(), true, incStreak);
 		}
 	}
 
 	public static void incDeath(final Player player) {
 		if (player.hasPermission("pvpstats.count")) {
 			PVPData.setStreak(player.getName(), 0);
-			checkAndDo(player.getName(), false, false);
+			checkAndDo(player.getName(), player.getUniqueId(), false, false);
 		}
 	}
 
-	private static void checkAndDo(final String sPlayer, final boolean kill, final boolean addStreak) {
-		if (!mysqlExists("SELECT * FROM `"+plugin.dbTable+"` WHERE `name` = '" + sPlayer
+	private static void checkAndDo(final String sPlayer, final UUID pid, final boolean kill, final boolean addStreak) {
+		if (!mysqlExists("SELECT * FROM `"+plugin.dbTable+"` WHERE `uid` = '" + pid
 				+ "';")) {
 			final int kills = kill?1:0;
 			final int deaths = kill?0:1;
-			mysqlQuery("INSERT INTO `"+plugin.dbTable+"` (`name`,`kills`,`deaths`) VALUES ('"
-					+ sPlayer + "', "+kills+", "+deaths+")");
+			mysqlQuery("INSERT INTO `"+plugin.dbTable+"` (`name`, `uid`, `kills`,`deaths`) VALUES ('"
+					+ sPlayer + "', '"+pid+"', "+kills+", "+deaths+")");
 			PVPData.setKills(sPlayer, kills);
 			PVPData.setDeaths(sPlayer, deaths);
 			return;
 		} else {
 			final String var = kill ? "kills" : "deaths";
 			mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `" + var + "` = `" + var
-					+ "`+1 WHERE `name` = '" + sPlayer + "'");
+					+ "`+1 WHERE `uid` = '" + pid + "'");
 		}
 		if (addStreak && kill) {
-			mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `streak` = `streak`+1 WHERE `name` = '" + sPlayer + "'");
+			mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `streak` = `streak`+1 WHERE `uid` = '" + pid + "'");
 		}
 		if (plugin.dbKillTable != null) {
-			mysqlQuery("INSERT INTO "+plugin.dbKillTable+" (`name`,`kill`,`time`) VALUES(" +
-				"'"+sPlayer+"', '"+(kill?1:0)+"', '"+(long) System.currentTimeMillis()/1000+"')");
+			mysqlQuery("INSERT INTO "+plugin.dbKillTable+" (`name`,`uid`,`kill`,`time`) VALUES(" +
+				"'"+sPlayer+"', '"+pid+"', '"+(kill?1:0)+"', '"+(long) System.currentTimeMillis()/1000+"')");
 		}
 	}
 
@@ -456,5 +458,49 @@ public final class PSMySQL {
 		}
 		
 		return ints.size();
+	}
+
+	public static List<String> getAllPlayers(String dbTable) {
+		if (!plugin.mySQL) {
+			plugin.getLogger().severe("MySQL is not set!");
+			return null;
+		}
+		List<String> output = new ArrayList<String>();
+		
+		ResultSet result = null;
+		
+		try {
+			result = plugin.sqlHandler
+					.executeQuery("SELECT `name` FROM `"+dbTable+"` GROUP BY `name`;", false);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
+			while (result != null && result.next()) {
+				output.add(result.getString("name"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if (output != null) {
+			return output;
+		}
+		
+		return output;
+	}
+
+	public static void commit(String dbTable, Map<String, UUID> map) {
+		
+		for (Entry<String, UUID> set : map.entrySet()) {
+			StringBuffer query = new StringBuffer("");
+			query.append("UPDATE `");
+			query.append(dbTable);
+			query.append("` SET `uid` = '");
+			query.append(set.getValue());
+			query.append("' WHERE `name` = '");
+			query.append(set.getKey());
+			query.append("';");
+			mysqlQuery(query.toString());
+		}
 	}
 }

@@ -1,3 +1,4 @@
+v0.8 - use UUIDs instead of player names
 v0.7.1 - fix SQL warning about the top command
 v0.7.0 - add "abuseseconds" to allow abuse nerfing
 v0.6.9 - maybe fix /ps top not displaying the top K/D
