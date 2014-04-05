@@ -1,7 +1,5 @@
 package praxis.slipcor.pvpstats;
 
-import java.util.List;
-
 import net.slipcor.pvparena.events.PADeathEvent;
 import net.slipcor.pvparena.events.PAKillEvent;
 
