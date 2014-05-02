@@ -7,27 +7,32 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import praxis.slipcor.pvpstats.PSMySQL;
+import praxis.slipcor.pvpstats.PVPStats;
 
 public class UUIDUpdater {
 
-	public UUIDUpdater(String dbTable) {
+	public UUIDUpdater(PVPStats plugin, String dbTable) {
+		if (PVPStats.useUUIDs && !plugin.getConfig().getBoolean("UUIDs-(do not change!)")) {
 		
-		List<String> players = PSMySQL.getAllPlayers(dbTable);
-		
-		if (players != null && players.size() > 0) {
-		
-			UUIDFetcher fetcher = new UUIDFetcher(players);
+			List<String> players = PSMySQL.getAllPlayers(dbTable);
 			
-			try {
-				Map<String, UUID> result = fetcher.call();
-				for (Entry<String, UUID> set : result.entrySet()) {
-					add(dbTable, set);
+			if (players != null && players.size() > 0) {
+			
+				UUIDFetcher fetcher = new UUIDFetcher(players);
+				
+				try {
+					Map<String, UUID> result = fetcher.call();
+					for (Entry<String, UUID> set : result.entrySet()) {
+						add(dbTable, set);
+					}
+					commit(dbTable);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				commit(dbTable);
-			} catch (Exception e) {
-				e.printStackTrace();
+				
 			}
-			
+			plugin.getConfig().set("UUIDs-(do not change!)", true);
+			plugin.saveConfig();
 		}
 	}
 	

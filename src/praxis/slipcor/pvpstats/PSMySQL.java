@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -86,26 +86,50 @@ public final class PSMySQL {
 	}
 
 	private static void checkAndDo(final String sPlayer, final UUID pid, final boolean kill, final boolean addStreak) {
-		if (!mysqlExists("SELECT * FROM `"+plugin.dbTable+"` WHERE `uid` = '" + pid
-				+ "';")) {
-			final int kills = kill?1:0;
-			final int deaths = kill?0:1;
-			mysqlQuery("INSERT INTO `"+plugin.dbTable+"` (`name`, `uid`, `kills`,`deaths`) VALUES ('"
-					+ sPlayer + "', '"+pid+"', "+kills+", "+deaths+")");
-			PVPData.setKills(sPlayer, kills);
-			PVPData.setDeaths(sPlayer, deaths);
-			return;
+		if (PVPStats.useUUIDs) {
+			if (!mysqlExists("SELECT * FROM `"+plugin.dbTable+"` WHERE `uid` = '" + pid
+					+ "';")) {
+				final int kills = kill?1:0;
+				final int deaths = kill?0:1;
+				mysqlQuery("INSERT INTO `"+plugin.dbTable+"` (`name`, `uid`, `kills`,`deaths`) VALUES ('"
+						+ sPlayer + "', '"+pid+"', "+kills+", "+deaths+")");
+				PVPData.setKills(sPlayer, kills);
+				PVPData.setDeaths(sPlayer, deaths);
+				return;
+			} else {
+				final String var = kill ? "kills" : "deaths";
+				mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `" + var + "` = `" + var
+						+ "`+1 WHERE `uid` = '" + pid + "'");
+			}
+			if (addStreak && kill) {
+				mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `streak` = `streak`+1 WHERE `uid` = '" + pid + "'");
+			}
+			if (plugin.dbKillTable != null) {
+				mysqlQuery("INSERT INTO "+plugin.dbKillTable+" (`name`,`uid`,`kill`,`time`) VALUES(" +
+					"'"+sPlayer+"', '"+pid+"', '"+(kill?1:0)+"', '"+(long) System.currentTimeMillis()/1000+"')");
+			}
 		} else {
-			final String var = kill ? "kills" : "deaths";
-			mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `" + var + "` = `" + var
-					+ "`+1 WHERE `uid` = '" + pid + "'");
-		}
-		if (addStreak && kill) {
-			mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `streak` = `streak`+1 WHERE `uid` = '" + pid + "'");
-		}
-		if (plugin.dbKillTable != null) {
-			mysqlQuery("INSERT INTO "+plugin.dbKillTable+" (`name`,`uid`,`kill`,`time`) VALUES(" +
-				"'"+sPlayer+"', '"+pid+"', '"+(kill?1:0)+"', '"+(long) System.currentTimeMillis()/1000+"')");
+			if (!mysqlExists("SELECT * FROM `"+plugin.dbTable+"` WHERE `name` = '" + sPlayer
+					+ "';")) {
+				final int kills = kill?1:0;
+				final int deaths = kill?0:1;
+				mysqlQuery("INSERT INTO `"+plugin.dbTable+"` (`name`, `uid`, `kills`,`deaths`) VALUES ('"
+						+ sPlayer + "', '', "+kills+", "+deaths+")");
+				PVPData.setKills(sPlayer, kills);
+				PVPData.setDeaths(sPlayer, deaths);
+				return;
+			} else {
+				final String var = kill ? "kills" : "deaths";
+				mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `" + var + "` = `" + var
+						+ "`+1 WHERE `name` = '" + sPlayer + "'");
+			}
+			if (addStreak && kill) {
+				mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `streak` = `streak`+1 WHERE `name` = '" + sPlayer + "'");
+			}
+			if (plugin.dbKillTable != null) {
+				mysqlQuery("INSERT INTO "+plugin.dbKillTable+" (`name`,`uid`,`kill`,`time`) VALUES(" +
+					"'"+sPlayer+"', '', '"+(kill?1:0)+"', '"+(long) System.currentTimeMillis()/1000+"')");
+			}
 		}
 	}
 

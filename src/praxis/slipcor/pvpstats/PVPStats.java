@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -38,6 +39,7 @@ public class PVPStats extends JavaPlugin {
 	protected String dbTable = null;
 	protected String dbKillTable = null;
 	protected int dbPort = 3306;
+	public static boolean useUUIDs = false;
 
 	private final PSListener entityListener = new PSListener(this);
 	protected final PSPAListener paListener = new PSPAListener(this);
@@ -46,6 +48,14 @@ public class PVPStats extends JavaPlugin {
 	private Updater updater = null;
 	
 	public void onEnable() {
+		try {
+			
+			OfflinePlayer.class.getDeclaredMethod("getUniqueId");
+			useUUIDs = true;
+		} catch (Exception e) {
+			getLogger().info("Your server is not yet ready for UUIDs, just FYI");
+		}
+		
 		final PluginDescriptionFile pdfFile = getDescription();
 		
 		getServer().getPluginManager().registerEvents(entityListener, this);
@@ -442,7 +452,7 @@ public class PVPStats extends JavaPlugin {
 	 	 		 					getLogger().info("Updated MySQL field 'kills'");
 	 	 							sqlHandler.executeQuery(queryD, true);
 	 	 		 					getLogger().info("Added 'uid' column to MySQL!");
-		 	 						new UUIDUpdater(dbTable);
+		 	 						new UUIDUpdater(this, dbTable);
 	 	 						} catch (SQLException e2) {
 	 	 							e2.printStackTrace();
 	 	 						}
@@ -454,7 +464,7 @@ public class PVPStats extends JavaPlugin {
 	 	 						} catch (SQLException e2) {
 	 	 							e2.printStackTrace();
 	 	 						}
-	 	 						new UUIDUpdater(dbTable);
+	 	 						new UUIDUpdater(this, dbTable);
 							}
 						} catch (SQLException e1) {
 							e1.printStackTrace();
@@ -499,7 +509,7 @@ public class PVPStats extends JavaPlugin {
 	 	 						} catch (SQLException e2) {
 	 	 							e2.printStackTrace();
 	 	 						}
-	 	 						new UUIDUpdater(dbKillTable);
+	 	 						new UUIDUpdater(this, dbKillTable);
 							} else if (!columns.contains("uid")) {
 								final String queryD = "ALTER TABLE `"+dbKillTable+"` ADD `uid` varchar(42); ";
 								
@@ -509,7 +519,7 @@ public class PVPStats extends JavaPlugin {
 	 	 						} catch (SQLException e2) {
 	 	 							e2.printStackTrace();
 	 	 						}
-	 	 						new UUIDUpdater(dbKillTable);
+	 	 						new UUIDUpdater(this, dbKillTable);
 							}
  	 					}
  					}
