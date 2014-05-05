@@ -265,8 +265,6 @@ public final class PSMySQL {
 		string = string.replaceAll("&d", "("+deaths+")");
 		string = string.replaceAll("&s", "("+streak+")");
 		string = string.replaceAll("&m", "("+maxstreak+")");
-
-		plugin.getLogger().severe("String: " + string.toString());
 		
 		ScriptEngineManager mgr = new ScriptEngineManager();
 		ScriptEngine engine = mgr.getEngineByName("JavaScript");
