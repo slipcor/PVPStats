@@ -10,6 +10,7 @@ public enum Language {
 	HEAD_DEATHS("head.deaths", "Deaths"),
 	HEAD_STREAK("head.streaks", "Streaks"),
 	HEAD_RATIO("head.ratio", ""),
+	HEAD_ELO("head.elo", "ELO"),
 	INFO_FORMAT("info.format", "&c%0%: &7%1%"),
 	INFO_NAME("info.name", "Name"),
 	INFO_KILLS("info.kills", "Kills"),

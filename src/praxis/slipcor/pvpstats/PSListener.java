@@ -89,7 +89,7 @@ public class PSListener implements Listener {
 			}
 		}
 		// here we go, PVP!
-		PSMySQL.incDeath(player);
-		PSMySQL.incKill(attacker);
+		
+		PSMySQL.AkilledB(attacker, player);
 	}
 }

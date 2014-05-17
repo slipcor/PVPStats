@@ -12,6 +12,7 @@ public final class PVPData {
 	private static Map<String, Integer> deaths = new HashMap<String, Integer>();
 	private static Map<String, Integer> streaks = new HashMap<String, Integer>();
 	private static Map<String, Integer> maxStreaks = new HashMap<String, Integer>();
+	private static Map<String, Integer> eloScore = new HashMap<String, Integer>();
 	
 	private PVPData() {
 	}
@@ -94,6 +95,18 @@ public final class PVPData {
 	}
 
 	/**
+	 * get a player's current elo score
+	 * @param name the player to read
+	 * @return the player's current elo score
+	 */
+	public static Integer getEloScore(String name) {
+		if (hasEloScore(name)) {
+			return eloScore.get(name);
+		}
+		return PVPStats.getInstance().getConfig().getInt("eloscore.default");
+	}
+
+	/**
 	 * does a player already have a maximum kill streak
 	 * @param name the player to check
 	 * @return true if the player has a maximum kill streak
@@ -109,6 +122,15 @@ public final class PVPData {
 	 */
 	public static boolean hasStreak(String name) {
 		return streaks.containsKey(name);
+	}
+
+	/**
+	 * does a player already have a elo score
+	 * @param name the player to check
+	 * @return true if the player has a elo score
+	 */
+	public static boolean hasEloScore(String name) {
+		return eloScore.containsKey(name);
 	}
 
 	/**

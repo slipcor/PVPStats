@@ -46,8 +46,10 @@ public class PVPStats extends JavaPlugin {
 	private PSPAPluginListener paPluginListener;
 	
 	private Updater updater = null;
+	private static PVPStats instance;
 	
 	public void onEnable() {
+		instance = this;
 		try {
 			
 			OfflinePlayer.class.getDeclaredMethod("getUniqueId");
@@ -285,6 +287,8 @@ public class PVPStats extends JavaPlugin {
 						Bukkit.getScheduler().runTaskAsynchronously(this, new RunLater("DEATHS", amount));
 					} else if (args[1].equals("streak")) {
 						Bukkit.getScheduler().runTaskAsynchronously(this, new RunLater("STREAK", amount));
+					} else if (args[1].equalsIgnoreCase("elo")) {
+						Bukkit.getScheduler().runTaskAsynchronously(this, new RunLater("ELO", amount));
 					} else {
 						return false;
 					}
@@ -410,6 +414,7 @@ public class PVPStats extends JavaPlugin {
  								"`kills` int(8) not null default 0, " +
  								"`deaths` int(8) not null default 0, " +
  								"`streak` int(8) not null default 0, " +
+ 								"`elo` int(8) not null default 0, " +
  								"PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
  						try {
  							sqlHandler.executeQuery(query, true);
@@ -443,6 +448,7 @@ public class PVPStats extends JavaPlugin {
 								final String queryB = "ALTER TABLE `"+dbTable+"` CHANGE `deaths` `deaths` INT( 8 ) NOT NULL DEFAULT 0;";
 								final String queryC = "ALTER TABLE `"+dbTable+"` CHANGE `kills` `kills` INT( 8 ) NOT NULL DEFAULT 0;";
 								final String queryD = "ALTER TABLE `"+dbTable+"` ADD `uid` varchar(42); ";
+								final String queryE = "ALTER TABLE `"+dbTable+"` ADD `elo` int(8) not null default 0; ";
 	 	 						try {
 	 	 							sqlHandler.executeQuery(queryA, true);
 	 	 		 					getLogger().info("Added 'streak' column to MySQL!");
@@ -452,19 +458,33 @@ public class PVPStats extends JavaPlugin {
 	 	 		 					getLogger().info("Updated MySQL field 'kills'");
 	 	 							sqlHandler.executeQuery(queryD, true);
 	 	 		 					getLogger().info("Added 'uid' column to MySQL!");
+	 	 							sqlHandler.executeQuery(queryE, true);
+	 	 		 					getLogger().info("Added 'elo' column to MySQL!");
 		 	 						new UUIDUpdater(this, dbTable);
 	 	 						} catch (SQLException e2) {
 	 	 							e2.printStackTrace();
 	 	 						}
 							} else if (!columns.contains("uid")) {
 								final String queryD = "ALTER TABLE `"+dbTable+"` ADD `uid` varchar(42); ";
+								final String queryE = "ALTER TABLE `"+dbTable+"` ADD `elo` int(8) not null default 0; ";
 	 	 						try {
 	 	 							sqlHandler.executeQuery(queryD, true);
 	 	 		 					getLogger().info("Added 'uid' column to MySQL!");
+	 	 							sqlHandler.executeQuery(queryE, true);
+	 	 		 					getLogger().info("Added 'elo' column to MySQL!");
 	 	 						} catch (SQLException e2) {
 	 	 							e2.printStackTrace();
 	 	 						}
 	 	 						new UUIDUpdater(this, dbTable);
+							} else if (!columns.contains("elo")) {
+								final String queryE = "ALTER TABLE `"+dbTable+"` ADD `elo` int(8) not null default 0; ";
+	 	 						try {
+	 	 							sqlHandler.executeQuery(queryE, true);
+	 	 		 					getLogger().info("Added 'elo' column to MySQL!");
+	 	 						} catch (SQLException e2) {
+	 	 							e2.printStackTrace();
+	 	 						}
+	 	 						new UUIDUpdater(this, dbTable); // double check if we still don't need this
 							}
 						} catch (SQLException e1) {
 							e1.printStackTrace();
@@ -493,7 +513,6 @@ public class PVPStats extends JavaPlugin {
 							try {
 								columns = Arrays.asList(sqlHandler.getColumns(dbDatabase, dbKillTable));
 							} catch (SQLException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 							
@@ -543,4 +562,7 @@ public class PVPStats extends JavaPlugin {
 		return getConfig().getStringList("ignoreworlds").contains(name);
 	}
 
+	public static PVPStats getInstance() {
+		return instance;
+	}
 }

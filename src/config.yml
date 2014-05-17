@@ -25,3 +25,12 @@ clearonstart: true
 kdcalculation: '&k/(&d+1)'
 ignoreworlds:
 - doNotTrack
+eloscore:
+  active: false
+  minimum: 18
+  default: 1500
+  maximum: 3000
+  k-factor:
+    below: 32
+    above: 16
+    threshold: 2000

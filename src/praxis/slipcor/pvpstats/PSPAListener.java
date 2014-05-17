@@ -26,7 +26,7 @@ public class PSPAListener implements Listener {
 		if (plugin.ignoresWorld(event.getPlayer().getWorld().getName())) {
 			return;
 		}
-		PSMySQL.incKill(event.getPlayer());
+		PSMySQL.AkilledB(event.getPlayer(), null);
 	}
 	
 	@EventHandler
@@ -35,6 +35,6 @@ public class PSPAListener implements Listener {
 				!event.isPVP()) {
 			return;
 		}
-		PSMySQL.incDeath(event.getPlayer());
+		PSMySQL.AkilledB(null, event.getPlayer());
 	}
 }

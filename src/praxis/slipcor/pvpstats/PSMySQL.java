@@ -15,6 +15,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 /**
@@ -61,10 +62,20 @@ public final class PSMySQL {
 		return false;
 	}
 
+	@Deprecated
+	public static void incKill(final Player player) {
+		incKill(player, PVPData.getEloScore(player.getName()));
+	}
+	
+	@Deprecated
+	public static void incDeath(final Player player) {
+		incDeath(player, PVPData.getEloScore(player.getName()));
+	}
+
 	/**
 	 * @param player
 	 */
-	public static void incKill(final Player player) {
+	private static void incKill(final Player player, int elo) {
 		if (player.hasPermission("pvpstats.count")) {
 			boolean incStreak = false;
 			if (PVPData.hasStreak(player.getName())) {
@@ -74,32 +85,32 @@ public final class PSMySQL {
 				PVPData.setMaxStreak(player.getName(), 1);
 				incStreak = true;
 			}
-			checkAndDo(player.getName(), player.getUniqueId(), true, incStreak);
+			checkAndDo(player.getName(), player.getUniqueId(), true, incStreak, elo);
 		}
 	}
 
-	public static void incDeath(final Player player) {
+	private static void incDeath(final Player player, int elo) {
 		if (player.hasPermission("pvpstats.count")) {
 			PVPData.setStreak(player.getName(), 0);
-			checkAndDo(player.getName(), player.getUniqueId(), false, false);
+			checkAndDo(player.getName(), player.getUniqueId(), false, false, elo);
 		}
 	}
 
-	private static void checkAndDo(final String sPlayer, final UUID pid, final boolean kill, final boolean addStreak) {
+	private static void checkAndDo(final String sPlayer, final UUID pid, final boolean kill, final boolean addStreak, int elo) {
 		if (PVPStats.useUUIDs) {
 			if (!mysqlExists("SELECT * FROM `"+plugin.dbTable+"` WHERE `uid` = '" + pid
 					+ "';")) {
 				final int kills = kill?1:0;
 				final int deaths = kill?0:1;
-				mysqlQuery("INSERT INTO `"+plugin.dbTable+"` (`name`, `uid`, `kills`,`deaths`) VALUES ('"
-						+ sPlayer + "', '"+pid+"', "+kills+", "+deaths+")");
+				mysqlQuery("INSERT INTO `"+plugin.dbTable+"` (`name`, `uid`, `kills`,`deaths`,`elo`) VALUES ('"
+						+ sPlayer + "', '"+pid+"', "+kills+", "+deaths+", "+elo+")");
 				PVPData.setKills(sPlayer, kills);
 				PVPData.setDeaths(sPlayer, deaths);
 				return;
 			} else {
 				final String var = kill ? "kills" : "deaths";
 				mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `" + var + "` = `" + var
-						+ "`+1 WHERE `uid` = '" + pid + "'");
+						+ "`+1, `elo` = '"+elo+"' WHERE `uid` = '" + pid + "'");
 			}
 			if (addStreak && kill) {
 				mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `streak` = `streak`+1 WHERE `uid` = '" + pid + "'");
@@ -113,15 +124,15 @@ public final class PSMySQL {
 					+ "';")) {
 				final int kills = kill?1:0;
 				final int deaths = kill?0:1;
-				mysqlQuery("INSERT INTO `"+plugin.dbTable+"` (`name`, `uid`, `kills`,`deaths`) VALUES ('"
-						+ sPlayer + "', '', "+kills+", "+deaths+")");
+				mysqlQuery("INSERT INTO `"+plugin.dbTable+"` (`name`, `uid`, `kills`,`deaths`,`elo`) VALUES ('"
+						+ sPlayer + "', '', "+kills+", "+deaths+", "+elo+")");
 				PVPData.setKills(sPlayer, kills);
 				PVPData.setDeaths(sPlayer, deaths);
 				return;
 			} else {
 				final String var = kill ? "kills" : "deaths";
 				mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `" + var + "` = `" + var
-						+ "`+1 WHERE `name` = '" + sPlayer + "'");
+						+ "`+1, `elo` = '"+elo+"' WHERE `name` = '" + sPlayer + "'");
 			}
 			if (addStreak && kill) {
 				mysqlQuery("UPDATE `"+plugin.dbTable+"` SET `streak` = `streak`+1 WHERE `name` = '" + sPlayer + "'");
@@ -159,6 +170,8 @@ public final class PSMySQL {
 				order = "deaths";
 			} else if (sort.equals("STREAK")) {
 				order = "streak";
+			} else if (sort.equals("ELO")) {
+				order = "elo";
 			} else if (sort.equals("K-D")) {
 				order = "kills";
 			} else {
@@ -167,8 +180,10 @@ public final class PSMySQL {
 			
 			int limit = sort.equals("K-D")?50:count;
 			
-			String query = "SELECT `name`,`kills`,`deaths`,`streak` FROM `"+
-					plugin.dbTable+"` WHERE 1 ORDER BY `"+order+"` DESC LIMIT "+limit+";";
+			String sorting = sort.equals("ELO") ? "DESC" : "ASC";
+			
+			String query = "SELECT `name`,`kills`,`deaths`,`streak`,`elo` FROM `"+
+					plugin.dbTable+"` WHERE 1 ORDER BY `"+order+"` "+sorting+" LIMIT "+limit+";";
 			
 			result = plugin.sqlHandler
 					.executeQuery(query, false);
@@ -180,6 +195,8 @@ public final class PSMySQL {
 				if (sort.equals("KILLS")) {
 					sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
 				} else if (sort.equals("DEATHS")) {
+					sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
+				} else if (sort.equals("ELO")) {
 					sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
 				} else if (sort.equals("STREAK")) {
 					sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
@@ -194,7 +211,7 @@ public final class PSMySQL {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		if (sort.equals("KILLS")||sort.equals("DEATHS")||sort.equals("STREAK")) {
+		if (sort.equals("KILLS")||sort.equals("DEATHS")||sort.equals("ELO")||sort.equals("STREAK")) {
 			String[] output = new String[sortedValues.size()];
 			
 			int pos = 0;
@@ -525,4 +542,66 @@ public final class PSMySQL {
 			mysqlQuery(query.toString());
 		}
 	}
+
+	public static void AkilledB(Player attacker, Player player) {
+		if (attacker == null && player == null) {
+			return;
+		}
+		
+		if (player == null) {
+			incKill(attacker, PVPData.getEloScore(attacker.getName()));
+			return;
+		}
+		if (attacker == null) {
+			incDeath(player, PVPData.getEloScore(player.getName()));
+			return;
+		}
+		
+		ConfigurationSection sec = PVPStats.getInstance().getConfig().getConfigurationSection("eloscore");
+		
+		if (!sec.getBoolean("active")) {
+			incKill(attacker, PVPData.getEloScore(attacker.getName()));
+			incDeath(player, PVPData.getEloScore(player.getName()));
+			return;
+		}
+		
+		final int min = sec.getInt("minimum", 18);
+		final int max = sec.getInt("maximum", 3000);
+		final int kBelow = sec.getInt("k-factor.below", 32);
+		final int kAbove = sec.getInt("k-factor.above", 16);
+		final int kThreshold = sec.getInt("k-factor.threshold", 2000);
+		
+		final int oldA = PVPData.getEloScore(attacker.getName());
+		final int oldP = PVPData.getEloScore(player.getName());
+
+		final int kA = oldA >= kThreshold ? kAbove : kBelow;
+		final int kP = oldP >= kThreshold ? kAbove : kBelow;
+		
+		final int newA = calcElo(oldA, oldP, kA, true, min, max);
+		final int newP = calcElo(oldP, oldA, kP, false, min, max);
+		incKill(attacker, newA);
+		incDeath(player, newP);
+	}
+
+	private static int calcElo(int myOld, int otherOld, int k, boolean win, int min, int max) {
+		double expected = 1 / (1 + Math.pow(10, (otherOld-myOld)/400));
+		
+		int newVal;
+		if (win) {
+			newVal = (int) Math.round(myOld + k*(1 - expected));
+		} else {
+			newVal = (int) Math.round(myOld + k*(0 - expected));
+		}
+		
+		if (min > -1 && newVal < min) {
+			return min;
+		}
+		
+		if (max > -1 && newVal > max) {
+			return max;
+		}
+		
+		return newVal;
+	}
+	
 }
