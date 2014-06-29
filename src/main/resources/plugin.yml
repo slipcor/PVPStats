@@ -1,0 +1,26 @@
+name: pvpstats
+main: net.slipcor.pvpstats.PVPStats
+version: 0.8.jenkins-build-number
+author: slipcor
+soft-depends: pvparena
+website: http://dev.bukkit.org/server-mods/pvp-stats/
+commands:
+    pvpstats:
+        description: handle PvP stats
+        aliases: stats
+permissions:
+    pvpstats.reload:
+        description: Ability to reload
+        default: op
+    pvpstats.cleanup:
+        description: Ability to cleanup
+        default: op
+    pvpstats.wipe:
+        description: Ability to wipe
+        default: op
+    pvpstats.count:
+        description: Permission to be counted
+        default: true
+    pvpstats.top:
+        description: Permission to get global stats
+        default: true
