@@ -2,6 +2,7 @@ package net.slipcor.pvpstats;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.net.URL;
@@ -19,26 +20,17 @@ import java.net.URLEncoder;
 
 public class Tracker implements Runnable {
     private Plugin plugin;
-    private static BukkitTask timer = null;
 
     public Tracker(Plugin p) {
         plugin = p;
     }
 
-    public void start() {
-        timer = Bukkit.getScheduler().runTaskTimer(plugin, this,
-                0L, 72000L);
-    }
-
-    public static void stop() {
-        timer.cancel();
+    @Override
+    public void run() {
+        callHome();
     }
 
     private void callHome() {
-        if (!plugin.getConfig().getBoolean("tracker", true)) {
-            return;
-        }
-
         try {
             String url = String
                     .format("http://www.slipcor.net/stats/call.php?port=%s&name=%s&version=%s",
@@ -53,8 +45,4 @@ public class Tracker implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        callHome();
-    }
 }
