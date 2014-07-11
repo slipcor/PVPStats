@@ -61,6 +61,11 @@ public class PVPStats extends JavaPlugin {
         getServer().getPluginManager().registerEvents(entityListener, this);
 
         loadConfig();
+        if(!this.mySQL) {
+            getLogger().severe("MySQL disabled, plugin DISABLED!");
+            getServer().getPluginManager().disablePlugin(this);
+            return; //to ensure the rest of the plugins code is not executed as this can lead to problems.
+        }
         loadHooks();
 
         if (getConfig().getBoolean("PVPArena")) {
@@ -553,8 +558,6 @@ public class PVPStats extends JavaPlugin {
                 getLogger().severe("MySQL connection failed");
                 this.mySQL = false;
             }
-        } else {
-            Bukkit.getServer().getPluginManager().disablePlugin(this);
         }
     }
 
