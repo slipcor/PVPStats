@@ -22,6 +22,8 @@ autodownload: true
 tracker: true
 collectprecise: true
 clearonstart: true
+resetkillstreakonquit: false
+countregulardeaths: false
 kdcalculation: '&k/(&d+1)'
 ignoreworlds:
 - doNotTrack

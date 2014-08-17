@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
@@ -49,10 +50,22 @@ public class PSListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onPlayerDeath(final PlayerDeathEvent event) {
+    public void onPlayerQuit(final PlayerQuitEvent event) {
+        if (plugin.getConfig().getBoolean("resetkillstreakonquit")) {
+            PVPData.setStreak(event.getPlayer().getName(), 0);
+        }
+    }
 
-        if (event.getEntity() == null || event.getEntity().getKiller() == null ||
-                plugin.ignoresWorld(event.getEntity().getWorld().getName())) {
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onPlayerDeath(final PlayerDeathEvent event) {
+        if (event.getEntity() == null || plugin.ignoresWorld(event.getEntity().getWorld().getName())) {
+            return;
+        }
+
+        if (event.getEntity().getKiller() == null) {
+            if (plugin.getConfig().getBoolean("countregulardeaths")) {
+                PSMySQL.AkilledB(null, event.getEntity());
+            }
             return;
         }
 
