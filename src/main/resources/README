@@ -1,3 +1,7 @@
+v0.8.7 - fix a little messup
+v0.8.6
+add "countregulardeaths" - count all deaths, not only PVP ones!
+add "resetkillstreakonquit" - reset killstreaks on server leave!
 v0.8.2 - add ELO rating
 v0.8.1 - remove debug spam ... sorry!
 v0.8 - use UUIDs instead of player names

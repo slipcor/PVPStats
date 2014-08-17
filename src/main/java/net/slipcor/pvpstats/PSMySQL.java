@@ -290,7 +290,17 @@ public final class PSMySQL {
         }
 
         try {
-            return (Double) engine.eval(saneString.toString());
+            Object value = engine.eval(saneString.toString());
+
+            if (value instanceof Double) {
+                return (Double) value;
+            } else if (value instanceof Integer) {
+                int i = (Integer) value;
+                return (double) i;
+            }
+            plugin.getLogger().severe("SaneString: " + value.toString());
+
+            return 0d;
         } catch (ScriptException e) {
             plugin.getLogger().severe("SaneString: " + saneString.toString());
             e.printStackTrace();
