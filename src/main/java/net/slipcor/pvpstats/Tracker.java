@@ -1,9 +1,6 @@
 package net.slipcor.pvpstats;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.net.URL;
 import java.net.URLEncoder;
