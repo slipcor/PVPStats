@@ -161,7 +161,7 @@ public final class PSMySQL {
 
             int limit = sort.equals("K-D") ? 50 : count;
 
-            String sorting = sort.equals("DEATHS") ? "DESC" : "ASC";
+            String sorting = sort.equals("DEATHS") ? "ASC" : "DESC";
 
             String query = "SELECT `name`,`kills`,`deaths`,`streak`,`elo` FROM `" +
                     plugin.dbTable + "` WHERE 1 ORDER BY `" + order + "` " + sorting + " LIMIT " + limit + ";";
