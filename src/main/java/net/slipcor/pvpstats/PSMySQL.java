@@ -283,6 +283,11 @@ public final class PSMySQL {
                 case '/':
                 case '(':
                 case ')':
+                case '<':
+                case '>':
+                case '?':
+                case ':':
+                case '=':
                     saneString.append(c);
                     break;
                 default:

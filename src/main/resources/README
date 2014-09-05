@@ -1,3 +1,4 @@
+v0.8.10 - allow ternary operator and comparisms for the KD calculation
 v0.8.9 - sorry - fixing the logic, this time for real
 v0.8.8 - fix wrong sorting - thanks, rexbut!
 v0.8.7 - fix a little messup
