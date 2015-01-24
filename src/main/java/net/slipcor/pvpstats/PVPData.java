@@ -39,6 +39,64 @@ public final class PVPData {
     }
 
     /**
+     * clear a player's temporary variables
+     *
+     * @param name the player to clear
+     */
+    public static void clear(String name) {
+        clearDeaths(name);
+        clearKills(name);
+        clearMaxStreak(name);
+        clearStreak(name);
+        clearEloScore(name);
+    }
+
+    /**
+     * clear a player's death count
+     *
+     * @param name the player to clear
+     */
+    public static void clearDeaths(String name) {
+        deaths.remove(name);
+    }
+
+    /**
+     * clear a player's kill count
+     *
+     * @param name the player to clear
+     */
+    public static void clearKills(String name) {
+        kills.remove(name);
+    }
+
+    /**
+     * clear a player's maximum kill streak
+     *
+     * @param name the player to clear
+     */
+    public static void clearMaxStreak(String name) {
+        maxStreaks.remove(name);
+    }
+
+    /**
+     * clear a player's current kill streak
+     *
+     * @param name the player to clear
+     */
+    public static void clearStreak(String name) {
+        streaks.remove(name);
+    }
+
+    /**
+     * clear a player's current elo score
+     *
+     * @param name the player to read
+     */
+    public static void clearEloScore(String name) {
+        eloScore.remove(name);
+    }
+
+    /**
      * get a player's death count
      *
      * @param name the player to read
