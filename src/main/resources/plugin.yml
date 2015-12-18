@@ -1,6 +1,6 @@
 name: pvpstats
 main: net.slipcor.pvpstats.PVPStats
-version: 0.8.jenkins-build-number
+version: 0.8.15
 author: slipcor
 soft-depends: pvparena
 website: http://dev.bukkit.org/server-mods/pvp-stats/
@@ -14,6 +14,9 @@ permissions:
         default: op
     pvpstats.cleanup:
         description: Ability to cleanup
+        default: op
+    pvpstats.purge:
+        description: Ability to purge
         default: op
     pvpstats.wipe:
         description: Ability to wipe

@@ -429,6 +429,40 @@ public final class PSMySQL {
         }
     }
 
+    public static int purge(int days) {
+        if (!plugin.mySQL) {
+            plugin.getLogger().severe("MySQL is not set!");
+            return 0;
+        }
+        ResultSet result;
+
+        int count = 0;
+
+        long timestamp = ((long) days * 24L * 60L * 60L) + (long) (System.currentTimeMillis()/1000);
+
+        try {
+
+            result = plugin.sqlHandler
+                    .executeQuery("SELECT `time` FROM `" + plugin.dbKillTable + "` WHERE `time` < "+timestamp+";", false);
+
+            while (result != null && result.next()) {
+                count++;
+            }
+
+            if (count > 0) {
+                StringBuilder buff = new StringBuilder("DELETE FROM `");
+                buff.append(plugin.dbKillTable);
+                buff.append("` WHERE `time` < "+timestamp+";");
+
+                mysqlQuery(buff.toString());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return count;
+    }
+
     public static int clean() {
         if (!plugin.mySQL) {
             plugin.getLogger().severe("MySQL is not set!");
@@ -561,7 +595,9 @@ public final class PSMySQL {
         final int newA = calcElo(oldA, oldP, kA, true, min, max);
         final int newP = calcElo(oldP, oldA, kP, false, min, max);
         incKill(attacker, newA);
+        attacker.sendMessage(Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
         incDeath(player, newP);
+        player.sendMessage(Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
     }
 
     private static int calcElo(int myOld, int otherOld, int k, boolean win, int min, int max) {
@@ -584,5 +620,4 @@ public final class PSMySQL {
 
         return newVal;
     }
-
 }

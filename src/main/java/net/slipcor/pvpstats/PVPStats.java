@@ -144,7 +144,7 @@ public class PVPStats extends JavaPlugin {
 
     public boolean onCommand(final CommandSender sender, final Command cmd, final String commandLabel, final String[] args) {
 
-        if (args == null || args.length < 1 || !(args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("wipe") || args[0].equalsIgnoreCase("cleanup"))) {
+        if (args == null || args.length < 1 || !(args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("wipe") || args[0].equalsIgnoreCase("cleanup") || args[0].equalsIgnoreCase("purge"))) {
             if (!parsecommand(sender, args)) {
                 sender.sendMessage("/pvpstats - show your pvp stats");
                 sender.sendMessage("/pvpstats [player] - show player's pvp stats");
@@ -159,6 +159,9 @@ public class PVPStats extends JavaPlugin {
                 }
                 if (sender.hasPermission("pvpstats.cleanup")) {
                     sender.sendMessage("/pvpstats cleanup - removes multi entries");
+                }
+                if (sender.hasPermission("pvpstats.purge")) {
+                    sender.sendMessage("/pvpstats purge [amount] - remove kill entries older than [amount] days");
                 }
             }
             return true;
@@ -186,6 +189,22 @@ public class PVPStats extends JavaPlugin {
             }
 
             final int count = PSMySQL.clean();
+            sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
+
+            return true;
+        } else if (args[0].equalsIgnoreCase("purge")) {
+            if (!sender.hasPermission("pvpstats.purge")) {
+                sendPrefixed(sender, Language.MSG_NOPERMPURGE.toString());
+                return true;
+            }
+
+            int days = 30;
+
+            if (args.length > 1) {
+                days = Integer.parseInt(args[1]);
+            }
+
+            final int count = PSMySQL.purge(days);
             sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
 
             return true;

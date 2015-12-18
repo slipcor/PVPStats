@@ -1,3 +1,5 @@
+v0.8.15 - add PURGE command to remove old entries from KILL table, add ELO score update message
+v0.8.14 - add CLEAR command to purge STATS table by name
 v0.8.10 - allow ternary operator and comparisms for the KD calculation
 v0.8.9 - sorry - fixing the logic, this time for real
 v0.8.8 - fix wrong sorting - thanks, rexbut!

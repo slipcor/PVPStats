@@ -14,7 +14,7 @@
         </repository>
         <repository>
             <id>slipcor-repo</id>
-            <url>http://mc-praxis.com:8080/plugin/repository/everything/</url>
+            <url>http://pa.slipcor.net/repo/</url>
         </repository>
     </repositories>
 
@@ -33,12 +33,6 @@
             <type>jar</type>
         </dependency>
     </dependencies>
-
-    <url>http://pa.slipcor.net</url>
-    <ciManagement>
-        <system>jenkins</system>
-        <url>http://www.mc-praxis.com:8080</url>
-    </ciManagement>
 
     <build>
         <defaultGoal>clean package</defaultGoal>
