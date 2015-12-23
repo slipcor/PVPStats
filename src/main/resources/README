@@ -1,5 +1,8 @@
+v0.8.16 - fix purge command and update database to allow for proper purging. NEW COMMAND LOGIC!
 v0.8.15 - add PURGE command to remove old entries from KILL table, add ELO score update message
-v0.8.14 - add CLEAR command to purge STATS table by name
+v0.8.14 - Add static methods to reset the internal PVPData HashMaps
+v0.8.13 - fix github misalignment
+v0.8.11 - allow ternary operator and comparisms for the KD calculation
 v0.8.10 - allow ternary operator and comparisms for the KD calculation
 v0.8.9 - sorry - fixing the logic, this time for real
 v0.8.8 - fix wrong sorting - thanks, rexbut!

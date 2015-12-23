@@ -83,44 +83,46 @@ public final class PSMySQL {
                     + "';")) {
                 final int kills = kill ? 1 : 0;
                 final int deaths = kill ? 0 : 1;
-                mysqlQuery("INSERT INTO `" + plugin.dbTable + "` (`name`, `uid`, `kills`,`deaths`,`elo`) VALUES ('"
-                        + sPlayer + "', '" + pid + "', " + kills + ", " + deaths + ", " + elo + ")");
+                mysqlQuery("INSERT INTO `" + plugin.dbTable + "` (`name`, `uid`, `kills`,`deaths`,`elo`,`time`) VALUES ('"
+                        + sPlayer + "', '" + pid + "', " + kills + ", " + deaths + ", " + elo + ", " + (long) (System.currentTimeMillis() / 1000) + ")");
                 PVPData.setKills(sPlayer, kills);
                 PVPData.setDeaths(sPlayer, deaths);
                 return;
             } else {
                 final String var = kill ? "kills" : "deaths";
                 mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `" + var + "` = `" + var
-                        + "`+1, `elo` = '" + elo + "' WHERE `uid` = '" + pid + "'");
+                        + "`+1, `elo` = '" + elo + "', `time` = " + (long) (System.currentTimeMillis() / 1000) + " WHERE `uid` = '" + pid + "'");
             }
             if (addStreak && kill) {
-                mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `streak` = `streak`+1 WHERE `uid` = '" + pid + "'");
+                mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `streak` = `streak`+1, `time` = " +
+                        (long) (System.currentTimeMillis() / 1000) + " WHERE `uid` = '" + pid + "'");
             }
             if (plugin.dbKillTable != null) {
                 mysqlQuery("INSERT INTO " + plugin.dbKillTable + " (`name`,`uid`,`kill`,`time`) VALUES(" +
-                        "'" + sPlayer + "', '" + pid + "', '" + (kill ? 1 : 0) + "', '" + (long) (System.currentTimeMillis() / 1000) + "')");
+                        "'" + sPlayer + "', '" + pid + "', '" + (kill ? 1 : 0) + "', " + (long) (System.currentTimeMillis() / 1000) + ")");
             }
         } else {
             if (!mysqlExists("SELECT * FROM `" + plugin.dbTable + "` WHERE `name` = '" + sPlayer
                     + "';")) {
                 final int kills = kill ? 1 : 0;
                 final int deaths = kill ? 0 : 1;
-                mysqlQuery("INSERT INTO `" + plugin.dbTable + "` (`name`, `uid`, `kills`,`deaths`,`elo`) VALUES ('"
-                        + sPlayer + "', '', " + kills + ", " + deaths + ", " + elo + ")");
+                mysqlQuery("INSERT INTO `" + plugin.dbTable + "` (`name`, `uid`, `kills`,`deaths`,`elo`,`time`) VALUES ('"
+                        + sPlayer + "', '', " + kills + ", " + deaths + ", " + elo + ", " + (long) (System.currentTimeMillis() / 1000) + ")");
                 PVPData.setKills(sPlayer, kills);
                 PVPData.setDeaths(sPlayer, deaths);
                 return;
             } else {
                 final String var = kill ? "kills" : "deaths";
                 mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `" + var + "` = `" + var
-                        + "`+1, `elo` = '" + elo + "' WHERE `name` = '" + sPlayer + "'");
+                        + "`+1, `elo` = '" + elo + "', `time` = " + (long) (System.currentTimeMillis() / 1000) + " WHERE `name` = '" + sPlayer + "'");
             }
             if (addStreak && kill) {
-                mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `streak` = `streak`+1 WHERE `name` = '" + sPlayer + "'");
+                mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `streak` = `streak`+1 WHERE `name` = '" + sPlayer + "' `time` = " +
+                        (long) (System.currentTimeMillis() / 1000));
             }
             if (plugin.dbKillTable != null) {
                 mysqlQuery("INSERT INTO " + plugin.dbKillTable + " (`name`,`uid`,`kill`,`time`) VALUES(" +
-                        "'" + sPlayer + "', '', '" + (kill ? 1 : 0) + "', '" + (long) (System.currentTimeMillis() / 1000) + "')");
+                        "'" + sPlayer + "', '', '" + (kill ? 1 : 0) + "', " + (long) (System.currentTimeMillis() / 1000) + ")");
             }
         }
     }
@@ -429,7 +431,7 @@ public final class PSMySQL {
         }
     }
 
-    public static int purge(int days) {
+    public static int purgeStats(int days) {
         if (!plugin.mySQL) {
             plugin.getLogger().severe("MySQL is not set!");
             return 0;
@@ -438,7 +440,41 @@ public final class PSMySQL {
 
         int count = 0;
 
-        long timestamp = ((long) days * 24L * 60L * 60L) + (long) (System.currentTimeMillis()/1000);
+        long timestamp = (long) (System.currentTimeMillis()/1000) - ((long) days * 24L * 60L * 60L);
+
+        try {
+
+            result = plugin.sqlHandler
+                    .executeQuery("SELECT `time` FROM `" + plugin.dbTable + "` WHERE `time` < "+timestamp+";", false);
+
+            while (result != null && result.next()) {
+                count++;
+            }
+
+            if (count > 0) {
+                StringBuilder buff = new StringBuilder("DELETE FROM `");
+                buff.append(plugin.dbTable);
+                buff.append("` WHERE `time` < "+timestamp+";");
+
+                mysqlQuery(buff.toString());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return count;
+    }
+
+    public static int purgeKillStats(int days) {
+        if (!plugin.mySQL) {
+            plugin.getLogger().severe("MySQL is not set!");
+            return 0;
+        }
+        ResultSet result;
+
+        int count = 0;
+
+        long timestamp = (long) (System.currentTimeMillis()/1000) - ((long) days * 24L * 60L * 60L);
 
         try {
 
