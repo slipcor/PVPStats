@@ -161,7 +161,7 @@ public class PVPStats extends JavaPlugin {
                     sender.sendMessage("/pvpstats cleanup - removes multi entries");
                 }
                 if (sender.hasPermission("pvpstats.purge")) {
-                    sender.sendMessage("/pvpstats purge {type} [amount] - remove kill entries older than [amount] days");
+                    sender.sendMessage("/pvpstats purge [specific | standard | both] [amount] - remove kill entries older than [amount] days");
                 }
             }
             return true;
@@ -215,17 +215,15 @@ public class PVPStats extends JavaPlugin {
                 } else if (args[1].equalsIgnoreCase("standard")) {
                     final int count = PSMySQL.purgeStats(days);
                     sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
-                } else {
+                } else if (args[1].equalsIgnoreCase("both")) {
                     final int count = PSMySQL.purgeKillStats(days) + PSMySQL.purgeStats(days);
                     sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
+                } else {
+                    sendPrefixed(sender, "/pvpstats purge [specific | standard | both] [days]");
                 }
             } else {
-                final int count = PSMySQL.purgeKillStats(days) + PSMySQL.purgeStats(days);
-                sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
+                sendPrefixed(sender, "/pvpstats purge [specific | standard | both] [days]");
             }
-
-
-
 
             return true;
         }
