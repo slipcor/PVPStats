@@ -465,7 +465,7 @@ public class PVPStats extends JavaPlugin {
                             "`deaths` int(8) not null default 0, " +
                             "`streak` int(8) not null default 0, " +
                             "`elo` int(8) not null default 0, " +
-                            "`time` int(16) not null default 0, " +
+                            "`time` int(16) not null default CURRENT_TIMESTAMP, " +
                             "PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
                     try {
                         sqlHandler.executeQuery(query, true);
@@ -481,7 +481,7 @@ public class PVPStats extends JavaPlugin {
                                 "`name` varchar(42) NOT NULL, " +
                                 "`uid` varchar(42), " +
                                 "`kill` int(1) not null default 0, " +
-                                "`time` int(16) not null default CURRENT_TIMESTAMP, " +
+                                "`time` int(16) not null default 0, " +
                                 "PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
                         try {
                             sqlHandler.executeQuery(query2, true);
