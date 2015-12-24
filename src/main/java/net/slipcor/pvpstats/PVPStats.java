@@ -463,7 +463,7 @@ public class PVPStats extends JavaPlugin {
                             "`deaths` int(8) not null default 0, " +
                             "`streak` int(8) not null default 0, " +
                             "`elo` int(8) not null default 0, " +
-                            "`time` int(16) not null default CURRENT_TIMESTAMP, " +
+                            "`time` int(16) not null default 0, " +
                             "PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
                     try {
                         sqlHandler.executeQuery(query, true);
@@ -498,7 +498,7 @@ public class PVPStats extends JavaPlugin {
                             final String queryC = "ALTER TABLE `" + dbTable + "` CHANGE `kills` `kills` INT( 8 ) NOT NULL DEFAULT 0;";
                             final String queryD = "ALTER TABLE `" + dbTable + "` ADD `uid` varchar(42); ";
                             final String queryE = "ALTER TABLE `" + dbTable + "` ADD `elo` int(8) not null default 0; ";
-                            final String queryF = "ALTER TABLE `" + dbTable + "` ADD `time` int(16) not null default CURRENT_TIMESTAMP; ";
+                            final String queryF = "ALTER TABLE `" + dbTable + "` ADD `time` int(16) not null default 0; ";
                             try {
                                 sqlHandler.executeQuery(queryA, true);
                                 getLogger().info("Added 'streak' column to MySQL!");
@@ -519,7 +519,7 @@ public class PVPStats extends JavaPlugin {
                         } else if (!columns.contains("uid")) {
                             final String queryD = "ALTER TABLE `" + dbTable + "` ADD `uid` varchar(42); ";
                             final String queryE = "ALTER TABLE `" + dbTable + "` ADD `elo` int(8) not null default 0; ";
-                            final String queryF = "ALTER TABLE `" + dbTable + "` ADD `time` int(16) not null default CURRENT_TIMESTAMP; ";
+                            final String queryF = "ALTER TABLE `" + dbTable + "` ADD `time` int(16) not null default 0; ";
                             try {
                                 sqlHandler.executeQuery(queryD, true);
                                 getLogger().info("Added 'uid' column to MySQL!");
@@ -533,7 +533,7 @@ public class PVPStats extends JavaPlugin {
                             new UUIDUpdater(this, dbTable);
                         } else if (!columns.contains("elo")) {
                             final String queryE = "ALTER TABLE `" + dbTable + "` ADD `elo` int(8) not null default 0; ";
-                            final String queryF = "ALTER TABLE `" + dbTable + "` ADD `time` int(16) not null default CURRENT_TIMESTAMP; ";
+                            final String queryF = "ALTER TABLE `" + dbTable + "` ADD `time` int(16) not null default 0; ";
                             try {
                                 sqlHandler.executeQuery(queryE, true);
                                 getLogger().info("Added 'elo' column to MySQL!");
@@ -544,7 +544,7 @@ public class PVPStats extends JavaPlugin {
                             }
                             new UUIDUpdater(this, dbTable); // double check if we still don't need this
                         } else if (!columns.contains("time")) {
-                            final String queryF = "ALTER TABLE `" + dbTable + "` ADD `time` int(16) not null default CURRENT_TIMESTAMP; ";
+                            final String queryF = "ALTER TABLE `" + dbTable + "` ADD `time` int(16) not null default 0; ";
                             try {
                                 sqlHandler.executeQuery(queryF, true);
                                 getLogger().info("Added 'time' column to MySQL!");
