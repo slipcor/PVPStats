@@ -339,6 +339,35 @@ public final class PSMySQL {
                 if (streak == null) {
                     streak = 0;
                 }
+
+                int kills = result.getInt("kills");
+                int deaths = result.getInt("deaths");
+                int maxStreak = result.getInt("streak");
+                Double ratio = calcResult(kills, deaths, maxStreak, streak);
+
+                if (plugin.getConfig().getBoolean("msgoverrides")) {
+                    List<String> lines = plugin.getConfig().getStringList("msg.main");
+                    output = new String[lines.size()];
+
+                    for (int i = 0; i < lines.size(); i++) {
+                        String line = lines.get(i);
+
+                        line.replace("%d%", String.valueOf(deaths));
+                        line.replace("%k%", String.valueOf(kills));
+                        line.replace("%m%", String.valueOf(maxStreak));
+                        line.replace("%n%", name);
+                        line.replace("%r%", String.valueOf(ratio));
+                        line.replace("%s%", String.valueOf(streak));
+
+                        output[i] = line;
+                    }
+
+                    return output;
+                }
+
+
+
+
                 output = new String[6];
 
                 output[0] = Language.INFO_FORMAT.toString(
@@ -346,19 +375,19 @@ public final class PSMySQL {
                         name);
                 output[1] = Language.INFO_FORMAT.toString(
                         Language.INFO_KILLS.toString(),
-                        String.valueOf(result.getInt("kills")));
+                        String.valueOf(kills));
                 output[2] = Language.INFO_FORMAT.toString(
                         Language.INFO_DEATHS.toString(),
-                        String.valueOf(result.getInt("deaths")));
+                        String.valueOf(deaths));
                 output[3] = Language.INFO_FORMAT.toString(
                         Language.INFO_RATIO.toString(),
-                        String.valueOf(calcResult(result.getInt("kills"), result.getInt("deaths"), result.getInt("streak"), streak)));
+                        String.valueOf(ratio));
                 output[4] = Language.INFO_FORMAT.toString(
                         Language.INFO_STREAK.toString(),
                         String.valueOf(streak));
                 output[5] = Language.INFO_FORMAT.toString(
                         Language.INFO_MAXSTREAK.toString(),
-                        String.valueOf(result.getInt("streak")));
+                        String.valueOf(maxStreak));
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -36,3 +36,12 @@ eloscore:
     below: 32
     above: 16
     threshold: 2000
+msgoverrides: false
+msg:
+  main:
+  - '&cName: &7%n%'
+  - '&cKills: &7%k%'
+  - '&cDeaths: &7%d%'
+  - '&cRatio: &7%r%'
+  - '&cStreak: &7%s%'
+  - '&cMax Streak: &7%m%'
