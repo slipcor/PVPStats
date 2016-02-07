@@ -352,12 +352,12 @@ public final class PSMySQL {
                     for (int i = 0; i < lines.size(); i++) {
                         String line = lines.get(i);
 
-                        line.replace("%d%", String.valueOf(deaths));
-                        line.replace("%k%", String.valueOf(kills));
-                        line.replace("%m%", String.valueOf(maxStreak));
-                        line.replace("%n%", name);
-                        line.replace("%r%", String.valueOf(ratio));
-                        line.replace("%s%", String.valueOf(streak));
+                        line.replace("%d", String.valueOf(deaths));
+                        line.replace("%k", String.valueOf(kills));
+                        line.replace("%m", String.valueOf(maxStreak));
+                        line.replace("%n", name);
+                        line.replace("%r", String.valueOf(ratio));
+                        line.replace("%s", String.valueOf(streak));
 
                         output[i] = line;
                     }

@@ -39,9 +39,9 @@ eloscore:
 msgoverrides: false
 msg:
   main:
-  - '&cName: &7%n%'
-  - '&cKills: &7%k%'
-  - '&cDeaths: &7%d%'
-  - '&cRatio: &7%r%'
-  - '&cStreak: &7%s%'
-  - '&cMax Streak: &7%m%'
+  - '&cName: &7%n'
+  - '&cKills: &7%k'
+  - '&cDeaths: &7%d'
+  - '&cRatio: &7%r'
+  - '&cStreak: &7%s'
+  - '&cMax Streak: &7%m'

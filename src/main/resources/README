@@ -1,3 +1,5 @@
+v0.8.20 - fix override placeholders
+v0.8.19 - add message override
 v0.8.18 - fix startup issue due to wrong default value for TIME
 v0.8.16 - fix purge command and update database to allow for proper purging. NEW COMMAND LOGIC!
 v0.8.15 - add PURGE command to remove old entries from KILL table, add ELO score update message
