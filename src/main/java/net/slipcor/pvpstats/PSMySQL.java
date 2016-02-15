@@ -666,7 +666,7 @@ public final class PSMySQL {
     }
 
     private static int calcElo(int myOld, int otherOld, int k, boolean win, int min, int max) {
-        double expected = 1 / (1 + Math.pow(10, (otherOld - myOld) / 400));
+        double expected = 1 / (1 + Math.pow(10, (otherOld - myOld) / 400.0));
 
         int newVal;
         if (win) {
