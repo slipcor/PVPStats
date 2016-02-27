@@ -24,7 +24,7 @@ public class PlaceholderAPIHook extends EZPlaceholderHook {
             return String.valueOf(PVPData.getDeaths(player.getName()));
         }
 
-        if (PVPData.hasStreak(player.getName()) && s.equals("streak")) {
+        if (s.equals("streak")) {
             return String.valueOf(PVPData.getStreak(player.getName()));
         }
 
