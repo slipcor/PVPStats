@@ -102,6 +102,11 @@ public class PVPStats extends JavaPlugin {
             }, 5000L);
         }
 
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            getLogger().info("PVPStats - PlaceholderAPI found.");
+            new PlaceholderAPIHook(getInstance(), "slipcorpvpstats").hook();
+        }
+
         getLogger().info("enabled. (version " + pdfFile.getVersion() + ")");
     }
 

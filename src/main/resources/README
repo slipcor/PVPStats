@@ -1,3 +1,4 @@
+v0.8.22 - add PlaceholderAPI hook - thanks to @Bonkozorus for the PR!
 v0.8.21 - fix ELO calculation precision
 v0.8.20 - fix override placeholders
 v0.8.19 - add message override
