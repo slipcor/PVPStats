@@ -18,6 +18,7 @@ public enum Language {
     INFO_MAXSTREAK("info.maxstreak", "Max Streak"),
     INFO_STREAK("info.streak", "Streak"),
     INFO_RATIO("info.ratio", "Ratio"),
+    INFO_ELO("info.helo", "Elo"),
     INFO_PLAYERNOTFOUND("info.playernotfound", "Player not found: %0%"),
     MSG_CLEANED("msg.cleaned", "Statistics successfully cleaned up! %0% entries removed!"),
     MSG_ELO_ADDED("msg.elo.added", "You got %0% ELO points! Your score is now: %1%"),

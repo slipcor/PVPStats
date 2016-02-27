@@ -327,7 +327,7 @@ public final class PSMySQL {
         ResultSet result = null;
         try {
             result = plugin.sqlHandler
-                    .executeQuery("SELECT `name`,`kills`,`deaths`,`streak` FROM `" + plugin.dbTable + "` WHERE `name` LIKE '%" + string + "%' LIMIT 1;", false);
+                    .executeQuery("SELECT `name`,`kills`,`deaths`,`streak`, `elo` FROM `" + plugin.dbTable + "` WHERE `name` LIKE '%" + string + "%' LIMIT 1;", false);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -340,6 +340,7 @@ public final class PSMySQL {
                     streak = 0;
                 }
 
+                int elo = result.getInt("elo");
                 int kills = result.getInt("kills");
                 int deaths = result.getInt("deaths");
                 int maxStreak = result.getInt("streak");
@@ -368,7 +369,7 @@ public final class PSMySQL {
 
 
 
-                output = new String[6];
+                output = new String[7];
 
                 output[0] = Language.INFO_FORMAT.toString(
                         Language.INFO_NAME.toString(),
@@ -388,6 +389,9 @@ public final class PSMySQL {
                 output[5] = Language.INFO_FORMAT.toString(
                         Language.INFO_MAXSTREAK.toString(),
                         String.valueOf(maxStreak));
+                output[6] = Language.INFO_FORMAT.toString(
+                        Language.INFO_ELO.toString(),
+                        String.valueOf(elo));
             }
         } catch (SQLException e) {
             e.printStackTrace();

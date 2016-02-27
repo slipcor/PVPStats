@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="PVPStats">
+    <output-path>$PROJECT_DIR$/release/PVPStats</output-path>
+    <root id="archive" name="PVPStats.jar">
+      <element id="module-output" name="PVPStats" />
+    </root>
+  </artifact>
+</component>
