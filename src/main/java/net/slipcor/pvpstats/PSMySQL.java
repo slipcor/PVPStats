@@ -669,13 +669,13 @@ public final class PSMySQL {
     }
 
     private static int calcElo(int myOld, int otherOld, int k, boolean win, int min, int max) {
-        double expected = 1 / (1 + Math.pow(10, (otherOld - myOld) / 400.0));
+        double expected = 1.0f / (1.0f + Math.pow(10.0f, ((float) (otherOld - myOld)) / 400.0f));
 
         int newVal;
         if (win) {
-            newVal = (int) Math.round(myOld + k * (1 - expected));
+            newVal = (int) Math.round(myOld + k * (1.0f - expected));
         } else {
-            newVal = (int) Math.round(myOld + k * (0 - expected));
+            newVal = (int) Math.round(myOld + k * (0.0f - expected));
         }
 
         if (min > -1 && newVal < min) {
