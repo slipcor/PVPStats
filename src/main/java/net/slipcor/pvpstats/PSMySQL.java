@@ -361,7 +361,7 @@ public final class PSMySQL {
                         line = line.replace("%s", String.valueOf(streak));
                         line = line.replace("%e", String.valueOf(elo));
 
-                        output[i] = line;
+                        output[i] = ChatColor.translateAlternateColorCodes('&', line);
                     }
 
                     return output;
