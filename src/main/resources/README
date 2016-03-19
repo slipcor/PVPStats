@@ -1,4 +1,5 @@
 v0.8.27 - wow guys, how should this ELO stuff work if I never update the internal values? Shame on me!
+v0.8.26 - add currentstreak to the database to not have players lose their precious streaks on server restart :P
 v0.8.25 - finally fix the message override with coloring :)
 v0.8.23 - try to tweak the ELO calculation precision even more
 v0.8.22 - add PlaceholderAPI hook - thanks to @Bonkozorus for the PR!
