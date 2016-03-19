@@ -47,6 +47,7 @@ public class PSListener implements Listener {
             }
 
         }
+        PSMySQL.initiatePlayer(event.getPlayer(), plugin.dbTable);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

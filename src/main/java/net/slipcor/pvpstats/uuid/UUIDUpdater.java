@@ -12,27 +12,23 @@ import java.util.UUID;
 public class UUIDUpdater {
 
     public UUIDUpdater(PVPStats plugin, String dbTable) {
-        if (PVPStats.useUUIDs && !plugin.getConfig().getBoolean("UUIDs-(do not change!)")) {
 
-            List<String> players = PSMySQL.getAllPlayers(dbTable);
+        List<String> players = PSMySQL.getAllPlayers(dbTable);
 
-            if (players != null && players.size() > 0) {
+        if (players != null && players.size() > 0) {
 
-                UUIDFetcher fetcher = new UUIDFetcher(players);
+            UUIDFetcher fetcher = new UUIDFetcher(players);
 
-                try {
-                    Map<String, UUID> result = fetcher.call();
-                    for (Entry<String, UUID> set : result.entrySet()) {
-                        add(dbTable, set);
-                    }
-                    commit(dbTable);
-                } catch (Exception e) {
-                    e.printStackTrace();
+            try {
+                Map<String, UUID> result = fetcher.call();
+                for (Entry<String, UUID> set : result.entrySet()) {
+                    add(dbTable, set);
                 }
-
+                commit(dbTable);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            plugin.getConfig().set("UUIDs-(do not change!)", true);
-            plugin.saveConfig();
+
         }
     }
 

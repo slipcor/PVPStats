@@ -32,6 +32,10 @@ public final class PVPData {
                 return true;
             }
         } else {
+            int max = getMaxStreak(name); // load the streaks
+            if (max > streak) {
+                return false;
+            }
             maxStreaks.put(name, streak);
             return true;
         }
@@ -154,7 +158,10 @@ public final class PVPData {
         if (hasStreak(name)) {
             return streaks.get(name);
         }
-        return 0;
+
+        final int value = PSMySQL.getEntry(name, "currentstreak");
+        streaks.put(name, value);
+        return value;
     }
 
     /**
@@ -167,7 +174,17 @@ public final class PVPData {
         if (hasEloScore(name)) {
             return eloScore.get(name);
         }
-        return PVPStats.getInstance().getConfig().getInt("eloscore.default");
+
+        final int value = PSMySQL.getEntry(name, "elo");
+
+        if (value > 0) {
+            eloScore.put(name, value);
+            return value;
+        }
+
+        Integer idefault = PVPStats.getInstance().getConfig().getInt("eloscore.default");
+        eloScore.put(name, idefault);
+        return idefault;
     }
 
     /**
@@ -238,5 +255,15 @@ public final class PVPData {
      */
     public static void setStreak(String name, int value) {
         streaks.put(name, value);
+    }
+
+    /**
+     * force set a player's elo score - this does NOT update the database!
+     *
+     * @param name  the player to update
+     * @param value the value to set
+     */
+    public static void setEloScore(String name, int value) {
+        eloScore.put(name, value);
     }
 }
