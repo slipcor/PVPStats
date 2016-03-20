@@ -1,3 +1,4 @@
+v0.8.28 - add permission "pvpstats.newbie" to protect new players from generating scores when killed (default OFF!!!)
 v0.8.27 - wow guys, how should this ELO stuff work if I never update the internal values? Shame on me!
 v0.8.26 - add currentstreak to the database to not have players lose their precious streaks on server restart :P
 v0.8.25 - finally fix the message override with coloring :)

@@ -56,7 +56,7 @@ public final class PSMySQL {
         return false;
     }
 
-    private static void incKill(final Player player, int elo) {
+    private static boolean incKill(final Player player, int elo) {
         if (player.hasPermission("pvpstats.count")) {
             boolean incMaxStreak;
             int streak;
@@ -78,14 +78,18 @@ public final class PSMySQL {
 
             }
             checkAndDo(player.getName(), player.getUniqueId(), true, incMaxStreak, streak, elo);
+            return true;
         }
+        return false;
     }
 
-    private static void incDeath(final Player player, int elo) {
+    private static boolean incDeath(final Player player, int elo) {
         if (player.hasPermission("pvpstats.count")) {
             PVPData.setStreak(player.getName(), 0);
             checkAndDo(player.getName(), player.getUniqueId(), false, false, 0, elo);
+            return true;
         }
+        return false;
     }
 
     private static void checkAndDo(final String sPlayer, final UUID pid, final boolean kill, final boolean addMaxStreak, final int currentStreak, int elo) {
@@ -630,6 +634,10 @@ public final class PSMySQL {
             return;
         }
 
+        if (attacker.hasPermission("pvpstats.newbie") || player.hasPermission("pvpstats.newbie")) {
+            return;
+        }
+
         ConfigurationSection sec = PVPStats.getInstance().getConfig().getConfigurationSection("eloscore");
 
         if (!sec.getBoolean("active")) {
@@ -652,12 +660,15 @@ public final class PSMySQL {
 
         final int newA = calcElo(oldA, oldP, kA, true, min, max);
         final int newP = calcElo(oldP, oldA, kP, false, min, max);
-        incKill(attacker, newA);
-        attacker.sendMessage(Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
-        PVPData.setEloScore(attacker.getName(), newA);
-        incDeath(player, newP);
-        player.sendMessage(Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
-        PVPData.setEloScore(player.getName(), newP);
+
+        if (incKill(attacker, newA)) {
+            attacker.sendMessage(Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
+            PVPData.setEloScore(attacker.getName(), newA);
+        }
+        if (incDeath(player, newP)) {
+            player.sendMessage(Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
+            PVPData.setEloScore(player.getName(), newP);
+        }
     }
 
     private static int calcElo(int myOld, int otherOld, int k, boolean win, int min, int max) {

@@ -24,6 +24,9 @@ permissions:
     pvpstats.count:
         description: Permission to be counted
         default: true
+    pvpstats.newbie:
+        description: Permission to block being killed to be counted
+        default: false
     pvpstats.top:
         description: Permission to get global stats
         default: true
