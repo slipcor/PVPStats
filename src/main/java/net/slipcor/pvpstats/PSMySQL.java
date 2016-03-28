@@ -662,11 +662,11 @@ public final class PSMySQL {
         final int newP = calcElo(oldP, oldA, kP, false, min, max);
 
         if (incKill(attacker, newA)) {
-            attacker.sendMessage(Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
+            plugin.sendPrefixed(attacker, Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
             PVPData.setEloScore(attacker.getName(), newA);
         }
         if (incDeath(player, newP)) {
-            player.sendMessage(Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
+            plugin.sendPrefixed(player, Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
             PVPData.setEloScore(player.getName(), newP);
         }
     }

@@ -142,7 +142,9 @@ public class PVPStats extends JavaPlugin {
     }
 
     public void sendPrefixed(final CommandSender sender, final String message) {
-        sender.sendMessage(Language.MSG_PREFIX + message);
+        if (!"".equals(message)) {
+            sender.sendMessage(Language.MSG_PREFIX + message);
+        }
     }
 
     public boolean onCommand(final CommandSender sender, final Command cmd, final String commandLabel, final String[] args) {

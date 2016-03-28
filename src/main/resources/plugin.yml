@@ -1,6 +1,6 @@
 name: pvpstats
 main: net.slipcor.pvpstats.PVPStats
-version: 0.8.27
+version: 0.8.29
 author: slipcor
 softdepend: [pvparena,PlaceholderAPI]
 website: http://dev.bukkit.org/server-mods/pvp-stats/

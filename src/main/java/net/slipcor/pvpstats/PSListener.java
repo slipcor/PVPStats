@@ -38,10 +38,10 @@ public class PSListener implements Listener {
 
             switch (test) {
                 case SUCCESS:
-                    event.getPlayer().sendMessage(Language.MSG_UPDATED.toString());
+                    plugin.sendPrefixed(event.getPlayer(), Language.MSG_UPDATED.toString());
                     break;
                 case UPDATE_AVAILABLE:
-                    event.getPlayer().sendMessage(Language.MSG_UPDATE.toString());
+                    plugin.sendPrefixed(event.getPlayer(), Language.MSG_UPDATE.toString());
                 default:
                     break;
             }
