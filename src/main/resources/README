@@ -1,3 +1,4 @@
+v0.8.30 - priorize correct player name input over name LIKE that
 v0.8.29 - allow to disable certain language strings by setting them to ''
 v0.8.28 - add permission "pvpstats.newbie" to protect new players from generating scores when killed (default OFF!!!)
 v0.8.27 - wow guys, how should this ELO stuff work if I never update the internal values? Shame on me!

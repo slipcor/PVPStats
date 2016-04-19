@@ -330,7 +330,11 @@ public final class PSMySQL {
         ResultSet result = null;
         try {
             result = plugin.sqlHandler
-                    .executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + plugin.dbTable + "` WHERE `name` LIKE '%" + string + "%' LIMIT 1;", false);
+                    .executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + plugin.dbTable + "` WHERE `name` = '" + string + "' LIMIT 1;", false);
+            if (result == null || !result.next()) {
+                result = plugin.sqlHandler
+                        .executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + plugin.dbTable + "` WHERE `name` LIKE '%" + string + "%' LIMIT 1;", false);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -424,7 +428,11 @@ public final class PSMySQL {
         ResultSet result = null;
         try {
             result = plugin.sqlHandler
-                    .executeQuery("SELECT `" + entry + "` FROM `" + plugin.dbTable + "` WHERE `name` LIKE '%" + player + "%' LIMIT 1;", false);
+                    .executeQuery("SELECT `" + entry + "` FROM `" + plugin.dbTable + "` WHERE `name` = '" + player + "' LIMIT 1;", false);
+            if (result == null || !result.next()) {
+                result = plugin.sqlHandler
+                        .executeQuery("SELECT `" + entry + "` FROM `" + plugin.dbTable + "` WHERE `name` LIKE '%" + player + "%' LIMIT 1;", false);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
