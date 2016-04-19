@@ -334,68 +334,71 @@ public final class PSMySQL {
             if (result == null || !result.next()) {
                 result = plugin.sqlHandler
                         .executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + plugin.dbTable + "` WHERE `name` LIKE '%" + string + "%' LIMIT 1;", false);
+                if (result == null || !result.next()) {
+                    String[] output = new String[1];
+                    output[0] = Language.INFO_PLAYERNOTFOUND.toString(string);
+                    return output;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         String[] output = null;
         try {
-            while (result != null && result.next()) {
-                String name = result.getString("name");
+            String name = result.getString("name");
 
-                int elo = result.getInt("elo");
-                int kills = result.getInt("kills");
-                int deaths = result.getInt("deaths");
-                int streak = result.getInt("currentstreak");
-                int maxStreak = result.getInt("streak");
-                Double ratio = calcResult(kills, deaths, maxStreak, streak);
+            int elo = result.getInt("elo");
+            int kills = result.getInt("kills");
+            int deaths = result.getInt("deaths");
+            int streak = result.getInt("currentstreak");
+            int maxStreak = result.getInt("streak");
+            Double ratio = calcResult(kills, deaths, maxStreak, streak);
 
-                if (plugin.getConfig().getBoolean("msgoverrides")) {
-                    List<String> lines = plugin.getConfig().getStringList("msg.main");
-                    output = new String[lines.size()];
+            if (plugin.getConfig().getBoolean("msgoverrides")) {
+                List<String> lines = plugin.getConfig().getStringList("msg.main");
+                output = new String[lines.size()];
 
-                    for (int i = 0; i < lines.size(); i++) {
-                        String line = lines.get(i);
+                for (int i = 0; i < lines.size(); i++) {
+                    String line = lines.get(i);
 
-                        line = line.replace("%d", String.valueOf(deaths));
-                        line = line.replace("%k", String.valueOf(kills));
-                        line = line.replace("%m", String.valueOf(maxStreak));
-                        line = line.replace("%n", name);
-                        line = line.replace("%r", String.valueOf(ratio));
-                        line = line.replace("%s", String.valueOf(streak));
-                        line = line.replace("%e", String.valueOf(elo));
+                    line = line.replace("%d", String.valueOf(deaths));
+                    line = line.replace("%k", String.valueOf(kills));
+                    line = line.replace("%m", String.valueOf(maxStreak));
+                    line = line.replace("%n", name);
+                    line = line.replace("%r", String.valueOf(ratio));
+                    line = line.replace("%s", String.valueOf(streak));
+                    line = line.replace("%e", String.valueOf(elo));
 
-                        output[i] = ChatColor.translateAlternateColorCodes('&', line);
-                    }
-
-                    return output;
+                    output[i] = ChatColor.translateAlternateColorCodes('&', line);
                 }
 
-
-                output = new String[7];
-
-                output[0] = Language.INFO_FORMAT.toString(
-                        Language.INFO_NAME.toString(),
-                        name);
-                output[1] = Language.INFO_FORMAT.toString(
-                        Language.INFO_KILLS.toString(),
-                        String.valueOf(kills));
-                output[2] = Language.INFO_FORMAT.toString(
-                        Language.INFO_DEATHS.toString(),
-                        String.valueOf(deaths));
-                output[3] = Language.INFO_FORMAT.toString(
-                        Language.INFO_RATIO.toString(),
-                        String.valueOf(ratio));
-                output[4] = Language.INFO_FORMAT.toString(
-                        Language.INFO_STREAK.toString(),
-                        String.valueOf(streak));
-                output[5] = Language.INFO_FORMAT.toString(
-                        Language.INFO_MAXSTREAK.toString(),
-                        String.valueOf(maxStreak));
-                output[6] = Language.INFO_FORMAT.toString(
-                        Language.INFO_ELO.toString(),
-                        String.valueOf(elo));
+                return output;
             }
+
+
+            output = new String[7];
+
+            output[0] = Language.INFO_FORMAT.toString(
+                    Language.INFO_NAME.toString(),
+                    name);
+            output[1] = Language.INFO_FORMAT.toString(
+                    Language.INFO_KILLS.toString(),
+                    String.valueOf(kills));
+            output[2] = Language.INFO_FORMAT.toString(
+                    Language.INFO_DEATHS.toString(),
+                    String.valueOf(deaths));
+            output[3] = Language.INFO_FORMAT.toString(
+                    Language.INFO_RATIO.toString(),
+                    String.valueOf(ratio));
+            output[4] = Language.INFO_FORMAT.toString(
+                    Language.INFO_STREAK.toString(),
+                    String.valueOf(streak));
+            output[5] = Language.INFO_FORMAT.toString(
+                    Language.INFO_MAXSTREAK.toString(),
+                    String.valueOf(maxStreak));
+            output[6] = Language.INFO_FORMAT.toString(
+                    Language.INFO_ELO.toString(),
+                    String.valueOf(elo));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -432,15 +435,16 @@ public final class PSMySQL {
             if (result == null || !result.next()) {
                 result = plugin.sqlHandler
                         .executeQuery("SELECT `" + entry + "` FROM `" + plugin.dbTable + "` WHERE `name` LIKE '%" + player + "%' LIMIT 1;", false);
+                if (result == null || !result.next()) {
+                    return 0;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         try {
-            while (result != null && result.next()) {
-                return result.getInt(entry);
-            }
+            return result.getInt(entry);
         } catch (SQLException e) {
             e.printStackTrace();
         }
