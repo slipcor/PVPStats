@@ -48,7 +48,7 @@ public final class PSMySQL {
                 e.printStackTrace();
             }
             try {
-                while (result != null && result.next()) {
+                if (result != null && result.next()) {
                     return true;
                 }
             } catch (SQLException e) {
