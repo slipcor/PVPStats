@@ -148,20 +148,28 @@ public final class PSMySQL {
         String order = null;
         try {
 
-            if (sort.equals("KILLS")) {
-                order = "kills";
-            } else if (sort.equals("DEATHS")) {
-                order = "deaths";
-            } else if (sort.equals("STREAK")) {
-                order = "streak";
-            } else if (sort.equals("CURRENTSTREAK")) {
-                order = "currentstreak";
-            } else if (sort.equals("ELO")) {
-                order = "elo";
-            } else if (sort.equals("K-D")) {
-                order = "kills";
-            } else {
-                order = "kills";
+            switch (sort) {
+                case "KILLS":
+                    order = "kills";
+                    break;
+                case "DEATHS":
+                    order = "deaths";
+                    break;
+                case "STREAK":
+                    order = "streak";
+                    break;
+                case "CURRENTSTREAK":
+                    order = "currentstreak";
+                    break;
+                case "ELO":
+                    order = "elo";
+                    break;
+                case "K-D":
+                    order = "kills";
+                    break;
+                default:
+                    order = "kills";
+                    break;
             }
 
             int limit = sort.equals("K-D") ? 50 : count;
@@ -178,22 +186,29 @@ public final class PSMySQL {
         }
         try {
             while (result != null && result.next()) {
-                if (sort.equals("KILLS")) {
-                    sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                } else if (sort.equals("DEATHS")) {
-                    sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                } else if (sort.equals("ELO")) {
-                    sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                } else if (sort.equals("STREAK")) {
-                    sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                } else if (sort.equals("CURRENTSTREAK")) {
-                    sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                } else {
-                    results.put(
-                            result.getString("name"),
-                            calcResult(result.getInt("kills"),
-                                    result.getInt("deaths"),
-                                    result.getInt("streak"), PVPData.getStreak(result.getString("name"))));
+                switch (sort) {
+                    case "KILLS":
+                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
+                        break;
+                    case "DEATHS":
+                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
+                        break;
+                    case "ELO":
+                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
+                        break;
+                    case "STREAK":
+                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
+                        break;
+                    case "CURRENTSTREAK":
+                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
+                        break;
+                    default:
+                        results.put(
+                                result.getString("name"),
+                                calcResult(result.getInt("kills"),
+                                        result.getInt("deaths"),
+                                        result.getInt("streak"), PVPData.getStreak(result.getString("name"))));
+                        break;
                 }
             }
         } catch (SQLException e) {
