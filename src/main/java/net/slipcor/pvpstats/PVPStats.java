@@ -464,11 +464,7 @@ public class PVPStats extends JavaPlugin {
             try {
                 sqlHandler = new lib.JesiKat.SQL.MySQLConnection(dbTable, dbHost, dbPort, dbDatabase, dbUser,
                         dbPass);
-            } catch (InstantiationException e1) {
-                e1.printStackTrace();
-            } catch (IllegalAccessException e1) {
-                e1.printStackTrace();
-            } catch (ClassNotFoundException e1) {
+            } catch (InstantiationException | ClassNotFoundException | IllegalAccessException e1) {
                 e1.printStackTrace();
             }
 
