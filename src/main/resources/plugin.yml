@@ -1,6 +1,6 @@
 name: pvpstats
 main: net.slipcor.pvpstats.PVPStats
-version: 0.8.30
+version: 0.8.31
 author: slipcor
 softdepend: [pvparena,PlaceholderAPI]
 website: http://dev.bukkit.org/server-mods/pvp-stats/
@@ -20,6 +20,9 @@ permissions:
         default: op
     pvpstats.wipe:
         description: Ability to wipe
+        default: op
+    pvpstats.debug:
+        description: Ability to debug
         default: op
     pvpstats.count:
         description: Permission to be counted

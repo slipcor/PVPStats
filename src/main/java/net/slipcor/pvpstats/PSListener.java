@@ -23,6 +23,8 @@ import java.util.Map;
 public class PSListener implements Listener {
     private final PVPStats plugin;
 
+    private final Debug DEBUG = new Debug(3);
+
     private final Map<String, String> lastKill = new HashMap<String, String>();
     private final Map<String, BukkitTask> killTask = new HashMap<String, BukkitTask>();
 
@@ -63,8 +65,12 @@ public class PSListener implements Listener {
             return;
         }
 
+        DEBUG.i("Player killed!", event.getEntity());
+
         if (event.getEntity().getKiller() == null) {
+            DEBUG.i("Killer is null", event.getEntity());
             if (plugin.getConfig().getBoolean("countregulardeaths")) {
+                DEBUG.i("Kill will be counted", event.getEntity());
                 PSMySQL.AkilledB(null, event.getEntity());
             }
             return;
@@ -74,8 +80,9 @@ public class PSListener implements Listener {
         final Player player = event.getEntity();
 
         if (plugin.getConfig().getBoolean("checkabuse")) {
-
+            DEBUG.i("- checking abuse", event.getEntity());
             if (lastKill.containsKey(attacker.getName()) && lastKill.get(attacker.getName()).equals(player.getName())) {
+                DEBUG.i("> OUT!", event.getEntity());
                 return; // no logging!
             }
 
@@ -101,7 +108,7 @@ public class PSListener implements Listener {
             }
         }
         // here we go, PVP!
-
+        DEBUG.i("Counting kill by " + attacker.getName(), event.getEntity());
         PSMySQL.AkilledB(attacker, player);
     }
 }

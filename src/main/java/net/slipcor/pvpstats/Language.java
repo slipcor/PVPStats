@@ -25,6 +25,7 @@ public enum Language {
     MSG_ELO_SUBBED("msg.elo.subbed", "You lost %0% ELO points! Your score is now: %1%"),
     MSG_NOPERMRELOAD("msg.nopermreload", "No permission to reload!"),
     MSG_NOPERMCLEANUP("msg.nopermcleanup", "No permission to cleanup!"),
+    MSG_NOPERMDEBUG("msg.nopermdebug", "No permission to debug!"),
     MSG_NOPERMPURGE("msg.nopermpurge", "No permission to purge!"),
     MSG_NOPERMWIPE("msg.nopermwipe", "No permission to wipe!"),
     MSG_PREFIX("msg.prefix", "[PVP Stats] "),

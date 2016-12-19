@@ -27,6 +27,8 @@ public final class PSMySQL {
 
     private static PVPStats plugin = null;
 
+    private static final Debug DEBUG = new Debug(4);
+
     private static void mysqlQuery(final String query) {
         if (plugin.mySQL) {
             try {
@@ -327,6 +329,7 @@ public final class PSMySQL {
             plugin.getLogger().severe("MySQL is not set!");
             return null;
         }
+        DEBUG.i("getting info for " + string);
         ResultSet result = null;
         try {
             result = plugin.sqlHandler
@@ -633,26 +636,32 @@ public final class PSMySQL {
     }
 
     public static void AkilledB(Player attacker, Player player) {
+        DEBUG.i("AkilledB, A is " + attacker, player);
         if (attacker == null && player == null) {
+            DEBUG.i("attacker and player are null", player);
             return;
         }
 
         if (player == null) {
+            DEBUG.i("player is null", player);
             incKill(attacker, PVPData.getEloScore(attacker.getName()));
             return;
         }
         if (attacker == null) {
+            DEBUG.i("attacker is null", player);
             incDeath(player, PVPData.getEloScore(player.getName()));
             return;
         }
 
         if (attacker.hasPermission("pvpstats.newbie") || player.hasPermission("pvpstats.newbie")) {
+            DEBUG.i("either one has newbie status", player);
             return;
         }
 
         ConfigurationSection sec = PVPStats.getInstance().getConfig().getConfigurationSection("eloscore");
 
         if (!sec.getBoolean("active")) {
+            DEBUG.i("no elo", player);
             incKill(attacker, PVPData.getEloScore(attacker.getName()));
             incDeath(player, PVPData.getEloScore(player.getName()));
             return;
@@ -674,10 +683,12 @@ public final class PSMySQL {
         final int newP = calcElo(oldP, oldA, kP, false, min, max);
 
         if (incKill(attacker, newA)) {
+            DEBUG.i("increasing kill", attacker);
             plugin.sendPrefixed(attacker, Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
             PVPData.setEloScore(attacker.getName(), newA);
         }
         if (incDeath(player, newP)) {
+            DEBUG.i("increasing death", player);
             plugin.sendPrefixed(player, Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
             PVPData.setEloScore(player.getName(), newP);
         }

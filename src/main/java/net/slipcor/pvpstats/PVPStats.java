@@ -43,6 +43,8 @@ public class PVPStats extends JavaPlugin {
     private Updater updater = null;
     private static PVPStats instance;
 
+    private final Debug DEBUG = new Debug(8);
+
     public void onEnable() {
         instance = this;
         try {
@@ -105,6 +107,8 @@ public class PVPStats extends JavaPlugin {
             new PlaceholderAPIHook(getInstance(), "slipcorpvpstats").hook();
         }
 
+        Debug.load(this, Bukkit.getConsoleSender());
+
         getLogger().info("enabled. (version " + pdfFile.getVersion() + ")");
     }
 
@@ -149,7 +153,9 @@ public class PVPStats extends JavaPlugin {
 
     public boolean onCommand(final CommandSender sender, final Command cmd, final String commandLabel, final String[] args) {
 
-        if (args == null || args.length < 1 || !(args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("wipe") || args[0].equalsIgnoreCase("cleanup") || args[0].equalsIgnoreCase("purge"))) {
+        DEBUG.i("onCommand!", sender);
+
+        if (args == null || args.length < 1 || !(args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("debug") || args[0].equalsIgnoreCase("wipe") || args[0].equalsIgnoreCase("cleanup") || args[0].equalsIgnoreCase("purge"))) {
             if (!parsecommand(sender, args)) {
                 sender.sendMessage("/pvpstats - show your pvp stats");
                 sender.sendMessage("/pvpstats [player] - show player's pvp stats");
@@ -167,6 +173,9 @@ public class PVPStats extends JavaPlugin {
                 }
                 if (sender.hasPermission("pvpstats.purge")) {
                     sender.sendMessage("/pvpstats purge [specific | standard | both] [amount] - remove kill entries older than [amount] days");
+                }
+                if (sender.hasPermission("pvpstats.debug")) {
+                    sender.sendMessage("/pvpstats debug [on | off] - enable or disable debugging");
                 }
             }
             return true;
@@ -195,6 +204,19 @@ public class PVPStats extends JavaPlugin {
 
             final int count = PSMySQL.clean();
             sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
+
+            return true;
+        } else if (args[0].equalsIgnoreCase("debug")) {
+            if (!sender.hasPermission("pvpstats.debug")) {
+                sendPrefixed(sender, Language.MSG_NOPERMDEBUG.toString());
+                return true;
+            }
+
+            if (args.length > 1) {
+                getConfig().set("debug", args[1]);
+            }
+
+            Debug.load(this, sender);
 
             return true;
         } else if (args[0].equalsIgnoreCase("purge")) {
