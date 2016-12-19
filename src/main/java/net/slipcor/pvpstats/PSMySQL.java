@@ -141,9 +141,9 @@ public final class PSMySQL {
 
         sort = sort.toUpperCase();
         ResultSet result = null;
-        final Map<String, Double> results = new HashMap<String, Double>();
+        final Map<String, Double> results = new HashMap<>();
 
-        final List<String> sortedValues = new ArrayList<String>();
+        final List<String> sortedValues = new ArrayList<>();
 
         String order = null;
         try {
@@ -555,8 +555,8 @@ public final class PSMySQL {
         }
         ResultSet result;
 
-        List<Integer> ints = new ArrayList<Integer>();
-        Map<String, Integer> players = new HashMap<String, Integer>();
+        List<Integer> ints = new ArrayList<>();
+        Map<String, Integer> players = new HashMap<>();
 
         try {
 
@@ -607,7 +607,7 @@ public final class PSMySQL {
             plugin.getLogger().severe("MySQL is not set!");
             return null;
         }
-        List<String> output = new ArrayList<String>();
+        List<String> output = new ArrayList<>();
 
         ResultSet result = null;
 

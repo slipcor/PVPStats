@@ -191,7 +191,7 @@ public class MySQLConnection {
         String format = "SELECT * FROM `$DB`.`$TABLE`;";
         ResultSet set = executeQuery(format.replace("$DB", database).replace("$TABLE", table), false);
         int count = set.getMetaData().getColumnCount();
-        ArrayList<String> columns = new ArrayList<String>();
+        ArrayList<String> columns = new ArrayList<>();
         for (int i = 1; i <= count; i++) {
             columns.add(set.getMetaData().getColumnName(i));
         }
@@ -206,7 +206,7 @@ public class MySQLConnection {
     public String[] getTables(String database) throws SQLException {
         String format = "SELECT `TABLE_NAME` FROM `information_schema`.`TABLES` WHERE TABLE_SCHEMA='$DB';";
         ResultSet set = executeQuery(format.replace("$DB", database), false);
-        ArrayList<String> tables = new ArrayList<String>();
+        ArrayList<String> tables = new ArrayList<>();
         while (set.next()) {
             tables.add(set.getString(1));
         }
@@ -232,7 +232,7 @@ public class MySQLConnection {
      */
     public String[] getDatabases(boolean onlyAdded) throws SQLException {
         ResultSet set = executeQuery("SHOW DATABASES;", false);
-        ArrayList<String> databases = new ArrayList<String>();
+        ArrayList<String> databases = new ArrayList<>();
         while (set.next()) {
             String database = set.getString(1);
             if (onlyAdded) {

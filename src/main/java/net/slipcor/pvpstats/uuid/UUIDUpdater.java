@@ -38,7 +38,7 @@ public class UUIDUpdater {
         map.clear();
     }
 
-    private final Map<String, UUID> map = new HashMap<String, UUID>();
+    private final Map<String, UUID> map = new HashMap<>();
 
     private void add(String dbTable, Entry<String, UUID> set) {
         map.put(set.getKey(), set.getValue());

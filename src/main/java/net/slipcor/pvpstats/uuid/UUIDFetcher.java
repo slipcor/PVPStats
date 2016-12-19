@@ -25,7 +25,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
     }
 
     public Map<String, UUID> call() throws Exception {
-        Map<String, UUID> uuidMap = new HashMap<String, UUID>();
+        Map<String, UUID> uuidMap = new HashMap<>();
         String body = buildBody(names);
         for (int i = 1; i < MAX_SEARCH; i++) {
             HttpURLConnection connection = createConnection(i);
@@ -67,7 +67,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 
     @SuppressWarnings("unchecked")
     private static String buildBody(List<String> names) {
-        List<JSONObject> lookups = new ArrayList<JSONObject>();
+        List<JSONObject> lookups = new ArrayList<>();
         for (String name : names) {
             JSONObject obj = new JSONObject();
             obj.put("name", name);
