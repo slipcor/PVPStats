@@ -111,7 +111,7 @@ public class MySQLConnection {
     /**
      * @param query    The Query to send to the SQL server.
      * @param modifies If the Query modifies the database, set this to true. If not, set this to false
-     * @return If {@value modifies} is true, returns a valid ResultSet obtained from the Query. If {@value modifies} is false, returns null.
+     * @return If {@code modifies} is true, returns a valid ResultSet obtained from the Query. If {@code modifies} is false, returns null.
      * @throws SQLException if the Query had an error or there was not a valid connection.
      */
     public ResultSet executeQuery(final String query, final boolean modifies) throws SQLException {
@@ -226,7 +226,7 @@ public class MySQLConnection {
     /**
      * @param onlyAdded determines whether or not the method will get all databases or if the method should
      *                  exclude the databases that are included with the MySQL installation.
-     * @return A String array of all databases. If {@value onlyAdded} is true, returns all databases. If {@value onlyAdded} is false,
+     * @return A String array of all databases. If {@code onlyAdded} is true, returns all databases. If {@code onlyAdded} is false,
      * returns all databases excluding those that are included with the MySQL installation.
      * @throws SQLException
      */
