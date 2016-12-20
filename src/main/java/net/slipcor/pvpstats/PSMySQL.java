@@ -101,29 +101,29 @@ public final class PSMySQL {
             final int kills = kill ? 1 : 0;
             final int deaths = kill ? 0 : 1;
             mysqlQuery("INSERT INTO `" + plugin.dbTable + "` (`name`, `uid`, `kills`,`deaths`,`streak`,`currentstreak`,`elo`,`time`) VALUES ('"
-                    + sPlayer + "', '" + pid + "', " + kills + ", " + deaths + ", " + kills + ", " + kills + ", " + elo + ", " + (long) (System.currentTimeMillis() / 1000) + ")");
+                    + sPlayer + "', '" + pid + "', " + kills + ", " + deaths + ", " + kills + ", " + kills + ", " + elo + ", " + System.currentTimeMillis() / 1000 + ")");
             PVPData.setKills(sPlayer, kills);
             PVPData.setDeaths(sPlayer, deaths);
             return;
         }
         final String var = kill ? "kills" : "deaths";
         mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `" + var + "` = `" + var
-                + "`+1, `elo` = '" + elo + "', `time` = " + (long) (System.currentTimeMillis() / 1000) + " WHERE `uid` = '" + pid + "'");
+                + "`+1, `elo` = '" + elo + "', `time` = " + System.currentTimeMillis() / 1000 + " WHERE `uid` = '" + pid + "'");
 
         if (addMaxStreak && kill) {
             mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `streak` = `streak`+1, `currentstreak` = `currentstreak`+1, `time` = " +
-                    (long) (System.currentTimeMillis() / 1000) + " WHERE `uid` = '" + pid + "'");
+                    System.currentTimeMillis() / 1000 + " WHERE `uid` = '" + pid + "'");
         } else if (kill) {
             mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `currentstreak` = `currentstreak`+1, `time` = " +
-                    (long) (System.currentTimeMillis() / 1000) + " WHERE `uid` = '" + pid + "'");
+                    System.currentTimeMillis() / 1000 + " WHERE `uid` = '" + pid + "'");
         } else {
             mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `currentstreak` = 0, `time` = " +
-                    (long) (System.currentTimeMillis() / 1000) + " WHERE `uid` = '" + pid + "'");
+                    System.currentTimeMillis() / 1000 + " WHERE `uid` = '" + pid + "'");
         }
 
         if (plugin.dbKillTable != null) {
             mysqlQuery("INSERT INTO " + plugin.dbKillTable + " (`name`,`uid`,`kill`,`time`) VALUES(" +
-                    "'" + sPlayer + "', '" + pid + "', '" + (kill ? 1 : 0) + "', " + (long) (System.currentTimeMillis() / 1000) + ")");
+                    "'" + sPlayer + "', '" + pid + "', '" + (kill ? 1 : 0) + "', " + System.currentTimeMillis() / 1000 + ")");
         }
 
     }
@@ -504,7 +504,7 @@ public final class PSMySQL {
 
         int count = 0;
 
-        long timestamp = (long) (System.currentTimeMillis()/1000) - ((long) days * 24L * 60L * 60L);
+        long timestamp = System.currentTimeMillis()/1000 - ((long) days * 24L * 60L * 60L);
 
         try {
 
@@ -538,7 +538,7 @@ public final class PSMySQL {
 
         int count = 0;
 
-        long timestamp = (long) (System.currentTimeMillis()/1000) - ((long) days * 24L * 60L * 60L);
+        long timestamp = System.currentTimeMillis()/1000 - ((long) days * 24L * 60L * 60L);
 
         try {
 
