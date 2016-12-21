@@ -287,6 +287,12 @@ public final class PSMySQL {
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
         StringBuilder saneString = new StringBuilder();
 
+        // Java 8 compatibility
+        if (engine == null) {
+            mgr = new ScriptEngineManager(null);
+            engine = mgr.getEngineByName("nashorn");
+        }
+
         for (char c : string.toCharArray()) {
             switch (c) {
                 case '0':
