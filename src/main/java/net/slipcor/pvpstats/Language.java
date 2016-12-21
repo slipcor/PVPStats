@@ -39,7 +39,7 @@ public enum Language {
     private final String node;
     private String value = null;
 
-    private Language(final String node, final String content) {
+    Language(final String node, final String content) {
         this.node = node;
         sDefault = content;
     }

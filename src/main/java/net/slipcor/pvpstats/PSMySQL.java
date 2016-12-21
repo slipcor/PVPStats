@@ -48,7 +48,7 @@ public final class PSMySQL {
                 e.printStackTrace();
             }
             try {
-                while (result != null && result.next()) {
+                if (result != null && result.next()) {
                     return true;
                 }
             } catch (SQLException e) {
@@ -101,29 +101,29 @@ public final class PSMySQL {
             final int kills = kill ? 1 : 0;
             final int deaths = kill ? 0 : 1;
             mysqlQuery("INSERT INTO `" + plugin.dbTable + "` (`name`, `uid`, `kills`,`deaths`,`streak`,`currentstreak`,`elo`,`time`) VALUES ('"
-                    + sPlayer + "', '" + pid + "', " + kills + ", " + deaths + ", " + kills + ", " + kills + ", " + elo + ", " + (long) (System.currentTimeMillis() / 1000) + ")");
+                    + sPlayer + "', '" + pid + "', " + kills + ", " + deaths + ", " + kills + ", " + kills + ", " + elo + ", " + System.currentTimeMillis() / 1000 + ")");
             PVPData.setKills(sPlayer, kills);
             PVPData.setDeaths(sPlayer, deaths);
             return;
         }
         final String var = kill ? "kills" : "deaths";
         mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `" + var + "` = `" + var
-                + "`+1, `elo` = '" + elo + "', `time` = " + (long) (System.currentTimeMillis() / 1000) + " WHERE `uid` = '" + pid + "'");
+                + "`+1, `elo` = '" + elo + "', `time` = " + System.currentTimeMillis() / 1000 + " WHERE `uid` = '" + pid + "'");
 
         if (addMaxStreak && kill) {
             mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `streak` = `streak`+1, `currentstreak` = `currentstreak`+1, `time` = " +
-                    (long) (System.currentTimeMillis() / 1000) + " WHERE `uid` = '" + pid + "'");
+                    System.currentTimeMillis() / 1000 + " WHERE `uid` = '" + pid + "'");
         } else if (kill) {
             mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `currentstreak` = `currentstreak`+1, `time` = " +
-                    (long) (System.currentTimeMillis() / 1000) + " WHERE `uid` = '" + pid + "'");
+                    System.currentTimeMillis() / 1000 + " WHERE `uid` = '" + pid + "'");
         } else {
             mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `currentstreak` = 0, `time` = " +
-                    (long) (System.currentTimeMillis() / 1000) + " WHERE `uid` = '" + pid + "'");
+                    System.currentTimeMillis() / 1000 + " WHERE `uid` = '" + pid + "'");
         }
 
         if (plugin.dbKillTable != null) {
             mysqlQuery("INSERT INTO " + plugin.dbKillTable + " (`name`,`uid`,`kill`,`time`) VALUES(" +
-                    "'" + sPlayer + "', '" + pid + "', '" + (kill ? 1 : 0) + "', " + (long) (System.currentTimeMillis() / 1000) + ")");
+                    "'" + sPlayer + "', '" + pid + "', '" + (kill ? 1 : 0) + "', " + System.currentTimeMillis() / 1000 + ")");
         }
 
     }
@@ -141,27 +141,35 @@ public final class PSMySQL {
 
         sort = sort.toUpperCase();
         ResultSet result = null;
-        final Map<String, Double> results = new HashMap<String, Double>();
+        final Map<String, Double> results = new HashMap<>();
 
-        final List<String> sortedValues = new ArrayList<String>();
+        final List<String> sortedValues = new ArrayList<>();
 
         String order = null;
         try {
 
-            if (sort.equals("KILLS")) {
-                order = "kills";
-            } else if (sort.equals("DEATHS")) {
-                order = "deaths";
-            } else if (sort.equals("STREAK")) {
-                order = "streak";
-            } else if (sort.equals("CURRENTSTREAK")) {
-                order = "currentstreak";
-            } else if (sort.equals("ELO")) {
-                order = "elo";
-            } else if (sort.equals("K-D")) {
-                order = "kills";
-            } else {
-                order = "kills";
+            switch (sort) {
+                case "KILLS":
+                    order = "kills";
+                    break;
+                case "DEATHS":
+                    order = "deaths";
+                    break;
+                case "STREAK":
+                    order = "streak";
+                    break;
+                case "CURRENTSTREAK":
+                    order = "currentstreak";
+                    break;
+                case "ELO":
+                    order = "elo";
+                    break;
+                case "K-D":
+                    order = "kills";
+                    break;
+                default:
+                    order = "kills";
+                    break;
             }
 
             int limit = sort.equals("K-D") ? 50 : count;
@@ -178,22 +186,29 @@ public final class PSMySQL {
         }
         try {
             while (result != null && result.next()) {
-                if (sort.equals("KILLS")) {
-                    sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                } else if (sort.equals("DEATHS")) {
-                    sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                } else if (sort.equals("ELO")) {
-                    sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                } else if (sort.equals("STREAK")) {
-                    sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                } else if (sort.equals("CURRENTSTREAK")) {
-                    sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                } else {
-                    results.put(
-                            result.getString("name"),
-                            calcResult(result.getInt("kills"),
-                                    result.getInt("deaths"),
-                                    result.getInt("streak"), PVPData.getStreak(result.getString("name"))));
+                switch (sort) {
+                    case "KILLS":
+                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
+                        break;
+                    case "DEATHS":
+                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
+                        break;
+                    case "ELO":
+                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
+                        break;
+                    case "STREAK":
+                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
+                        break;
+                    case "CURRENTSTREAK":
+                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
+                        break;
+                    default:
+                        results.put(
+                                result.getString("name"),
+                                calcResult(result.getInt("kills"),
+                                        result.getInt("deaths"),
+                                        result.getInt("streak"), PVPData.getStreak(result.getString("name"))));
+                        break;
                 }
             }
         } catch (SQLException e) {
@@ -489,7 +504,7 @@ public final class PSMySQL {
 
         int count = 0;
 
-        long timestamp = (long) (System.currentTimeMillis()/1000) - ((long) days * 24L * 60L * 60L);
+        long timestamp = System.currentTimeMillis()/1000 - ((long) days * 24L * 60L * 60L);
 
         try {
 
@@ -523,7 +538,7 @@ public final class PSMySQL {
 
         int count = 0;
 
-        long timestamp = (long) (System.currentTimeMillis()/1000) - ((long) days * 24L * 60L * 60L);
+        long timestamp = System.currentTimeMillis()/1000 - ((long) days * 24L * 60L * 60L);
 
         try {
 
@@ -555,8 +570,8 @@ public final class PSMySQL {
         }
         ResultSet result;
 
-        List<Integer> ints = new ArrayList<Integer>();
-        Map<String, Integer> players = new HashMap<String, Integer>();
+        List<Integer> ints = new ArrayList<>();
+        Map<String, Integer> players = new HashMap<>();
 
         try {
 
@@ -607,7 +622,7 @@ public final class PSMySQL {
             plugin.getLogger().severe("MySQL is not set!");
             return null;
         }
-        List<String> output = new ArrayList<String>();
+        List<String> output = new ArrayList<>();
 
         ResultSet result = null;
 

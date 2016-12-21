@@ -8,11 +8,11 @@ import java.util.Map;
  */
 public final class PVPData {
 
-    private static Map<String, Integer> kills = new HashMap<String, Integer>();
-    private static Map<String, Integer> deaths = new HashMap<String, Integer>();
-    private static Map<String, Integer> streaks = new HashMap<String, Integer>();
-    private static Map<String, Integer> maxStreaks = new HashMap<String, Integer>();
-    private static Map<String, Integer> eloScore = new HashMap<String, Integer>();
+    private static Map<String, Integer> kills = new HashMap<>();
+    private static Map<String, Integer> deaths = new HashMap<>();
+    private static Map<String, Integer> streaks = new HashMap<>();
+    private static Map<String, Integer> maxStreaks = new HashMap<>();
+    private static Map<String, Integer> eloScore = new HashMap<>();
 
     private PVPData() {
     }

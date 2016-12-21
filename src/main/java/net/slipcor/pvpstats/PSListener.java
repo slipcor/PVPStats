@@ -25,8 +25,8 @@ public class PSListener implements Listener {
 
     private final Debug DEBUG = new Debug(3);
 
-    private final Map<String, String> lastKill = new HashMap<String, String>();
-    private final Map<String, BukkitTask> killTask = new HashMap<String, BukkitTask>();
+    private final Map<String, String> lastKill = new HashMap<>();
+    private final Map<String, BukkitTask> killTask = new HashMap<>();
 
     public PSListener(final PVPStats instance) {
         this.plugin = instance;

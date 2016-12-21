@@ -80,8 +80,7 @@ public class MySQLConnection {
     public boolean connect(boolean printerror) {
         try {
             this.databaseConnection = DriverManager.getConnection("jdbc:mysql://" + this.dbUrl + "?autoReconnect=true", this.dbUsername, this.dbPassword);
-            if (this.databaseConnection == null) return false;
-            return true;
+            return this.databaseConnection != null;
         } catch (SQLException e) {
             if (printerror) e.printStackTrace();
             return false;
@@ -112,7 +111,7 @@ public class MySQLConnection {
     /**
      * @param query    The Query to send to the SQL server.
      * @param modifies If the Query modifies the database, set this to true. If not, set this to false
-     * @return If {@value modifies} is true, returns a valid ResultSet obtained from the Query. If {@value modifies} is false, returns null.
+     * @return If {@code modifies} is true, returns a valid ResultSet obtained from the Query. If {@code modifies} is false, returns null.
      * @throws SQLException if the Query had an error or there was not a valid connection.
      */
     public ResultSet executeQuery(final String query, final boolean modifies) throws SQLException {
@@ -192,7 +191,7 @@ public class MySQLConnection {
         String format = "SELECT * FROM `$DB`.`$TABLE`;";
         ResultSet set = executeQuery(format.replace("$DB", database).replace("$TABLE", table), false);
         int count = set.getMetaData().getColumnCount();
-        ArrayList<String> columns = new ArrayList<String>();
+        ArrayList<String> columns = new ArrayList<>();
         for (int i = 1; i <= count; i++) {
             columns.add(set.getMetaData().getColumnName(i));
         }
@@ -207,7 +206,7 @@ public class MySQLConnection {
     public String[] getTables(String database) throws SQLException {
         String format = "SELECT `TABLE_NAME` FROM `information_schema`.`TABLES` WHERE TABLE_SCHEMA='$DB';";
         ResultSet set = executeQuery(format.replace("$DB", database), false);
-        ArrayList<String> tables = new ArrayList<String>();
+        ArrayList<String> tables = new ArrayList<>();
         while (set.next()) {
             tables.add(set.getString(1));
         }
@@ -227,13 +226,13 @@ public class MySQLConnection {
     /**
      * @param onlyAdded determines whether or not the method will get all databases or if the method should
      *                  exclude the databases that are included with the MySQL installation.
-     * @return A String array of all databases. If {@value onlyAdded} is true, returns all databases. If {@value onlyAdded} is false,
+     * @return A String array of all databases. If {@code onlyAdded} is true, returns all databases. If {@code onlyAdded} is false,
      * returns all databases excluding those that are included with the MySQL installation.
      * @throws SQLException
      */
     public String[] getDatabases(boolean onlyAdded) throws SQLException {
         ResultSet set = executeQuery("SHOW DATABASES;", false);
-        ArrayList<String> databases = new ArrayList<String>();
+        ArrayList<String> databases = new ArrayList<>();
         while (set.next()) {
             String database = set.getString(1);
             if (onlyAdded) {
