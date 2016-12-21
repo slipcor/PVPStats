@@ -149,9 +149,6 @@ public final class PSMySQL {
         try {
 
             switch (sort) {
-                case "KILLS":
-                    order = "kills";
-                    break;
                 case "DEATHS":
                     order = "deaths";
                     break;
@@ -164,9 +161,8 @@ public final class PSMySQL {
                 case "ELO":
                     order = "elo";
                     break;
+                case "KILLS":
                 case "K-D":
-                    order = "kills";
-                    break;
                 default:
                     order = "kills";
                     break;
@@ -188,17 +184,9 @@ public final class PSMySQL {
             while (result != null && result.next()) {
                 switch (sort) {
                     case "KILLS":
-                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                        break;
                     case "DEATHS":
-                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                        break;
                     case "ELO":
-                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                        break;
                     case "STREAK":
-                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
-                        break;
                     case "CURRENTSTREAK":
                         sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
                         break;
