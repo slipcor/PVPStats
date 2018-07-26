@@ -34,6 +34,7 @@ public class PVPStats extends JavaPlugin {
     protected String dbDatabase = null;
     protected String dbTable = null;
     protected String dbKillTable = null;
+    protected String dbOptions = "?autoReconnect=true";
     protected int dbPort = 3306;
 
     private final PSListener entityListener = new PSListener(this);
@@ -437,6 +438,7 @@ public class PVPStats extends JavaPlugin {
             this.dbPass = getConfig().getString("MySQLpass", "");
             this.dbDatabase = getConfig().getString("MySQLdb", "");
             this.dbTable = getConfig().getString("MySQLtable", "pvpstats");
+            this.dbOptions = getConfig().getString("MySQLoptions", "?autoReconnect=true");
 
             if (getConfig().getBoolean("collectprecise")) {
                 this.dbKillTable = getConfig().getString("MySQLkilltable", "pvpkillstats");
@@ -462,8 +464,8 @@ public class PVPStats extends JavaPlugin {
         if (this.mySQL) {
             // Declare MySQL Handler
             try {
-                sqlHandler = new lib.JesiKat.SQL.MySQLConnection(dbTable, dbHost, dbPort, dbDatabase, dbUser,
-                        dbPass);
+                sqlHandler = new lib.JesiKat.SQL.MySQLConnection(dbHost, dbPort, dbDatabase, dbUser,
+                        dbPass, dbOptions);
             } catch (InstantiationException | ClassNotFoundException | IllegalAccessException e1) {
                 e1.printStackTrace();
             }
