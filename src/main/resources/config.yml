@@ -13,6 +13,7 @@ MySQLdb: db
 MySQLport: 3306
 MySQLtable: pvpstats
 MySQLkilltable: pvpkillstats
+MySQLoptions: '?autoReconnect=true'
 
 PVPArena: false
 checkabuse: true

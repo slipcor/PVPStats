@@ -1,3 +1,4 @@
+v0.8.33 - allow SQL servers to auto reconnect
 v0.8.32 - thanks to ChrisLane for some cleanup! And some tracker additions for the future
 v0.8.31 - add debugging /pvpstats debug off|on
 v0.8.30 - priorize correct player name input over name LIKE that
