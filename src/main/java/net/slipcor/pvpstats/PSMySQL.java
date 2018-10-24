@@ -104,6 +104,11 @@ public final class PSMySQL {
                     + sPlayer + "', '" + pid + "', " + kills + ", " + deaths + ", " + kills + ", " + kills + ", " + elo + ", " + System.currentTimeMillis() / 1000 + ")");
             PVPData.setKills(sPlayer, kills);
             PVPData.setDeaths(sPlayer, deaths);
+
+            if (plugin.dbKillTable != null) {
+                mysqlQuery("INSERT INTO " + plugin.dbKillTable + " (`name`,`uid`,`kill`,`time`) VALUES(" +
+                        "'" + sPlayer + "', '" + pid + "', '" + (kill ? 1 : 0) + "', " + System.currentTimeMillis() / 1000 + ")");
+            }
             return;
         }
         final String var = kill ? "kills" : "deaths";
