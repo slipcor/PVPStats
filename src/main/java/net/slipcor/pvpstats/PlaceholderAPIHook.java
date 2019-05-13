@@ -1,16 +1,36 @@
 package net.slipcor.pvpstats;
 
-import me.clip.placeholderapi.external.EZPlaceholderHook;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 /**
  * Created by Yaël on 27/02/2016.
+ * Updated with code by extendedclip on 15/05/2019
  */
-public class PlaceholderAPIHook extends EZPlaceholderHook {
+public class PlaceholderAPIHook extends PlaceholderExpansion {
+    @Override
+    public String getIdentifier() {
+        return "slipcorpvpstats";
+    }
 
-    public PlaceholderAPIHook(Plugin plugin, String placeholderName) {
-        super(plugin, placeholderName);
+    @Override
+    public String getAuthor() {
+        return "SLiPCoR";
+    }
+
+    @Override
+    public String getPlugin() {
+        return null;
+    }
+
+    @Override
+    public String getVersion() {
+        return "0.0.1";
+    }
+
+    @Override
+    public boolean persist() {
+        return true;
     }
 
     @Override

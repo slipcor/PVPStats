@@ -105,7 +105,7 @@ public class PVPStats extends JavaPlugin {
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             getLogger().info("PVPStats - PlaceholderAPI found.");
-            new PlaceholderAPIHook(getInstance(), "slipcorpvpstats").hook();
+            new PlaceholderAPIHook().register();
         }
 
         Debug.load(this, Bukkit.getConsoleSender());
