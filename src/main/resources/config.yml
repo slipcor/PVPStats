@@ -46,3 +46,6 @@ msg:
   - '&cRatio: &7%r'
   - '&cStreak: &7%s'
   - '&cMax Streak: &7%m'
+update:
+  mode: both
+  type: beta

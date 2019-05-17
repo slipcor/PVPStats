@@ -1,6 +1,5 @@
 package net.slipcor.pvpstats;
 
-import net.slipcor.pvpstats.Updater.UpdateResult;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,18 +34,7 @@ public class PSListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerJoin(final PlayerJoinEvent event) {
         if (event.getPlayer().isOp() && plugin.getUpdater() != null) {
-
-            final UpdateResult test = plugin.getUpdater().getResult();
-
-            switch (test) {
-                case SUCCESS:
-                    plugin.sendPrefixed(event.getPlayer(), Language.MSG_UPDATED.toString());
-                    break;
-                case UPDATE_AVAILABLE:
-                    plugin.sendPrefixed(event.getPlayer(), Language.MSG_UPDATE.toString());
-                default:
-                    break;
-            }
+            plugin.getUpdater().message(event.getPlayer());
 
         }
         PSMySQL.initiatePlayer(event.getPlayer(), plugin.dbTable);

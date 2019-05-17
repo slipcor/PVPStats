@@ -20,6 +20,8 @@ public enum Language {
     INFO_RATIO("info.ratio", "Ratio"),
     INFO_ELO("info.helo", "Elo"),
     INFO_PLAYERNOTFOUND("info.playernotfound", "Player not found: %0%"),
+    LOG_UPDATE_DISABLED("log.updatedisabled", "Updates deactivated. Please check mpcspigot.org for updates"),
+    LOG_UPDATE_ENABLED("log.updateenabled", "Checking for updates..."),
     MSG_CLEANED("msg.cleaned", "Statistics successfully cleaned up! %0% entries removed!"),
     MSG_ELO_ADDED("msg.elo.added", "You got %0% ELO points! Your score is now: %1%"),
     MSG_ELO_SUBBED("msg.elo.subbed", "You lost %0% ELO points! Your score is now: %1%"),

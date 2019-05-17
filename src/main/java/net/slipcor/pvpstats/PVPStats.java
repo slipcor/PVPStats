@@ -78,14 +78,7 @@ public class PVPStats extends JavaPlugin {
             }
         }
 
-        if (getConfig().getBoolean("updatecheck", true)) {
-
-            if (getConfig().getBoolean("autodownload", true)) {
-                updater = new Updater(this, 32908, this.getFile(), UpdateType.NO_DOWNLOAD, false);
-            } else {
-                updater = new Updater(this, 32908, this.getFile(), UpdateType.DEFAULT, false);
-            }
-        }
+        updater = new Updater(this, getFile());
 
         loadLanguage();
 

@@ -1,3 +1,4 @@
+v1.0.0 - build against 1.13 API, use my own updater, remove UUID updating. It's been years.
 v0.8.36 - use correct placeholder ID
 v0.8.35 - update PlaceholderAPI hook. One year late to the party
 v0.8.34 - try addressing an issue with killstats - thanks to Ken for the help!
