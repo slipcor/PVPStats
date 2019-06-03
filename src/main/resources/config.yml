@@ -15,6 +15,11 @@ MySQLtable: pvpstats
 MySQLkilltable: pvpkillstats
 MySQLoptions: '?autoReconnect=true'
 
+SQLite: false
+SQLitefile: database
+SQLitetable: pvpstats
+SQLitekilltable: pvpkillstats
+
 PVPArena: false
 checkabuse: true
 abuseseconds: -1

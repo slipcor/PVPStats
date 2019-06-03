@@ -1,5 +1,6 @@
 package net.slipcor.pvpstats;
 
+import net.slipcor.pvpstats.impl.SQLiteConnection;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -28,35 +29,6 @@ public final class PSMySQL {
     private static PVPStats plugin = null;
 
     private static final Debug DEBUG = new Debug(4);
-
-    private static void mysqlQuery(final String query) {
-        if (plugin.mySQL) {
-            try {
-                plugin.sqlHandler.executeQuery(query, true);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static boolean mysqlExists(final String query) {
-        ResultSet result = null;
-        if (plugin.mySQL) {
-            try {
-                result = plugin.sqlHandler.executeQuery(query, false);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                if (result != null && result.next()) {
-                    return true;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
 
     private static boolean incKill(final Player player, int elo) {
         if (player.hasPermission("pvpstats.count")) {
@@ -96,41 +68,31 @@ public final class PSMySQL {
 
     private static void checkAndDo(final String sPlayer, final UUID pid, final boolean kill, final boolean addMaxStreak, final int currentStreak, int elo) {
 
-        if (!mysqlExists("SELECT * FROM `" + plugin.dbTable + "` WHERE `uid` = '" + pid
-                + "';")) {
+        if (!plugin.sqlHandler.hasEntry(pid)) {
+
+
             final int kills = kill ? 1 : 0;
             final int deaths = kill ? 0 : 1;
-            mysqlQuery("INSERT INTO `" + plugin.dbTable + "` (`name`, `uid`, `kills`,`deaths`,`streak`,`currentstreak`,`elo`,`time`) VALUES ('"
-                    + sPlayer + "', '" + pid + "', " + kills + ", " + deaths + ", " + kills + ", " + kills + ", " + elo + ", " + System.currentTimeMillis() / 1000 + ")");
+
+            plugin.sqlHandler.addFirstStat(sPlayer, pid, kills, deaths, elo);
+
             PVPData.setKills(sPlayer, kills);
             PVPData.setDeaths(sPlayer, deaths);
 
-            if (plugin.dbKillTable != null) {
-                mysqlQuery("INSERT INTO " + plugin.dbKillTable + " (`name`,`uid`,`kill`,`time`) VALUES(" +
-                        "'" + sPlayer + "', '" + pid + "', '" + (kill ? 1 : 0) + "', " + System.currentTimeMillis() / 1000 + ")");
-            }
+            plugin.sqlHandler.addKill(sPlayer, pid, kill);
+
             return;
         }
-        final String var = kill ? "kills" : "deaths";
-        mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `" + var + "` = `" + var
-                + "`+1, `elo` = '" + elo + "', `time` = " + System.currentTimeMillis() / 1000 + " WHERE `uid` = '" + pid + "'");
 
         if (addMaxStreak && kill) {
-            mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `streak` = `streak`+1, `currentstreak` = `currentstreak`+1, `time` = " +
-                    System.currentTimeMillis() / 1000 + " WHERE `uid` = '" + pid + "'");
+            plugin.sqlHandler.increaseKillsAndMaxStreak(pid, elo);
         } else if (kill) {
-            mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `currentstreak` = `currentstreak`+1, `time` = " +
-                    System.currentTimeMillis() / 1000 + " WHERE `uid` = '" + pid + "'");
+            plugin.sqlHandler.increaseKillsAndStreak(pid, elo);
         } else {
-            mysqlQuery("UPDATE `" + plugin.dbTable + "` SET `currentstreak` = 0, `time` = " +
-                    System.currentTimeMillis() / 1000 + " WHERE `uid` = '" + pid + "'");
+            plugin.sqlHandler.increaseDeaths(pid, elo);
         }
 
-        if (plugin.dbKillTable != null) {
-            mysqlQuery("INSERT INTO " + plugin.dbKillTable + " (`name`,`uid`,`kill`,`time`) VALUES(" +
-                    "'" + sPlayer + "', '" + pid + "', '" + (kill ? 1 : 0) + "', " + System.currentTimeMillis() / 1000 + ")");
-        }
-
+        plugin.sqlHandler.addKill(sPlayer, pid, kill);
     }
 
     /**
@@ -139,8 +101,8 @@ public final class PSMySQL {
      * @return a sorted array
      */
     public static String[] top(final int count, String sort) {
-        if (!plugin.mySQL) {
-            plugin.getLogger().severe("MySQL is not set!");
+        if (!plugin.connection) {
+            plugin.getLogger().severe("Database is not connected!");
             return null;
         }
 
@@ -175,13 +137,7 @@ public final class PSMySQL {
 
             int limit = sort.equals("K-D") ? 50 : count;
 
-            String sorting = sort.equals("DEATHS") ? "ASC" : "DESC";
-
-            String query = "SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`,`elo` FROM `" +
-                    plugin.dbTable + "` WHERE 1 ORDER BY `" + order + "` " + sorting + " LIMIT " + limit + ";";
-
-            result = plugin.sqlHandler
-                    .executeQuery(query, false);
+            result = plugin.sqlHandler.getTopSorted(limit, order, sort.equals("DEATHS"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -339,18 +295,16 @@ public final class PSMySQL {
      * @return the player info
      */
     public static String[] info(final String string) {
-        if (!plugin.mySQL) {
-            plugin.getLogger().severe("MySQL is not set!");
+        if (!plugin.connection) {
+            plugin.getLogger().severe("Database is not connected!");
             return null;
         }
         DEBUG.i("getting info for " + string);
         ResultSet result = null;
         try {
-            result = plugin.sqlHandler
-                    .executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + plugin.dbTable + "` WHERE `name` = '" + string + "' LIMIT 1;", false);
+            result = plugin.sqlHandler.getStatsExact(string);
             if (result == null || !result.next()) {
-                result = plugin.sqlHandler
-                        .executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + plugin.dbTable + "` WHERE `name` LIKE '%" + string + "%' LIMIT 1;", false);
+                result = plugin.sqlHandler.getStatsLike(string);
                 if (result == null || !result.next()) {
                     String[] output = new String[1];
                     output[0] = Language.INFO_PLAYERNOTFOUND.toString(string);
@@ -441,17 +395,15 @@ public final class PSMySQL {
             throw new IllegalArgumentException("entry can not be '" + entry + "'. Valid values: elo, kills, deaths, streak, currentstreak");
         }
 
-        if (!plugin.mySQL) {
-            plugin.getLogger().severe("MySQL is not set!");
+        if (!plugin.connection) {
+            plugin.getLogger().severe("Database is not connected!");
             return null;
         }
         ResultSet result = null;
         try {
-            result = plugin.sqlHandler
-                    .executeQuery("SELECT `" + entry + "` FROM `" + plugin.dbTable + "` WHERE `name` = '" + player + "' LIMIT 1;", false);
+            result = plugin.sqlHandler.getStatExact(entry, player);
             if (result == null || !result.next()) {
-                result = plugin.sqlHandler
-                        .executeQuery("SELECT `" + entry + "` FROM `" + plugin.dbTable + "` WHERE `name` LIKE '%" + player + "%' LIMIT 1;", false);
+                result = plugin.sqlHandler.getStatLike(entry, player);
                 if (result == null || !result.next()) {
                     return 0;
                 }
@@ -475,28 +427,22 @@ public final class PSMySQL {
 
     public static void wipe(final String name) {
         if (name == null) {
-            mysqlQuery("DELETE FROM `" + plugin.dbTable + "` WHERE 1;");
-            if (plugin.dbKillTable != null) {
-                mysqlQuery("DELETE FROM `" + plugin.dbKillTable + "` WHERE 1;");
-            }
+            plugin.sqlHandler.deleteStats();
+            plugin.sqlHandler.deleteKills();
         } else {
             PVPData.setDeaths(name, 0);
             PVPData.setKills(name, 0);
             PVPData.setMaxStreak(name, 0);
             PVPData.setStreak(name, 0);
 
-            mysqlQuery("DELETE FROM `" + plugin.dbTable + "` WHERE `name` = '" + name
-                    + "';");
-            if (plugin.dbKillTable != null) {
-                mysqlQuery("DELETE FROM `" + plugin.dbKillTable + "` WHERE `name` = '" + name
-                        + "';");
-            }
+            plugin.sqlHandler.deleteStatsByName(name);
+            plugin.sqlHandler.deleteKillsByName(name);
         }
     }
 
     public static int purgeStats(int days) {
-        if (!plugin.mySQL) {
-            plugin.getLogger().severe("MySQL is not set!");
+        if (!plugin.connection) {
+            plugin.getLogger().severe("Database is not connected!");
             return 0;
         }
         ResultSet result;
@@ -506,21 +452,7 @@ public final class PSMySQL {
         long timestamp = System.currentTimeMillis()/1000 - ((long) days * 24L * 60L * 60L);
 
         try {
-
-            result = plugin.sqlHandler
-                    .executeQuery("SELECT `time` FROM `" + plugin.dbTable + "` WHERE `time` < "+timestamp+";", false);
-
-            while (result != null && result.next()) {
-                count++;
-            }
-
-            if (count > 0) {
-                StringBuilder buff = new StringBuilder("DELETE FROM `");
-                buff.append(plugin.dbTable);
-                buff.append("` WHERE `time` < "+timestamp+";");
-
-                mysqlQuery(buff.toString());
-            }
+            plugin.sqlHandler.deleteStatsOlderThan(timestamp);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -529,32 +461,17 @@ public final class PSMySQL {
     }
 
     public static int purgeKillStats(int days) {
-        if (!plugin.mySQL) {
-            plugin.getLogger().severe("MySQL is not set!");
+        if (!plugin.connection) {
+            plugin.getLogger().severe("Database is not connected!");
             return 0;
         }
-        ResultSet result;
 
         int count = 0;
 
         long timestamp = System.currentTimeMillis()/1000 - ((long) days * 24L * 60L * 60L);
 
         try {
-
-            result = plugin.sqlHandler
-                    .executeQuery("SELECT `time` FROM `" + plugin.dbKillTable + "` WHERE `time` < "+timestamp+";", false);
-
-            while (result != null && result.next()) {
-                count++;
-            }
-
-            if (count > 0) {
-                StringBuilder buff = new StringBuilder("DELETE FROM `");
-                buff.append(plugin.dbKillTable);
-                buff.append("` WHERE `time` < "+timestamp+";");
-
-                mysqlQuery(buff.toString());
-            }
+            plugin.sqlHandler.deleteKillsOlderThan(timestamp);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -563,8 +480,8 @@ public final class PSMySQL {
     }
 
     public static int clean() {
-        if (!plugin.mySQL) {
-            plugin.getLogger().severe("MySQL is not set!");
+        if (!plugin.connection) {
+            plugin.getLogger().severe("Database is not connected!");
             return 0;
         }
         ResultSet result;
@@ -574,14 +491,13 @@ public final class PSMySQL {
 
         try {
 
-            result = plugin.sqlHandler
-                    .executeQuery("SELECT `id`, `name` FROM `" + plugin.dbTable + "` WHERE 1 ORDER BY `kills` DESC;", false);
+            result = plugin.sqlHandler.getStatsIDsAndNames();
 
             while (result != null && result.next()) {
                 String playerName = result.getString("name");
 
                 if (players.containsKey(playerName)) {
-                    ints.add(result.getInt("id"));
+                    ints.add(result.getInt(1));
                     players.put(playerName, players.get(playerName) + 1);
                 } else {
                     players.put(playerName, 1);
@@ -589,23 +505,7 @@ public final class PSMySQL {
             }
 
             if (ints.size() > 0) {
-                StringBuilder buff = new StringBuilder("DELETE FROM `");
-                buff.append(plugin.dbTable);
-                buff.append("` WHERE `id` IN (");
-
-                boolean first = true;
-
-                for (Integer i : ints) {
-                    if (!first) {
-                        buff.append(',');
-                    }
-                    first = false;
-                    buff.append(i);
-                }
-
-                buff.append(");");
-
-                mysqlQuery(buff.toString());
+                plugin.sqlHandler.deleteStatsByIDs(ints);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -617,8 +517,8 @@ public final class PSMySQL {
     }
 
     public static List<String> getAllPlayers(String dbTable) {
-        if (!plugin.mySQL) {
-            plugin.getLogger().severe("MySQL is not set!");
+        if (!plugin.connection) {
+            plugin.getLogger().severe("Database is not connected!");
             return null;
         }
         List<String> output = new ArrayList<>();
@@ -626,8 +526,7 @@ public final class PSMySQL {
         ResultSet result = null;
 
         try {
-            result = plugin.sqlHandler
-                    .executeQuery("SELECT `name` FROM `" + dbTable + "` GROUP BY `name`;", false);
+            result = plugin.sqlHandler.getStatsNames();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -642,10 +541,14 @@ public final class PSMySQL {
         return output;
     }
 
+    @Deprecated
+    /**
+     * Migration to UUIDs should be done - this method will be removed
+     */
     public static void commit(String dbTable, Map<String, UUID> map) {
 
         for (Entry<String, UUID> set : map.entrySet()) {
-            mysqlQuery("UPDATE `" + dbTable + "` SET `uid` = '" + set.getValue() + "' WHERE `name` = '" + set.getKey() + "';");
+            plugin.sqlHandler.customQuery("UPDATE `" + dbTable + "` SET `uid` = '" + set.getValue() + "' WHERE `name` = '" + set.getKey() + "';");
         }
     }
 
@@ -735,8 +638,7 @@ public final class PSMySQL {
         if (getAllPlayers(dbTable).contains(player.getName())) {
 
             try {
-                result = plugin.sqlHandler
-                        .executeQuery("SELECT `uid` FROM `" + dbTable + "` WHERE `name` = '" + player.getName() + "';", false);
+                result = plugin.sqlHandler.getStatUIDFromPlayer(player);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -744,7 +646,7 @@ public final class PSMySQL {
                 while (result != null && result.next()) {
                     String value = result.getString("uid");
                     if (value == null || value.equals("")) {
-                        plugin.sqlHandler.executeQuery("UPDATE `" + dbTable + "` SET `uid` = '" + player.getUniqueId() + "' WHERE `name` = '" + player.getName() + "';", true);
+                        plugin.sqlHandler.setStatUIDByPlayer(player);
                     }
                 }
             } catch (SQLException e) {

@@ -1,6 +1,5 @@
 package net.slipcor.pvpstats;
 
-import net.slipcor.pvparena.PVPArena;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -94,7 +93,7 @@ public class Updater extends Thread {
         } else {
             instances.clear();
             type = UpdateType.getBySetting(plugin.getConfig().getString("update.type", "beta"));
-            instances.add(new UpdateInstance("pvparena"));
+            instances.add(new UpdateInstance("pvpstats"));
             start();
         }
     }
@@ -273,7 +272,7 @@ public class Updater extends Thread {
                             player.sendMessage("The plugin has been updated, please restart the server!");
                         }
                     }
-                    Bukkit.getScheduler().runTaskLater(PVPArena.instance, new RunLater(), 60L);
+                    Bukkit.getScheduler().runTaskLater(PVPStats.getInstance(), new RunLater(), 60L);
                 }
             } else {
                 if (mode != UpdateMode.DOWNLOAD || (!( player instanceof Player))) {

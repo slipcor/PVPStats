@@ -1,3 +1,4 @@
+v1.1.0 - add SQLite support - use with caution!
 v1.0.0 - build against 1.13 API, use my own updater, remove UUID updating. It's been years.
 v0.8.36 - use correct placeholder ID
 v0.8.35 - update PlaceholderAPI hook. One year late to the party

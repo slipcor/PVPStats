@@ -1,6 +1,8 @@
 package net.slipcor.pvpstats;
 
-import net.slipcor.pvpstats.Updater.UpdateType;
+import net.slipcor.pvpstats.api.DatabaseConnection;
+import net.slipcor.pvpstats.impl.MySQLConnection;
+import net.slipcor.pvpstats.impl.SQLiteConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -23,23 +25,27 @@ import java.util.List;
  */
 
 public class PVPStats extends JavaPlugin {
-    protected Plugin paHandler = null;
-    protected lib.JesiKat.SQL.MySQLConnection sqlHandler; // MySQL handler
+    Plugin paHandler = null;
+    DatabaseConnection sqlHandler; // MySQL handler
 
     // Settings Variables
-    protected Boolean mySQL = false;
-    protected String dbHost = null;
-    protected String dbUser = null;
-    protected String dbPass = null;
-    protected String dbDatabase = null;
-    protected String dbTable = null;
-    protected String dbKillTable = null;
-    protected String dbOptions = "?autoReconnect=true";
-    protected int dbPort = 3306;
+    boolean connection = false;
+
+    private boolean mySQL = false;
+    private boolean SQLite = false;
+    private boolean flatFile = false;
+
+    private String dbHost = null;
+    private String dbUser = null;
+    private String dbPass = null;
+    private String dbDatabase = null;
+    private String dbTable = null;
+    private String dbKillTable = null;
+    private String dbOptions = "?autoReconnect=true";
+    private int dbPort = 3306;
 
     private final PSListener entityListener = new PSListener(this);
-    protected final PSPAListener paListener = new PSPAListener(this);
-    private PSPAPluginListener paPluginListener;
+    final PSPAListener paListener = new PSPAListener(this);
 
     private Updater updater = null;
     private static PVPStats instance;
@@ -62,8 +68,9 @@ public class PVPStats extends JavaPlugin {
         getServer().getPluginManager().registerEvents(entityListener, this);
 
         loadConfig();
-        if(!this.mySQL) {
-            getLogger().severe("MySQL disabled, plugin DISABLED!");
+
+        if(!this.connection) {
+            getLogger().severe("Database not connected, plugin DISABLED!");
             getServer().getPluginManager().disablePlugin(this);
             return; //to ensure the rest of the plugins code is not executed as this can lead to problems.
         }
@@ -73,7 +80,7 @@ public class PVPStats extends JavaPlugin {
             if (getServer().getPluginManager().isPluginEnabled("pvparena")) {
                 getServer().getPluginManager().registerEvents(paListener, this);
             } else {
-                paPluginListener = new PSPAPluginListener(this);
+                PSPAPluginListener paPluginListener = new PSPAPluginListener(this);
                 getServer().getPluginManager().registerEvents(paPluginListener, this);
             }
         }
@@ -425,7 +432,7 @@ public class PVPStats extends JavaPlugin {
 
         // get variables from settings handler
         if (getConfig().getBoolean("MySQL", false)) {
-            this.mySQL = getConfig().getBoolean("MySQL", false);
+            this.mySQL = true;
             this.dbHost = getConfig().getString("MySQLhost", "");
             this.dbUser = getConfig().getString("MySQLuser", "");
             this.dbPass = getConfig().getString("MySQLpass", "");
@@ -438,6 +445,14 @@ public class PVPStats extends JavaPlugin {
             }
 
             this.dbPort = getConfig().getInt("MySQLport", 3306);
+        } else if (getConfig().getBoolean("SQLite", false)) {
+            this.SQLite = true;
+            this.dbDatabase = getConfig().getString("SQLitefile", "");
+
+            this.dbTable = getConfig().getString("SQLitetable", "pvpstats");
+            if (getConfig().getBoolean("collectprecise")) {
+                this.dbKillTable = getConfig().getString("SQLitekilltable", "pvpkillstats");
+            }
         }
 
         // Check Settings
@@ -451,127 +466,56 @@ public class PVPStats extends JavaPlugin {
             } else if (this.dbDatabase.equals("")) {
                 this.mySQL = false;
             }
+        } else if (this.SQLite) {
+            dbDatabase = getConfig().getString("SQLitefile", "");
+            if (this.dbDatabase.equals("")) {
+                this.SQLite = false;
+            }
         }
 
         // Enabled SQL/MySQL
         if (this.mySQL) {
             // Declare MySQL Handler
+            getLogger().info("Database: mySQL");
             try {
-                sqlHandler = new lib.JesiKat.SQL.MySQLConnection(dbHost, dbPort, dbDatabase, dbUser,
-                        dbPass, dbOptions);
+                sqlHandler = new MySQLConnection(dbHost, dbPort, dbDatabase, dbUser,
+                        dbPass, dbOptions, dbTable, dbKillTable);
             } catch (InstantiationException | ClassNotFoundException | IllegalAccessException e1) {
                 e1.printStackTrace();
             }
+        } else if (this.SQLite) {
+            getLogger().info("Database: SQLite");
+            sqlHandler = new SQLiteConnection(dbDatabase, dbTable, dbKillTable);
+        } else {
+            getLogger().info("Database: YML");
+            // default to flatfile
+        }
 
-            getLogger().info("MySQL Initializing");
-            // Initialize MySQL Handler
 
-            if (sqlHandler.connect(true)) {
-                getLogger().info("MySQL connection successful");
-                // Check if the tables exist, if not, create them
-                if (!sqlHandler.tableExists(dbDatabase, dbTable)) {
-                    // normal table doesnt exist, create both
 
-                    getLogger().info("Creating table " + dbTable);
-                    final String query = "CREATE TABLE `" + dbTable + "` ( " +
-                            "`id` int(5) NOT NULL AUTO_INCREMENT, " +
-                            "`name` varchar(42) NOT NULL, " +
-                            "`uid` varchar(42), " +
-                            "`kills` int(8) not null default 0, " +
-                            "`deaths` int(8) not null default 0, " +
-                            "`streak` int(8) not null default 0, " +
-                            "`currentstreak` int(8) not null default 0, " +
-                            "`elo` int(8) not null default 0, " +
-                            "`time` int(16) not null default 0, " +
-                            "PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
-                    try {
-                        sqlHandler.executeQuery(query, true);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+        getLogger().info("Database Initializing");
+        // Initialize MySQL Handler
 
-                    if (dbKillTable != null) {
+        if (sqlHandler != null && sqlHandler.connect(true)) {
+            getLogger().info("Database connection successful");
+            connection = true;
+            // Check if the tables exist, if not, create them
+            if (!sqlHandler.tableExists(dbDatabase, dbTable)) {
+                // normal table doesnt exist, create both
 
-                        getLogger().info("Creating table " + dbKillTable);
-                        final String query2 = "CREATE TABLE `" + dbKillTable + "` ( " +
-                                "`id` int(16) NOT NULL AUTO_INCREMENT, " +
-                                "`name` varchar(42) NOT NULL, " +
-                                "`uid` varchar(42), " +
-                                "`kill` int(1) not null default 0, " +
-                                "`time` int(16) not null default 0, " +
-                                "PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
-                        try {
-                            sqlHandler.executeQuery(query2, true);
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } else {
-                    // normal exists, do we need to update?
-                    try {
-                        List<String> columns = Arrays.asList(sqlHandler.getColumns(dbDatabase, dbTable));
+                getLogger().info("Creating table " + dbTable);
+                sqlHandler.createStatsTable(true);
 
-                        if (!columns.contains("elo")) {
-                            final String queryE = "ALTER TABLE `" + dbTable + "` ADD `elo` int(8) not null default 0; ";
-                            final String queryF = "ALTER TABLE `" + dbTable + "` ADD `time` int(16) not null default 0; ";
-                            final String queryG = "ALTER TABLE `" + dbTable + "` ADD `currentstreak` int(8) not null default 0; ";
-                            try {
-                                sqlHandler.executeQuery(queryE, true);
-                                getLogger().info("Added 'elo' column to MySQL!");
-                                sqlHandler.executeQuery(queryF, true);
-                                getLogger().info("Added 'time' column to MySQL!");
-                            } catch (SQLException e2) {
-                                e2.printStackTrace();
-                            }
-                            //new UUIDUpdater(this, dbTable); // double check if we still don't need this
-                        } else if (!columns.contains("time")) {
-                            final String queryF = "ALTER TABLE `" + dbTable + "` ADD `time` int(16) not null default 0; ";
-                            final String queryG = "ALTER TABLE `" + dbTable + "` ADD `currentstreak` int(8) not null default 0; ";
-                            try {
-                                sqlHandler.executeQuery(queryF, true);
-                                getLogger().info("Added 'time' column to MySQL!");
-                                sqlHandler.executeQuery(queryG, true);
-                                getLogger().info("Added 'currentstreak' column to MySQL!");
-                            } catch (SQLException e2) {
-                                e2.printStackTrace();
-                            }
-                            //new UUIDUpdater(this, dbTable); // double check if we still don't need this
-                        } else if (!columns.contains("currentstreak")) {
-                            final String queryG = "ALTER TABLE `" + dbTable + "` ADD `currentstreak` int(8) not null default 0; ";
-                            try {
-                                sqlHandler.executeQuery(queryG, true);
-                                getLogger().info("Added 'currentstreak' column to MySQL!");
-                            } catch (SQLException e2) {
-                                e2.printStackTrace();
-                            }
-                            //new UUIDUpdater(this, dbTable); // double check if we still don't need this
-                        }
-                    } catch (SQLException e1) {
-                        e1.printStackTrace();
-                    }
-
-                    if (dbKillTable != null && !sqlHandler.tableExists(dbDatabase, dbKillTable)) {
-                        // second table doesnt exist, create that
-
-                        getLogger().info("Creating table " + dbKillTable);
-                        final String query = "CREATE TABLE `" + dbKillTable + "` ( " +
-                                "`id` int(16) NOT NULL AUTO_INCREMENT, " +
-                                "`name` varchar(42) NOT NULL, " +
-                                "`uid` varchar(42), " +
-                                "`kill` int(1) not null default 0, " +
-                                "`time` int(16) not null default 0, " +
-                                "PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
-                        try {
-                            sqlHandler.executeQuery(query, true);
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                if (dbKillTable != null) {
+                    getLogger().info("Creating table " + dbKillTable);
+                    sqlHandler.createKillStatsTable(true);
                 }
-            } else {
-                getLogger().severe("MySQL connection failed");
-                this.mySQL = false;
             }
+        } else {
+            getLogger().severe("Database connection failed");
+            this.mySQL = false;
+            this.SQLite = false;
+            this.flatFile = false;
         }
     }
 
