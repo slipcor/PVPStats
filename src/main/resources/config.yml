@@ -20,6 +20,9 @@ SQLitefile: database
 SQLitetable: pvpstats
 SQLitekilltable: pvpkillstats
 
+FlatFiletable: pvpstats
+FlatFilekilltable: pvpkillstats
+
 PVPArena: false
 checkabuse: true
 abuseseconds: -1

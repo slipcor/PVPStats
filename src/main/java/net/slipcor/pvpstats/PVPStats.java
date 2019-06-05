@@ -1,9 +1,12 @@
 package net.slipcor.pvpstats;
 
 import net.slipcor.pvpstats.api.DatabaseConnection;
+import net.slipcor.pvpstats.commands.*;
+import net.slipcor.pvpstats.impl.FlatFileConnection;
 import net.slipcor.pvpstats.impl.MySQLConnection;
 import net.slipcor.pvpstats.impl.SQLiteConnection;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,9 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * main class
@@ -26,6 +27,8 @@ import java.util.List;
 
 public class PVPStats extends JavaPlugin {
     Plugin paHandler = null;
+    final Map<String, AbstractCommand> commandMap = new HashMap<>();
+    final List<AbstractCommand> commandList = new ArrayList<>();
     DatabaseConnection sqlHandler; // MySQL handler
 
     // Settings Variables
@@ -33,7 +36,6 @@ public class PVPStats extends JavaPlugin {
 
     private boolean mySQL = false;
     private boolean SQLite = false;
-    private boolean flatFile = false;
 
     private String dbHost = null;
     private String dbUser = null;
@@ -68,6 +70,7 @@ public class PVPStats extends JavaPlugin {
         getServer().getPluginManager().registerEvents(entityListener, this);
 
         loadConfig();
+        loadCommands();
 
         if(!this.connection) {
             getLogger().severe("Database not connected, plugin DISABLED!");
@@ -113,7 +116,7 @@ public class PVPStats extends JavaPlugin {
         getLogger().info("enabled. (version " + pdfFile.getVersion() + ")");
     }
 
-    private void loadLanguage() {
+    public void loadLanguage() {
         final File langFile = new File(this.getDataFolder(), "lang.yml");
         if (!langFile.exists()) {
             try {
@@ -156,275 +159,48 @@ public class PVPStats extends JavaPlugin {
 
         DEBUG.i("onCommand!", sender);
 
-        if (args == null || args.length < 1 || !(args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("debug") || args[0].equalsIgnoreCase("wipe") || args[0].equalsIgnoreCase("cleanup") || args[0].equalsIgnoreCase("purge"))) {
-            if (!parsecommand(sender, args)) {
-                sender.sendMessage("/pvpstats - show your pvp stats");
-                sender.sendMessage("/pvpstats [player] - show player's pvp stats");
-                sender.sendMessage("/pvpstats [amount] - show the top [amount] players (K-D)");
-                if (sender.hasPermission("pvpstats.top")) {
-                    sender.sendMessage("/pvpstats top [amount] - show the top [amount] players (K-D)");
-                    sender.sendMessage("/pvpstats top [type] - show the top 10 players of the type");
-                    sender.sendMessage("/pvpstats top [type] [amount] - show the top [amount] players of the type");
-                }
-                if (sender.hasPermission("pvpstats.reload")) {
-                    sender.sendMessage("/pvpstats reload - reload the configs");
-                }
-                if (sender.hasPermission("pvpstats.cleanup")) {
-                    sender.sendMessage("/pvpstats cleanup - removes multi entries");
-                }
-                if (sender.hasPermission("pvpstats.purge")) {
-                    sender.sendMessage("/pvpstats purge [specific | standard | both] [amount] - remove kill entries older than [amount] days");
-                }
-                if (sender.hasPermission("pvpstats.debug")) {
-                    sender.sendMessage("/pvpstats debug [on | off] - enable or disable debugging");
-                }
-            }
+        final AbstractCommand acc = (args.length > 0) ? commandMap.get(args[0].toLowerCase()) : null;
+        if (acc != null) {
+            acc.commit(sender, args);
             return true;
         }
 
-        if (args[0].equalsIgnoreCase("wipe")) {
-            if (!sender.hasPermission("pvpstats.wipe")) {
-                sendPrefixed(sender, Language.MSG_NOPERMWIPE.toString());
-                return true;
-            }
-
-            if (args.length < 2) {
-                PSMySQL.wipe(null);
-                sendPrefixed(sender, Language.MSG_WIPED.toString());
-            } else {
-                PSMySQL.wipe(args[1]);
-                sendPrefixed(sender, Language.MSG_WIPED.toString(args[1]));
-            }
-
-            return true;
-        } else if (args[0].equalsIgnoreCase("cleanup")) {
-            if (!sender.hasPermission("pvpstats.cleanup")) {
-                sendPrefixed(sender, Language.MSG_NOPERMCLEANUP.toString());
-                return true;
-            }
-
-            final int count = PSMySQL.clean();
-            sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
-
-            return true;
-        } else if (args[0].equalsIgnoreCase("debug")) {
-            if (!sender.hasPermission("pvpstats.debug")) {
-                sendPrefixed(sender, Language.MSG_NOPERMDEBUG.toString());
-                return true;
-            }
-
-            if (args.length > 1) {
-                getConfig().set("debug", args[1]);
-            }
-
-            Debug.load(this, sender);
-
-            return true;
-        } else if (args[0].equalsIgnoreCase("purge")) {
-            if (!sender.hasPermission("pvpstats.purge")) {
-                sendPrefixed(sender, Language.MSG_NOPERMPURGE.toString());
-                return true;
-            }
-
-            int days = 30;
-
-            if (args.length > 2) {
-                try {
-                    days = Integer.parseInt(args[args.length - 1]);
-                } catch (Exception e) {
-
-                }
-            }
-
-            if (args.length > 1) {
-                if (args[1].equalsIgnoreCase("specific")) {
-                    final int count = PSMySQL.purgeKillStats(days);
-                    sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
-                } else if (args[1].equalsIgnoreCase("standard")) {
-                    final int count = PSMySQL.purgeStats(days);
-                    sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
-                } else if (args[1].equalsIgnoreCase("both")) {
-                    final int count = PSMySQL.purgeKillStats(days) + PSMySQL.purgeStats(days);
-                    sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
-                } else {
-                    sendPrefixed(sender, "/pvpstats purge [specific | standard | both] [days]");
-                }
-            } else {
-                sendPrefixed(sender, "/pvpstats purge [specific | standard | both] [days]");
-            }
-
+        if (args.length < 1) {
+            commandMap.get("show").commit(sender, new String[0]);
             return true;
         }
-
-        if (!sender.hasPermission("pvpstats.reload")) {
-            sendPrefixed(sender, Language.MSG_NOPERMRELOAD.toString());
-            return true;
-        }
-
-        this.reloadConfig();
-        loadConfig();
-        loadLanguage();
-        sendPrefixed(sender, Language.MSG_RELOADED.toString());
-
-        return true;
-    }
-
-    private boolean parsecommand(final CommandSender sender, final String[] args) {
-        if (args == null || args.length < 1) {
-
-            // /pvpstats - show your pvp stats
-
-            class TellLater implements Runnable {
-
-                @Override
-                public void run() {
-                    final String[] info = PSMySQL.info(sender.getName());
-                    sender.sendMessage(info);
-                }
-
-            }
-            Bukkit.getScheduler().runTaskAsynchronously(this, new TellLater());
-            return true;
-        }
-
-        if (args[0].equals("?") || args[0].equals("help")) {
-            return false;
-        }
-
-        int legacyTop = 0;
-
+        int legacy = 0;
         try {
-            legacyTop = Integer.parseInt(args[0]);
+            legacy = Integer.parseInt(args[0]);
         } catch (Exception e) {
-
         }
 
-        if (sender.hasPermission("pvpstats.top") && (args[0].equals("top") || legacyTop > 0)) {
-
-            if (args.length > 1) {
-                int amount = -1;
-
-                try {
-                    amount = Integer.parseInt(args[1]);
-                } catch (Exception e) {
-
-
-                    if (args.length > 2) {
-                        // /pvpstats top [type] [amount] - show the top [amount] players of the type
-                        try {
-                            amount = Integer.parseInt(args[2]);
-                        } catch (Exception e2) {
-                            amount = 10;
-                        }
-                    }
-
-                    //   /pvpstats top [type] - show the top 10 players of the type
-                    if (amount == -1) {
-                        amount = 10;
-                    }
-
-                    class RunLater implements Runnable {
-                        final String name;
-                        final int amount;
-
-                        RunLater(String name, int amount) {
-                            this.name = name;
-                            this.amount = amount;
-                        }
-
-                        @Override
-                        public void run() {
-                            String[] top = PSMySQL.top(amount, name);
-                            sender.sendMessage(Language.HEAD_LINE.toString());
-                            sender.sendMessage(Language.HEAD_HEADLINE.toString(
-                                    String.valueOf(amount),
-                                    Language.valueOf("HEAD_" + name).toString()));
-                            sender.sendMessage(Language.HEAD_LINE.toString());
-
-
-                            int pos = 1;
-                            for (String stat : top) {
-                                sender.sendMessage(pos++ + ": " + stat);
-                            }
-                        }
-
-                    }
-
-                    if (args[1].equals("kills")) {
-                        Bukkit.getScheduler().runTaskAsynchronously(this, new RunLater("KILLS", amount));
-                    } else if (args[1].equals("deaths")) {
-                        Bukkit.getScheduler().runTaskAsynchronously(this, new RunLater("DEATHS", amount));
-                    } else if (args[1].equals("streak")) {
-                        Bukkit.getScheduler().runTaskAsynchronously(this, new RunLater("STREAK", amount));
-                    } else if (args[1].equalsIgnoreCase("elo")) {
-                        Bukkit.getScheduler().runTaskAsynchronously(this, new RunLater("ELO", amount));
-                    } else {
-                        return false;
-                    }
-
-                    return true;
-                }
-                //   /pvpstats top [amount] - show the top [amount] players (K-D)
-                args[0] = args[1];
-                legacyTop = 1;
-            }
-
-            // /pvpstats [amount] - show the top [amount] players (K-D)
-            try {
-                int count = legacyTop == 0 ? 10 : Integer.parseInt(args[0]);
-                if (count > 20) {
-                    count = 20;
-                }
-                if (legacyTop == 0) {
-                    args[0] = String.valueOf(count);
-                }
-                class RunLater implements Runnable {
-                    int count;
-
-                    RunLater(int i) {
-                        count = i;
-                    }
-
-                    @Override
-                    public void run() {
-                        final String[] top = PSMySQL.top(count, "K-D");
-                        sender.sendMessage(Language.HEAD_LINE.toString());
-                        sender.sendMessage(Language.HEAD_HEADLINE.toString(
-                                args[0],
-                                Language.HEAD_RATIO.toString()));
-                        sender.sendMessage(Language.HEAD_LINE.toString());
-                        int pos = 1;
-                        for (String stat : top) {
-                            sender.sendMessage(String.valueOf(pos++) + ": " + stat);
-                        }
-                    }
-
-                }
-                Bukkit.getScheduler().runTaskAsynchronously(this, new RunLater(count));
-
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-
+        if (legacy > 0) {
+            commandMap.get("top").commit(sender, args);
+            return true;
         }
-        // /pvpstats [player] - show player's pvp stats
 
-        class TellLater implements Runnable {
-
-            @Override
-            public void run() {
-                final String[] info = PSMySQL.info(args[0]);
-                sender.sendMessage(info);
+        boolean found = false;
+        for (AbstractCommand command : commandList) {
+            if (command.hasPerms(sender)) {
+                sender.sendMessage(ChatColor.YELLOW + command.getShortInfo());
+                found = true;
             }
-
         }
-        Bukkit.getScheduler().runTaskAsynchronously(this, new TellLater());
-        return true;
+        return found;
     }
 
-    private void loadConfig() {
+    private void loadCommands() {
+        new CommandCleanup().load(commandList, commandMap);
+        new CommandDebug().load(commandList, commandMap);
+        new CommandPurge().load(commandList, commandMap);
+        new CommandShow().load(commandList, commandMap);
+        new CommandTop().load(commandList, commandMap);
+        new CommandReload().load(commandList, commandMap);
+        new CommandWipe().load(commandList, commandMap);
+    }
+
+    public void loadConfig() {
 
         getConfig().options().copyDefaults(true);
         saveConfig();
@@ -452,6 +228,11 @@ public class PVPStats extends JavaPlugin {
             this.dbTable = getConfig().getString("SQLitetable", "pvpstats");
             if (getConfig().getBoolean("collectprecise")) {
                 this.dbKillTable = getConfig().getString("SQLitekilltable", "pvpkillstats");
+            }
+        } else {
+            this.dbTable = getConfig().getString("FlatFiletable", "pvpstats");
+            if (getConfig().getBoolean("collectprecise")) {
+                this.dbKillTable = getConfig().getString("FlatFilekilltable", "pvpkillstats");
             }
         }
 
@@ -487,8 +268,9 @@ public class PVPStats extends JavaPlugin {
             getLogger().info("Database: SQLite");
             sqlHandler = new SQLiteConnection(dbDatabase, dbTable, dbKillTable);
         } else {
-            getLogger().info("Database: YML");
             // default to flatfile
+            getLogger().warning("Database: YML");
+            sqlHandler = new FlatFileConnection(dbTable, dbKillTable);
         }
 
 
@@ -515,11 +297,11 @@ public class PVPStats extends JavaPlugin {
             getLogger().severe("Database connection failed");
             this.mySQL = false;
             this.SQLite = false;
-            this.flatFile = false;
         }
     }
 
     public void onDisable() {
+        Debug.destroy();
         getLogger().info("disabled. (version " + getDescription().getVersion() + ")");
     }
 

@@ -1,10 +1,11 @@
 package net.slipcor.pvpstats.api;
 
+import net.slipcor.pvpstats.impl.PlayerStatistic;
 import org.bukkit.entity.Player;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface DatabaseConnection {
@@ -26,27 +27,27 @@ public interface DatabaseConnection {
 
     void createKillStatsTable(boolean printError);
 
-    ResultSet getTopSorted(int amount, String orderBy, boolean sorting) throws SQLException;
+    List<PlayerStatistic> getTopSorted(int amount, String orderBy, boolean sorting) throws SQLException;
 
-    ResultSet getStatsExact(String playerName) throws SQLException;
+    PlayerStatistic getStatsExact(String playerName) throws SQLException;
 
-    ResultSet getStatsLike(String playerName) throws SQLException;
+    PlayerStatistic getStatsLike(String playerName) throws SQLException;
 
-    ResultSet getStatExact(String stat, String playerName) throws SQLException;
+    int getStatExact(String stat, String playerName) throws SQLException;
 
-    ResultSet getStatLike(String stat, String playerName) throws SQLException;
+    int getStatLike(String stat, String playerName) throws SQLException;
 
-    void deleteKillsOlderThan(long timestamp) throws SQLException;
+    int deleteKillsOlderThan(long timestamp) throws SQLException;
 
-    void deleteStatsOlderThan(long timestamp) throws SQLException;
+    int deleteStatsOlderThan(long timestamp) throws SQLException;
 
-    ResultSet getStatsIDsAndNames() throws SQLException;
+    Map<Integer, String> getStatsIDsAndNames() throws SQLException;
 
     void deleteStatsByIDs(List<Integer> list) throws SQLException;
 
-    ResultSet getStatsNames() throws SQLException;
+    List<String> getStatsNames() throws SQLException;
 
-    ResultSet getStatUIDFromPlayer(Player player) throws SQLException;
+    String getStatUIDFromPlayer(Player player) throws SQLException;
 
     void setStatUIDByPlayer(Player player) throws SQLException;
 

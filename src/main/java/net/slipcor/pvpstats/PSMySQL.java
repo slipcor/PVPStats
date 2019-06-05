@@ -1,5 +1,6 @@
 package net.slipcor.pvpstats;
 
+import net.slipcor.pvpstats.impl.PlayerStatistic;
 import net.slipcor.pvpstats.impl.SQLiteConnection;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -70,6 +71,7 @@ public final class PSMySQL {
 
         if (!plugin.sqlHandler.hasEntry(pid)) {
 
+            DEBUG.i("player has no entry yet, adding!");
 
             final int kills = kill ? 1 : 0;
             final int deaths = kill ? 0 : 1;
@@ -85,13 +87,17 @@ public final class PSMySQL {
         }
 
         if (addMaxStreak && kill) {
+            DEBUG.i("increasing kills and max streak");
             plugin.sqlHandler.increaseKillsAndMaxStreak(pid, elo);
         } else if (kill) {
+            DEBUG.i("increasing kills and current streak");
             plugin.sqlHandler.increaseKillsAndStreak(pid, elo);
         } else {
+            DEBUG.i("increasing deaths");
             plugin.sqlHandler.increaseDeaths(pid, elo);
         }
 
+        DEBUG.i("adding Kill: " + kill);
         plugin.sqlHandler.addKill(sPlayer, pid, kill);
     }
 
@@ -107,7 +113,7 @@ public final class PSMySQL {
         }
 
         sort = sort.toUpperCase();
-        ResultSet result = null;
+        List<PlayerStatistic> result = null;
         final Map<String, Double> results = new HashMap<>();
 
         final List<String> sortedValues = new ArrayList<>();
@@ -135,33 +141,39 @@ public final class PSMySQL {
                     break;
             }
 
-            int limit = sort.equals("K-D") ? 50 : count;
+            int limit = sort.equals("K-D") ? Math.min(count, 50) : count;
 
             result = plugin.sqlHandler.getTopSorted(limit, order, sort.equals("DEATHS"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        try {
-            while (result != null && result.next()) {
+        if (result != null) {
+            for (PlayerStatistic entry : result) {
                 switch (sort) {
                     case "KILLS":
+                        sortedValues.add(ChatColor.RED + entry.getName() + ":" + ChatColor.GRAY + " " + entry.getKills());
+                        break;
                     case "DEATHS":
+                        sortedValues.add(ChatColor.RED + entry.getName() + ":" + ChatColor.GRAY + " " + entry.getDeaths());
+                        break;
                     case "ELO":
+                        sortedValues.add(ChatColor.RED + entry.getName() + ":" + ChatColor.GRAY + " " + entry.getELO());
+                        break;
                     case "STREAK":
+                        sortedValues.add(ChatColor.RED + entry.getName() + ":" + ChatColor.GRAY + " " + entry.getMaxStreak());
+                        break;
                     case "CURRENTSTREAK":
-                        sortedValues.add(ChatColor.RED + result.getString("name") + ":" + ChatColor.GRAY + " " + result.getInt(order));
+                        sortedValues.add(ChatColor.RED + entry.getName() + ":" + ChatColor.GRAY + " " + entry.getCurrentStreak());
                         break;
                     default:
                         results.put(
-                                result.getString("name"),
-                                calcResult(result.getInt("kills"),
-                                        result.getInt("deaths"),
-                                        result.getInt("streak"), PVPData.getStreak(result.getString("name"))));
+                                entry.getName(),
+                                calcResult(entry.getKills(),
+                                        entry.getDeaths(),
+                                        entry.getMaxStreak(), PVPData.getStreak(entry.getName())));
                         break;
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         if (sort.equals("KILLS") || sort.equals("DEATHS") || sort.equals("ELO") || sort.equals("STREAK") || sort.equals("CURRENTSTREAK")) {
             String[] output = new String[sortedValues.size()];
@@ -300,12 +312,12 @@ public final class PSMySQL {
             return null;
         }
         DEBUG.i("getting info for " + string);
-        ResultSet result = null;
+        PlayerStatistic result = null;
         try {
             result = plugin.sqlHandler.getStatsExact(string);
-            if (result == null || !result.next()) {
+            if (result == null) {
                 result = plugin.sqlHandler.getStatsLike(string);
-                if (result == null || !result.next()) {
+                if (result == null) {
                     String[] output = new String[1];
                     output[0] = Language.INFO_PLAYERNOTFOUND.toString(string);
                     return output;
@@ -314,65 +326,61 @@ public final class PSMySQL {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        String[] output = null;
-        try {
-            String name = result.getString("name");
+        String[] output;
+        String name = result.getName();
 
-            int elo = result.getInt("elo");
-            int kills = result.getInt("kills");
-            int deaths = result.getInt("deaths");
-            int streak = result.getInt("currentstreak");
-            int maxStreak = result.getInt("streak");
-            Double ratio = calcResult(kills, deaths, maxStreak, streak);
+        int elo = result.getELO();
+        int kills = result.getKills();
+        int deaths = result.getDeaths();
+        int streak = result.getCurrentStreak();
+        int maxStreak = result.getMaxStreak();
+        Double ratio = calcResult(kills, deaths, maxStreak, streak);
 
-            if (plugin.getConfig().getBoolean("msgoverrides")) {
-                List<String> lines = plugin.getConfig().getStringList("msg.main");
-                output = new String[lines.size()];
+        if (plugin.getConfig().getBoolean("msgoverrides")) {
+            List<String> lines = plugin.getConfig().getStringList("msg.main");
+            output = new String[lines.size()];
 
-                for (int i = 0; i < lines.size(); i++) {
-                    String line = lines.get(i);
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
 
-                    line = line.replace("%d", String.valueOf(deaths));
-                    line = line.replace("%k", String.valueOf(kills));
-                    line = line.replace("%m", String.valueOf(maxStreak));
-                    line = line.replace("%n", name);
-                    line = line.replace("%r", String.valueOf(ratio));
-                    line = line.replace("%s", String.valueOf(streak));
-                    line = line.replace("%e", String.valueOf(elo));
+                line = line.replace("%d", String.valueOf(deaths));
+                line = line.replace("%k", String.valueOf(kills));
+                line = line.replace("%m", String.valueOf(maxStreak));
+                line = line.replace("%n", name);
+                line = line.replace("%r", String.valueOf(ratio));
+                line = line.replace("%s", String.valueOf(streak));
+                line = line.replace("%e", String.valueOf(elo));
 
-                    output[i] = ChatColor.translateAlternateColorCodes('&', line);
-                }
-
-                return output;
+                output[i] = ChatColor.translateAlternateColorCodes('&', line);
             }
 
-
-            output = new String[7];
-
-            output[0] = Language.INFO_FORMAT.toString(
-                    Language.INFO_NAME.toString(),
-                    name);
-            output[1] = Language.INFO_FORMAT.toString(
-                    Language.INFO_KILLS.toString(),
-                    String.valueOf(kills));
-            output[2] = Language.INFO_FORMAT.toString(
-                    Language.INFO_DEATHS.toString(),
-                    String.valueOf(deaths));
-            output[3] = Language.INFO_FORMAT.toString(
-                    Language.INFO_RATIO.toString(),
-                    String.valueOf(ratio));
-            output[4] = Language.INFO_FORMAT.toString(
-                    Language.INFO_STREAK.toString(),
-                    String.valueOf(streak));
-            output[5] = Language.INFO_FORMAT.toString(
-                    Language.INFO_MAXSTREAK.toString(),
-                    String.valueOf(maxStreak));
-            output[6] = Language.INFO_FORMAT.toString(
-                    Language.INFO_ELO.toString(),
-                    String.valueOf(elo));
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return output;
         }
+
+
+        output = new String[7];
+
+        output[0] = Language.INFO_FORMAT.toString(
+                Language.INFO_NAME.toString(),
+                name);
+        output[1] = Language.INFO_FORMAT.toString(
+                Language.INFO_KILLS.toString(),
+                String.valueOf(kills));
+        output[2] = Language.INFO_FORMAT.toString(
+                Language.INFO_DEATHS.toString(),
+                String.valueOf(deaths));
+        output[3] = Language.INFO_FORMAT.toString(
+                Language.INFO_RATIO.toString(),
+                String.valueOf(ratio));
+        output[4] = Language.INFO_FORMAT.toString(
+                Language.INFO_STREAK.toString(),
+                String.valueOf(streak));
+        output[5] = Language.INFO_FORMAT.toString(
+                Language.INFO_MAXSTREAK.toString(),
+                String.valueOf(maxStreak));
+        output[6] = Language.INFO_FORMAT.toString(
+                Language.INFO_ELO.toString(),
+                String.valueOf(elo));
         if (output != null) {
             return output;
         }
@@ -399,12 +407,12 @@ public final class PSMySQL {
             plugin.getLogger().severe("Database is not connected!");
             return null;
         }
-        ResultSet result = null;
+        int result = -1;
         try {
             result = plugin.sqlHandler.getStatExact(entry, player);
-            if (result == null || !result.next()) {
+            if (result < 0) {
                 result = plugin.sqlHandler.getStatLike(entry, player);
-                if (result == null || !result.next()) {
+                if (result < 0) {
                     return 0;
                 }
             }
@@ -412,13 +420,7 @@ public final class PSMySQL {
             e.printStackTrace();
         }
 
-        try {
-            return result.getInt(entry);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return 0;
+        return result < 0 ? 0 : result;
     }
 
     public static void initiate(final PVPStats pvpStats) {
@@ -445,14 +447,12 @@ public final class PSMySQL {
             plugin.getLogger().severe("Database is not connected!");
             return 0;
         }
-        ResultSet result;
-
         int count = 0;
 
         long timestamp = System.currentTimeMillis()/1000 - ((long) days * 24L * 60L * 60L);
 
         try {
-            plugin.sqlHandler.deleteStatsOlderThan(timestamp);
+            count = plugin.sqlHandler.deleteStatsOlderThan(timestamp);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -471,7 +471,7 @@ public final class PSMySQL {
         long timestamp = System.currentTimeMillis()/1000 - ((long) days * 24L * 60L * 60L);
 
         try {
-            plugin.sqlHandler.deleteKillsOlderThan(timestamp);
+            count = plugin.sqlHandler.deleteKillsOlderThan(timestamp);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -484,7 +484,7 @@ public final class PSMySQL {
             plugin.getLogger().severe("Database is not connected!");
             return 0;
         }
-        ResultSet result;
+        Map<Integer, String> result;
 
         List<Integer> ints = new ArrayList<>();
         Map<String, Integer> players = new HashMap<>();
@@ -493,11 +493,11 @@ public final class PSMySQL {
 
             result = plugin.sqlHandler.getStatsIDsAndNames();
 
-            while (result != null && result.next()) {
-                String playerName = result.getString("name");
+            for (Integer key : result.keySet()) {
+                String playerName = result.get(key);
 
                 if (players.containsKey(playerName)) {
-                    ints.add(result.getInt(1));
+                    ints.add(key);
                     players.put(playerName, players.get(playerName) + 1);
                 } else {
                     players.put(playerName, 1);
@@ -523,17 +523,9 @@ public final class PSMySQL {
         }
         List<String> output = new ArrayList<>();
 
-        ResultSet result = null;
-
         try {
-            result = plugin.sqlHandler.getStatsNames();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        try {
-            while (result != null && result.next()) {
-                output.add(result.getString("name"));
-            }
+            List<String> result = plugin.sqlHandler.getStatsNames();
+            output.addAll(result);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -633,7 +625,7 @@ public final class PSMySQL {
     }
 
     public static void initiatePlayer(Player player, String dbTable) {
-        ResultSet result = null;
+        String result = null;
 
         if (getAllPlayers(dbTable).contains(player.getName())) {
 
@@ -643,11 +635,8 @@ public final class PSMySQL {
                 e.printStackTrace();
             }
             try {
-                while (result != null && result.next()) {
-                    String value = result.getString("uid");
-                    if (value == null || value.equals("")) {
-                        plugin.sqlHandler.setStatUIDByPlayer(player);
-                    }
+                if (result == null || result.equals("")) {
+                    plugin.sqlHandler.setStatUIDByPlayer(player);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

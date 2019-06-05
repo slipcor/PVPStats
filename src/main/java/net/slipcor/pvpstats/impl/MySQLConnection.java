@@ -5,8 +5,7 @@ import net.slipcor.pvpstats.api.DatabaseConnection;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Based on MySQLConnection by Jesika(Kaitlyn) Tremaine aka JesiKat
@@ -20,6 +19,8 @@ public class MySQLConnection implements DatabaseConnection {
 
     // The connection object
     private Connection databaseConnection;
+
+    private boolean collectPrecise = false;
 
     public MySQLConnection(String host, int port,
                            String database, String username, String password, String dbOptions,
@@ -43,6 +44,9 @@ public class MySQLConnection implements DatabaseConnection {
     public boolean connect(boolean printError) {
         try {
             this.databaseConnection = DriverManager.getConnection("jdbc:mysql://" + this.dbUrl + this.dbOptions, this.dbUsername, this.dbPassword);
+
+            collectPrecise = dbKillTable != null && !"".equals(dbKillTable);
+
             return this.databaseConnection != null;
         } catch (SQLException e) {
             if (printError) e.printStackTrace();
@@ -117,6 +121,9 @@ public class MySQLConnection implements DatabaseConnection {
      */
     @Override
     public void addKill(String playerName, UUID uuid, boolean kill) {
+        if (!collectPrecise) {
+            return;
+        }
         long time = System.currentTimeMillis() / 1000;
         try {
             executeQuery("INSERT INTO " + dbKillTable + " (`name`,`uid`,`kill`,`time`) VALUES(" +
@@ -187,6 +194,9 @@ public class MySQLConnection implements DatabaseConnection {
      */
     @Override
     public void deleteKills() {
+        if (!collectPrecise) {
+            return;
+        }
         try {
             executeQuery("DELETE FROM `" + dbKillTable + "` WHERE 1;", true);
         } catch (SQLException e) {
@@ -199,6 +209,9 @@ public class MySQLConnection implements DatabaseConnection {
      */
     @Override
     public void deleteKillsByName(String playerName) {
+        if (!collectPrecise) {
+            return;
+        }
         try {
             executeQuery("DELETE FROM `" + dbKillTable + "` WHERE `name` = '" + playerName
                     + "';", true);
@@ -212,8 +225,19 @@ public class MySQLConnection implements DatabaseConnection {
      * @throws SQLException
      */
     @Override
-    public void deleteKillsOlderThan(long timestamp) throws SQLException {
+    public int deleteKillsOlderThan(long timestamp) throws SQLException {
+        if (!collectPrecise) {
+            return 0;
+        }
+
+        int count = 0;
+
+        ResultSet result = executeQuery("SELECT `time` FROM `" + dbKillTable + "` WHERE `time` < "+timestamp+";", false);
+        while (result.next()) {
+            count++;
+        }
         executeQuery("DELETE FROM `" + dbKillTable + "` WHERE `time` < "+timestamp+";", true);
+        return count;
     }
 
     /**
@@ -274,32 +298,35 @@ public class MySQLConnection implements DatabaseConnection {
      * @throws SQLException
      */
     @Override
-    public void deleteStatsOlderThan(long timestamp) throws SQLException {
+    public int deleteStatsOlderThan(long timestamp) throws SQLException {
         executeQuery("DELETE FROM `" + dbTable + "` WHERE `time` < "+timestamp+";", true);
+        return 0;
     }
 
     /**
      * Get a statistic value by exact player name
      * @param stat the statistic value
      * @param playerName the exact player's name to look for
-     * @return a set of all matching entries
+     * @return a matching statistical value otherwise 0
      * @throws SQLException
      */
     @Override
-    public ResultSet getStatExact(String stat, String playerName) throws SQLException {
-        return executeQuery("SELECT `" + stat + "` FROM `" + dbTable + "` WHERE `name` = '" + playerName + "' LIMIT 1;", false);
+    public int getStatExact(String stat, String playerName) throws SQLException {
+        ResultSet result = executeQuery("SELECT `" + stat + "` FROM `" + dbTable + "` WHERE `name` = '" + playerName + "' LIMIT 1;", false);
+        return (result != null && result.next()) ? result.getInt(stat) : -1;
     }
 
     /**
      * Get a statistic value by matching partial player name
      * @param stat the statistic value
      * @param playerName the partial player's name to look for
-     * @return a set of all matching entries
+     * @return a matching statistical value otherwise 0
      * @throws SQLException
      */
     @Override
-    public ResultSet getStatLike(String stat, String playerName) throws SQLException {
-        return executeQuery("SELECT `" + stat + "` FROM `" + dbTable + "` WHERE `name` LIKE '%" + playerName + "%' LIMIT 1;", false);
+    public int getStatLike(String stat, String playerName) throws SQLException {
+        ResultSet result = executeQuery("SELECT `" + stat + "` FROM `" + dbTable + "` WHERE `name` LIKE '%" + playerName + "%' LIMIT 1;", false);
+        return (result != null && result.next()) ? result.getInt(stat) : -1;
     }
 
     /**
@@ -309,8 +336,17 @@ public class MySQLConnection implements DatabaseConnection {
      * @throws SQLException
      */
     @Override
-    public ResultSet getStatsExact(String playerName) throws SQLException {
-        return executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + dbTable + "` WHERE `name` = '" + playerName + "' LIMIT 1;", false);
+    public PlayerStatistic getStatsExact(String playerName) throws SQLException {
+        ResultSet result = executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + dbTable + "` WHERE `name` = '" + playerName + "' LIMIT 1;", false);
+        if (result.next()) {
+            return new PlayerStatistic(result.getString("name"),
+                    result.getInt("kills"),
+                    result.getInt("deaths"),
+                    result.getInt("streak"),
+                    result.getInt("currentstreak"),
+                    result.getInt("elo"));
+        }
+        return null;
     }
 
     /**
@@ -319,8 +355,13 @@ public class MySQLConnection implements DatabaseConnection {
      * @throws SQLException
      */
     @Override
-    public ResultSet getStatsIDsAndNames() throws SQLException {
-        return executeQuery("SELECT `id`, `name` FROM `" + dbTable + "` WHERE 1 ORDER BY `kills` DESC;", false);
+    public Map<Integer, String> getStatsIDsAndNames() throws SQLException {
+        Map<Integer, String> map = new LinkedHashMap<>();
+        ResultSet result = executeQuery("SELECT `id`, `name` FROM `" + dbTable + "` WHERE 1 ORDER BY `kills` DESC;", false);
+        while (result.next()) {
+            map.put(result.getInt("id"), result.getString("name"));
+        }
+        return map;
     }
 
     /**
@@ -330,29 +371,48 @@ public class MySQLConnection implements DatabaseConnection {
      * @throws SQLException
      */
     @Override
-    public ResultSet getStatsLike(String playerName) throws SQLException {
-        return executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + dbTable + "` WHERE `name` LIKE '%" + playerName + "%' LIMIT 1;", false);
+    public PlayerStatistic getStatsLike(String playerName) throws SQLException {
+        ResultSet result = executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + dbTable + "` WHERE `name` LIKE '%" + playerName + "%' LIMIT 1;", false);
+        List<PlayerStatistic> list = new ArrayList<>();
+        if (result.next()) {
+            return new PlayerStatistic(result.getString("name"),
+                    result.getInt("kills"),
+                    result.getInt("deaths"),
+                    result.getInt("streak"),
+                    result.getInt("currentstreak"),
+                    result.getInt("elo"));
+        }
+        return null;
     }
 
     /**
      * Get all player names
-     * @return a grouped set of all player names
+     * @return list of all player names
      * @throws SQLException
      */
     @Override
-    public ResultSet getStatsNames() throws SQLException {
-        return executeQuery("SELECT `name` FROM `" + dbTable + "` GROUP BY `name`;", false);
+    public List<String> getStatsNames() throws SQLException {
+        List<String> list = new ArrayList<>();
+        ResultSet result = executeQuery("SELECT `name` FROM `" + dbTable + "` GROUP BY `name`;", false);
+        while (result.next()) {
+            list.add(result.getString("name"));
+        }
+        return list;
     }
 
     /**
      * Get a player's saved UUID entry
      * @param player the player to look for
-     * @return a set of their UID
+     * @return their UID
      * @throws SQLException
      */
     @Override
-    public ResultSet getStatUIDFromPlayer(Player player) throws SQLException {
-        return executeQuery("SELECT `uid` FROM `" + dbTable + "` WHERE `name` = '" + player.getName() + "';", false);
+    public String getStatUIDFromPlayer(Player player) throws SQLException {
+        ResultSet result = executeQuery("SELECT `uid` FROM `" + dbTable + "` WHERE `name` = '" + player.getName() + "';", false);
+        while (result.next()) {
+            return result.getString("uid");
+        }
+        return "";
     }
 
     /**
@@ -364,11 +424,27 @@ public class MySQLConnection implements DatabaseConnection {
      * @throws SQLException
      */
     @Override
-    public ResultSet getTopSorted(int amount, String orderBy, boolean ascending) throws SQLException {
+    public List<PlayerStatistic> getTopSorted(int amount, String orderBy, boolean ascending) throws SQLException {
         String query = "SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`,`elo` FROM `" +
                 dbTable + "` WHERE 1 ORDER BY `" + orderBy + "` " + (ascending?"ASC":"DESC") + " LIMIT " + amount + ";";
 
-        return executeQuery(query, false);
+        List<PlayerStatistic> list = new ArrayList<>();
+
+        ResultSet result = executeQuery(query, false);
+
+        if (result == null) {
+            return null;
+        }
+
+        while (result.next()) {
+            list.add(new PlayerStatistic(result.getString("name"),
+                    result.getInt("kills"),
+                    result.getInt("deaths"),
+                    result.getInt("streak"),
+                    result.getInt("currentstreak"),
+                    result.getInt("elo")));
+        }
+        return list;
     }
 
     /**
