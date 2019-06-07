@@ -195,6 +195,7 @@ public class PVPStats extends JavaPlugin {
         new CommandDebug().load(commandList, commandMap);
         new CommandPurge().load(commandList, commandMap);
         new CommandShow().load(commandList, commandMap);
+        new CommandSet().load(commandList, commandMap);
         new CommandTop().load(commandList, commandMap);
         new CommandReload().load(commandList, commandMap);
         new CommandWipe().load(commandList, commandMap);

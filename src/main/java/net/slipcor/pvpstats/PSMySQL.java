@@ -423,6 +423,15 @@ public final class PSMySQL {
         return result < 0 ? 0 : result;
     }
 
+    public static boolean hasEntry(String player) {
+        int result = -1;
+        try {
+            result = plugin.sqlHandler.getStatExact("kills", player);
+        } catch (SQLException e) {
+        }
+        return result > -1;
+    }
+
     public static void initiate(final PVPStats pvpStats) {
         plugin = pvpStats;
     }
@@ -510,8 +519,6 @@ public final class PSMySQL {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        int i = 10;
 
         return ints.size();
     }
@@ -649,5 +656,16 @@ public final class PSMySQL {
         PVPData.getEloScore(player.getName());
         PVPData.getKills(player.getName());
         PVPData.getMaxStreak(player.getName());
+    }
+
+    public static void setSpecificStat(String playerName, String entry, int value) throws SQLException {
+        if (!entry.equals("elo") &&
+                !entry.equals("kills") &&
+                !entry.equals("deaths") &&
+                !entry.equals("streak") &&
+                !entry.equals("currentstreak")) {
+            throw new IllegalArgumentException("entry can not be '" + entry + "'. Valid values: elo, kills, deaths, streak, currentstreak");
+        }
+        plugin.sqlHandler.setSpecificStat(playerName, entry, value);
     }
 }

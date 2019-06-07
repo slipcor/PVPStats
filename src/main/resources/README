@@ -1,3 +1,4 @@
+v1.2.1 - new command /pvp set [player] [type] [amount] to set specific player statistcs
 v1.2.0 - add YML support - use double caution!
 v1.1.0 - add SQLite support - use with caution!
 v1.0.0 - build against 1.13 API, use my own updater, remove UUID updating. It's been years.

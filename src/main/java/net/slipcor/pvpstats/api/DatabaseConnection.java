@@ -70,4 +70,6 @@ public interface DatabaseConnection {
     void addFirstStat(String playerName, UUID uuid, int kills, int deaths, int elo);
 
     boolean hasEntry(UUID uuid);
+
+    void setSpecificStat(String playerName, String entry, int value) throws SQLException;
 }

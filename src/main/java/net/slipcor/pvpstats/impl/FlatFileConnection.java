@@ -745,6 +745,17 @@ public class FlatFileConnection implements DatabaseConnection {
     }
 
     /**
+     * Set specific statistical value of a player
+     * @param playerName the player to find
+     * @param entry the entry to set
+     * @param value the value to set
+     */
+    @Override
+    public void setSpecificStat(String playerName, String entry, int value) {
+
+    }
+
+    /**
      * Set the UUID of a certain player entry
      * @param player the player to find and update
      * @throws SQLException

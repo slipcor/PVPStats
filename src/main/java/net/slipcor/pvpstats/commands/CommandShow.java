@@ -63,7 +63,7 @@ public class CommandShow extends AbstractCommand {
 
     @Override
     public List<String> getShort() {
-        return Collections.singletonList("!s");
+        return Collections.singletonList("!sh");
     }
 
     @Override
