@@ -2,6 +2,7 @@ package net.slipcor.pvpstats.impl;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseConnection;
+import net.slipcor.pvpstats.classes.PlayerStatistic;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,7 +11,6 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.*;
 import java.util.*;
 
 public class FlatFileConnection implements DatabaseConnection {
@@ -28,6 +28,8 @@ public class FlatFileConnection implements DatabaseConnection {
     private FileConfiguration statConfig, killStatConfig;
 
     /**
+     * Try to connect to the database
+     *
      * @param printError should we print errors that we encounter?
      * @return true if the connection was made successfully, false otherwise.
      */
@@ -60,12 +62,11 @@ public class FlatFileConnection implements DatabaseConnection {
     }
 
     /**
+     * Check whether a table exists
+     *
      * @param database The database to check for the table in.
      * @param table    The table to check for existence.
      * @return true if the table exists, false if there was an error or the database doesn't exist.
-     * <p/>
-     * This method looks through the information schema that comes with a MySQL installation and checks
-     * if a certain table exists within a database.
      */
     public boolean tableExists(String database, String table) {
         File file = new File(PVPStats.getInstance().getDataFolder(), table + ".yml");
@@ -80,17 +81,18 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Create the first statistic entry for a player
+     *
      * @param playerName the player's name
-     * @param uuid the player's UUID
-     * @param kills the kill amount
-     * @param deaths the death amount
-     * @param elo the ELO rating
+     * @param uuid       the player's UUID
+     * @param kills      the kill amount
+     * @param deaths     the death amount
+     * @param elo        the ELO rating
      */
     @Override
     public void addFirstStat(String playerName, UUID uuid, int kills, int deaths, int elo) {
         long time = System.currentTimeMillis() / 1000;
 
-        String root = uuid+".";
+        String root = uuid + ".";
 
         int count = 0;
 
@@ -116,9 +118,10 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Add a kill to the player's count
+     *
      * @param playerName the player's name
-     * @param uuid the player's uuid
-     * @param kill true if they did kill, false if they were killed
+     * @param uuid       the player's uuid
+     * @param kill       true if they did kill, false if they were killed
      */
     @Override
     public void addKill(String playerName, UUID uuid, boolean kill) {
@@ -130,7 +133,7 @@ public class FlatFileConnection implements DatabaseConnection {
 
         StringBuilder root = new StringBuilder(uuid.toString());
         root.append('.');
-        root.append(kill?"kills.":"deaths.");
+        root.append(kill ? "kills." : "deaths.");
         root.append(time);
 
         killStatConfig.set(root.toString(), playerName);
@@ -139,49 +142,23 @@ public class FlatFileConnection implements DatabaseConnection {
     }
 
     /**
-     * create the kill stat table
+     * Create the kill stat table
+     *
      * @param printError should we print errors that we encounter?
      */
     @Override
     public void createKillStatsTable(boolean printError) {
-        /*
-         * uuid:
-         *   kills:
-         *     time: playerName
-         *     ...
-         *   deaths:
-         *     time: playerName
-         */
         // needs no setup
     }
 
     /**
-     * create the statistics table
+     * Create the statistics table
+     *
      * @param printError should we print errors that we encounter?
      */
     @Override
     public void createStatsTable(boolean printError) {
-        /*
-         * uuid:
-         *   oid: order ID
-         *   name: playerName
-         *   kills: kill amount
-         *   deaths: death amount
-         *   streak: max streak
-         *   currentstreak: current streak
-         *   elo: elo score
-         *   time: last time seen
-         */
         // needs no setup
-    }
-
-    /**
-     * Run a custom query. THIS WILL BE REMOVED
-     * @param query the query to run
-     */
-    @Override
-    public void customQuery(String query) {
-
     }
 
     /**
@@ -198,6 +175,7 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Delete kill stats of a player
+     *
      * @param playerName the player's name
      */
     @Override
@@ -211,7 +189,8 @@ public class FlatFileConnection implements DatabaseConnection {
 
         List<String> removeables = new ArrayList<>();
 
-        uuids: for (String uuid : uuids.keySet()) {
+        uuids:
+        for (String uuid : uuids.keySet()) {
             ConfigurationSection player = root.getConfigurationSection(uuid);
 
             Map<String, Object> kills = player.getConfigurationSection("kills").getValues(false);
@@ -241,11 +220,11 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Delete kill stats older than a timestamp
-     * @param timestamp to compare to
-     * @throws SQLException
+     *
+     * @param timestamp the timestamp to compare to
      */
     @Override
-    public int deleteKillsOlderThan(long timestamp) throws SQLException {
+    public int deleteKillsOlderThan(long timestamp) {
         if (!collectPrecise) {
             return 0;
         }
@@ -272,14 +251,14 @@ public class FlatFileConnection implements DatabaseConnection {
             for (String key : kills.keySet()) {
                 long time = Long.parseLong(key);
                 if (time < timestamp) {
-                    removeables.add(uuid+".kills."+key);
+                    removeables.add(uuid + ".kills." + key);
                 }
             }
 
             for (String key : deaths.keySet()) {
                 long time = Long.parseLong(key);
                 if (time < timestamp) {
-                    removeables.add(uuid+".deaths."+key);
+                    removeables.add(uuid + ".deaths." + key);
                 }
             }
         }
@@ -303,11 +282,11 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Delete all statistics by ID
+     *
      * @param list the list of IDs to delete
-     * @throws SQLException
      */
     @Override
-    public void deleteStatsByIDs(List<Integer> list) throws SQLException {
+    public void deleteStatsByIDs(List<Integer> list) {
         ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
 
         Map<String, Object> uuids = root.getValues(false);
@@ -331,6 +310,7 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Delete statistics by player name
+     *
      * @param playerName the player's name
      */
     @Override
@@ -358,11 +338,11 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Delete statistics older than a timestamp
+     *
      * @param timestamp the timestamp to compare to
-     * @throws SQLException
      */
     @Override
-    public int deleteStatsOlderThan(long timestamp) throws SQLException {
+    public int deleteStatsOlderThan(long timestamp) {
         ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
 
         Map<String, Object> uuids = root.getValues(false);
@@ -387,13 +367,13 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Get a statistic value by exact player name
-     * @param stat the statistic value
+     *
+     * @param stat       the statistic value
      * @param playerName the exact player's name to look for
      * @return a set of all matching entries
-     * @throws SQLException
      */
     @Override
-    public int getStatExact(String stat, String playerName) throws SQLException {
+    public int getStatExact(String stat, String playerName) {
         ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
 
         Map<String, Object> uuids = root.getValues(false);
@@ -410,13 +390,13 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Get a statistic value by matching partial player name
-     * @param stat the statistic value
+     *
+     * @param stat       the statistic value
      * @param playerName the partial player's name to look for
      * @return a set of all matching entries
-     * @throws SQLException
      */
     @Override
-    public int getStatLike(String stat, String playerName) throws SQLException {
+    public int getStatLike(String stat, String playerName) {
         ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
 
         Map<String, Object> uuids = root.getValues(false);
@@ -433,12 +413,12 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Get statistics by exact player name
+     *
      * @param playerName the exact player's name to look for
-     * @return a set of all matching entries
-     * @throws SQLException
+     * @return the first matching player stat entry
      */
     @Override
-    public PlayerStatistic getStatsExact(String playerName) throws SQLException {
+    public PlayerStatistic getStatsExact(String playerName) {
         ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
 
         Map<String, Object> uuids = root.getValues(false);
@@ -460,11 +440,11 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Get ALL statistics player names and entry IDs
-     * @return a set of all entry IDs and player names
-     * @throws SQLException
+     *
+     * @return a map of all entry IDs and player names
      */
     @Override
-    public Map<Integer, String> getStatsIDsAndNames() throws SQLException {
+    public Map<Integer, String> getStatsIDsAndNames() {
         /*
          * Instead of just a sorted row, this implementation will return only entries that actually have duplicates
          * as this is the only purpose of this method so far. Find duplicate name entries and delete all that are of
@@ -542,12 +522,12 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Get statistics by matching partial player name
+     *
      * @param playerName the partial player's name to look for
-     * @return a set of all matching entries
-     * @throws SQLException
+     * @return the first matching player stat entry
      */
     @Override
-    public PlayerStatistic getStatsLike(String playerName) throws SQLException {
+    public PlayerStatistic getStatsLike(String playerName) {
 
         ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
 
@@ -571,11 +551,11 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Get all player names
+     *
      * @return all player names
-     * @throws SQLException
      */
     @Override
-    public List<String> getStatsNames() throws SQLException {
+    public List<String> getStatsNames() {
         List<String> names = new ArrayList<>();
 
         ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
@@ -596,21 +576,21 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Get a player's saved UUID entry
-     * @param p the player to look for
+     *
+     * @param player the player to look for
      * @return their UID
-     * @throws SQLException
      */
     @Override
-    public String getStatUIDFromPlayer(Player p) throws SQLException {
+    public String getStatUIDFromPlayer(Player player) {
 
         ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
 
         Map<String, Object> uuids = root.getValues(false);
 
         for (String uuid : uuids.keySet()) {
-            ConfigurationSection player = root.getConfigurationSection(uuid);
+            ConfigurationSection cs = root.getConfigurationSection(uuid);
 
-            if (p.getName().equals(player.getString("name", ""))) {
+            if (player.getName().equals(cs.getString("name", ""))) {
                 return uuid;
             }
         }
@@ -619,29 +599,29 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Get the top players sorted by a given column
-     * @param amount the amount to return
-     * @param orderBy the column to sort by
+     *
+     * @param amount    the amount to return
+     * @param orderBy   the column to sort by
      * @param ascending true if ascending order, false otherwise
-     * @return a set of all stats from the top players
-     * @throws SQLException
+     * @return a list of all stats from the top players
      */
     @Override
-    public List<PlayerStatistic> getTopSorted(final int amount, final String orderBy, final boolean ascending) throws SQLException {
+    public List<PlayerStatistic> getTopSorted(final int amount, final String orderBy, final boolean ascending) {
         class CustomComparator implements Comparator<PlayerStatistic> {
 
             @Override
             public int compare(PlayerStatistic stat1, PlayerStatistic stat2) {
                 switch (orderBy) {
                     case "kills":
-                        return (stat1.getKills()-stat2.getKills()) * (ascending?1:-1);
+                        return (stat1.getKills() - stat2.getKills()) * (ascending ? 1 : -1);
                     case "deaths":
-                        return (stat1.getDeaths()-stat2.getDeaths()) * (ascending?1:-1);
+                        return (stat1.getDeaths() - stat2.getDeaths()) * (ascending ? 1 : -1);
                     case "streak":
-                        return (stat1.getMaxStreak()-stat2.getMaxStreak()) * (ascending?1:-1);
+                        return (stat1.getMaxStreak() - stat2.getMaxStreak()) * (ascending ? 1 : -1);
                     case "currentstreak":
-                        return (stat1.getCurrentStreak()-stat2.getCurrentStreak()) * (ascending?1:-1);
+                        return (stat1.getCurrentStreak() - stat2.getCurrentStreak()) * (ascending ? 1 : -1);
                     case "elo":
-                        return (stat1.getELO()-stat2.getELO()) * (ascending?1:-1);
+                        return (stat1.getELO() - stat2.getELO()) * (ascending ? 1 : -1);
                 }
                 return 0;
             }
@@ -667,28 +647,30 @@ public class FlatFileConnection implements DatabaseConnection {
 
         Collections.sort(result, new CustomComparator());
 
-        return result.size()>amount?result.subList(0, amount):result;
+        return result.size() > amount ? result.subList(0, amount) : result;
     }
 
     /**
      * Check whether an entry matches a player UUID
+     *
      * @param uuid the UUID to find
      * @return true if found, false otherwise
      */
     @Override
     public boolean hasEntry(UUID uuid) {
-        return !statConfig.getString(uuid+".name", "").equals("");
+        return !statConfig.getString(uuid + ".name", "").equals("");
     }
 
     /**
      * Increase player death count, update ELO score and reset streak
+     *
      * @param uuid the player's UUID
-     * @param elo the new ELO rating
+     * @param elo  the new ELO rating
      */
     @Override
     public void increaseDeaths(UUID uuid, int elo) {
         long time = System.currentTimeMillis() / 1000;
-        String root = uuid+".";
+        String root = uuid + ".";
 
         statConfig.set(root + "deaths", statConfig.getInt(root + "deaths", 0) + 1);
         statConfig.set(root + "elo", elo);
@@ -700,13 +682,14 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Increase player kill count, update ELO score and the max and current streak
+     *
      * @param uuid the player's UUID
-     * @param elo the new ELO rating
+     * @param elo  the new ELO rating
      */
     @Override
     public void increaseKillsAndMaxStreak(UUID uuid, int elo) {
         long time = System.currentTimeMillis() / 1000;
-        String root = uuid+".";
+        String root = uuid + ".";
 
         statConfig.set(root + "kills", statConfig.getInt(root + "kills", 0) + 1);
         statConfig.set(root + "elo", elo);
@@ -719,13 +702,14 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Increase player kill count, update ELO score and the current streak
+     *
      * @param uuid the player's UUID
-     * @param elo the new ELO rating
+     * @param elo  the new ELO rating
      */
     @Override
     public void increaseKillsAndStreak(UUID uuid, int elo) {
         long time = System.currentTimeMillis() / 1000;
-        String root = uuid+".";
+        String root = uuid + ".";
 
         statConfig.set(root + "kills", statConfig.getInt(root + "kills", 0) + 1);
         statConfig.set(root + "elo", elo);
@@ -735,6 +719,20 @@ public class FlatFileConnection implements DatabaseConnection {
         save(statConfig, dbTable);
     }
 
+    /**
+     * @return whether the connection was established properly
+     */
+    @Override
+    public boolean isConnected() {
+        return statConfig != null;
+    }
+
+    /**
+     * Save a configuration to a file
+     *
+     * @param config   the configuration to save
+     * @param filename the file name (excluding extension .yml) to save to
+     */
     private void save(FileConfiguration config, String filename) {
         File file = new File(PVPStats.getInstance().getDataFolder(), filename + ".yml");
         try {
@@ -746,22 +744,34 @@ public class FlatFileConnection implements DatabaseConnection {
 
     /**
      * Set specific statistical value of a player
+     *
      * @param playerName the player to find
-     * @param entry the entry to set
-     * @param value the value to set
+     * @param entry      the entry to set
+     * @param value      the value to set
      */
     @Override
     public void setSpecificStat(String playerName, String entry, int value) {
+        ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
 
+        Map<String, Object> uuids = root.getValues(false);
+
+        for (String uuid : uuids.keySet()) {
+            ConfigurationSection player = root.getConfigurationSection(uuid);
+            if (player.getString("name", "").equals(playerName)) {
+                statConfig.set(uuid + "." + entry, value);
+                save(statConfig, dbTable);
+            }
+
+        }
     }
 
     /**
      * Set the UUID of a certain player entry
+     *
      * @param player the player to find and update
-     * @throws SQLException
      */
     @Override
-    public void setStatUIDByPlayer(Player player) throws SQLException {
+    public void setStatUIDByPlayer(Player player) {
         // can not happen in this implementation
     }
 }

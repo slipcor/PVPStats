@@ -1,7 +1,7 @@
 package net.slipcor.pvpstats.commands;
 
-import net.slipcor.pvpstats.PSMySQL;
 import net.slipcor.pvpstats.PVPStats;
+import net.slipcor.pvpstats.api.DatabaseAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -26,7 +26,7 @@ public class CommandShow extends AbstractCommand {
 
                 @Override
                 public void run() {
-                    final String[] info = PSMySQL.info(sender.getName());
+                    final String[] info = DatabaseAPI.info(sender.getName());
                     sender.sendMessage(info);
                 }
 
@@ -42,7 +42,7 @@ public class CommandShow extends AbstractCommand {
 
                 @Override
                 public void run() {
-                    final String[] info = PSMySQL.info(args[1]);
+                    final String[] info = DatabaseAPI.info(args[1]);
                     sender.sendMessage(info);
                 }
 

@@ -1,12 +1,16 @@
-package net.slipcor.pvpstats;
+package net.slipcor.pvpstats.core;
 
+import net.slipcor.pvpstats.PVPStats;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
@@ -58,7 +62,7 @@ public class Updater extends Thread {
         }
     }
 
-    public Updater(final Plugin plugin, final File file) {
+    public Updater(final PVPStats plugin, final File file) {
         super();
 
         String version = Bukkit.getServer().getBukkitVersion();
@@ -67,9 +71,9 @@ public class Updater extends Thread {
         try {
             chunks = version.split("-")[0].split("\\.");
         } catch (Exception e) {
-            chunks = new String[]{"1","11"};
+            chunks = new String[]{"1", "11"};
         }
-        int a,b;
+        int a, b;
         try {
             a = Integer.parseInt(chunks[0]);
         } catch (Exception e) {
@@ -86,13 +90,13 @@ public class Updater extends Thread {
         this.plugin = plugin;
         this.file = file;
 
-        mode = UpdateMode.getBySetting(plugin.getConfig().getString("update.mode", "both"));
+        mode = UpdateMode.getBySetting(plugin.config().get(Config.Entry.UPDATE_MODE));
 
         if (mode == UpdateMode.OFF) {
             type = UpdateType.RELEASE;
         } else {
             instances.clear();
-            type = UpdateType.getBySetting(plugin.getConfig().getString("update.type", "beta"));
+            type = UpdateType.getBySetting(plugin.config().get(Config.Entry.UPDATE_TYPE));
             instances.add(new UpdateInstance("pvpstats"));
             start();
         }
@@ -102,7 +106,7 @@ public class Updater extends Thread {
         private byte updateDigit;
         private String vOnline;
         private String vThis;
-        private String pluginName;
+        private final String pluginName;
         private String url;
 
         private boolean msg;
@@ -140,6 +144,7 @@ public class Updater extends Thread {
                 }
             }
         }
+
         /**
          * calculate a version part based on letters
          *
@@ -194,31 +199,29 @@ public class Updater extends Thread {
 
                 String version = "";
 
-                URL website = new URL("http://pa.slipcor.net/versioncheck.php?plugin="+pluginName+"&type="+type.toString().toLowerCase()+"&major="+major+"&minor="+minor);
+                URL website = new URL("http://pa.slipcor.net/versioncheck.php?plugin=" + pluginName + "&type=" + type.toString().toLowerCase() + "&major=" + major + "&minor=" + minor);
                 URLConnection connection = website.openConnection();
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(
                                 connection.getInputStream()));
                 String inputLine;
 
-                while ((inputLine = in.readLine()) != null) {
+                if ((inputLine = in.readLine()) != null) {
                     version = inputLine;
-                    break;
                 }
                 in.close();
                 vOnline = version.replace("v", "");
 
                 url = "https://www.spigotmc.org/resources/pvp-stats.59124/";
 
-                website = new URL("http://pa.slipcor.net/versioncheck.php?plugin="+pluginName+"&link=true&type="+type.toString().toLowerCase()+"&major="+major+"&minor="+minor);
+                website = new URL("http://pa.slipcor.net/versioncheck.php?plugin=" + pluginName + "&link=true&type=" + type.toString().toLowerCase() + "&major=" + major + "&minor=" + minor);
                 connection = website.openConnection();
                 in = new BufferedReader(
                         new InputStreamReader(
                                 connection.getInputStream()));
 
-                while ((inputLine = in.readLine()) != null) {
+                if ((inputLine = in.readLine()) != null) {
                     url = inputLine;
-                    break;
                 }
                 in.close();
 
@@ -258,7 +261,7 @@ public class Updater extends Thread {
 
                 }
 
-                if (mode != UpdateMode.DOWNLOAD || (!( player instanceof Player))) {
+                if (mode != UpdateMode.DOWNLOAD || (!(player instanceof Player))) {
                     player.sendMessage("You are using " + instance.colorize('v' + instance.vThis)
                             + ", an outdated version! Latest: " + ChatColor.COLOR_CHAR + 'a' + 'v' + instance.vOnline);
                 }
@@ -275,7 +278,7 @@ public class Updater extends Thread {
                     Bukkit.getScheduler().runTaskLater(PVPStats.getInstance(), new RunLater(), 60L);
                 }
             } else {
-                if (mode != UpdateMode.DOWNLOAD || (!( player instanceof Player))) {
+                if (mode != UpdateMode.DOWNLOAD || (!(player instanceof Player))) {
                     player.sendMessage("You are using " + instance.colorize('v' + instance.vThis)
                             + ", an experimental version! Latest stable: " + ChatColor.COLOR_CHAR + 'a' + 'v'
                             + instance.vOnline);

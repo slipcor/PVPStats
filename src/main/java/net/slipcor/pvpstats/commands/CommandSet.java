@@ -1,10 +1,8 @@
 package net.slipcor.pvpstats.commands;
 
-import net.slipcor.pvpstats.Language;
-import net.slipcor.pvpstats.PSMySQL;
-import net.slipcor.pvpstats.PVPStats;
-import net.slipcor.pvpstats.impl.PlayerStatistic;
-import org.bukkit.Bukkit;
+import net.slipcor.pvpstats.api.DatabaseAPI;
+import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
+import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
 import java.sql.SQLException;
@@ -33,18 +31,23 @@ public class CommandSet extends AbstractCommand {
         try {
             int amount = Integer.parseInt(args[3]);
 
-            if (PSMySQL.hasEntry(args[1])) {
+            if (DatabaseAPI.hasEntry(args[1])) {
                 try {
                     if (args[2].toLowerCase().equals("kills")) {
-                        PSMySQL.setSpecificStat(args[2], "kills", amount);
+                        PlayerStatisticsBuffer.setKills(args[2], amount);
+                        DatabaseAPI.setSpecificStat(args[2], "kills", amount);
                     } else if (args[2].toLowerCase().equals("deaths")) {
-                        PSMySQL.setSpecificStat(args[2], "deaths", amount);
+                        PlayerStatisticsBuffer.setDeaths(args[2], amount);
+                        DatabaseAPI.setSpecificStat(args[2], "deaths", amount);
                     } else if (args[2].toLowerCase().equals("streak")) {
-                        PSMySQL.setSpecificStat(args[2], "streak", amount);
+                        PlayerStatisticsBuffer.setStreak(args[2], amount);
+                        DatabaseAPI.setSpecificStat(args[2], "streak", amount);
                     } else if (args[2].toLowerCase().equals("currentstreak")) {
-                        PSMySQL.setSpecificStat(args[2], "currentstreak", amount);
+                        PlayerStatisticsBuffer.setMaxStreak(args[2], amount);
+                        DatabaseAPI.setSpecificStat(args[2], "currentstreak", amount);
                     } else if (args[2].toLowerCase().equalsIgnoreCase("elo")) {
-                        PSMySQL.setSpecificStat(args[2], "elo", amount);
+                        PlayerStatisticsBuffer.setEloScore(args[2], amount);
+                        DatabaseAPI.setSpecificStat(args[2], "elo", amount);
                     } else {
                         sender.sendMessage(this.getShortInfo());
                         return;
@@ -59,7 +62,6 @@ public class CommandSet extends AbstractCommand {
             }
         } catch (Exception e) {
             sender.sendMessage(Language.ERROR_INVALID_NUMBER.toString(args[3]));
-            return;
         }
     }
 

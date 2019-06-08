@@ -1,6 +1,7 @@
 package net.slipcor.pvpstats.impl;
 
 import net.slipcor.pvpstats.api.DatabaseConnection;
+import net.slipcor.pvpstats.classes.PlayerStatistic;
 import org.bukkit.entity.Player;
 
 import java.sql.Connection;
@@ -17,22 +18,25 @@ import java.util.UUID;
 public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     // Database tables
-    protected final String dbTable, dbKillTable;
+    final String dbTable;
+    final String dbKillTable;
 
     // The connection object
-    protected Connection databaseConnection;
+    Connection databaseConnection;
 
-    protected boolean collectPrecise = false;
+    boolean collectPrecise = false;
 
-    protected AbstractSQLConnection(String dbTable, String dbKillTable) {
+    AbstractSQLConnection(String dbTable, String dbKillTable) {
         this.dbTable = dbTable;
         this.dbKillTable = dbKillTable;
     }
 
     /**
-     * @param query    The Query to send to the SQL server.
-     * @param modifies If the Query modifies the database, set this to true. If not, set this to false
-     * @return If {@code modifies} is true, returns a valid ResultSet obtained from the query. If {@code modifies} is false, returns null.
+     * Actually execute an SQL query
+     *
+     * @param query    the query to send to the SQL server.
+     * @param modifies tf the Query modifies the database, set this to true, otherwise set this to false
+     * @return If modifies is true, returns a valid ResultSet obtained from the query, otherwise returns null.
      * @throws SQLException if the query had an error or there was not a valid connection.
      */
     protected ResultSet executeQuery(final String query, final boolean modifies) throws SQLException {
@@ -53,11 +57,12 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Create the first statistic entry for a player
+     *
      * @param playerName the player's name
-     * @param uuid the player's UUID
-     * @param kills the kill amount
-     * @param deaths the death amount
-     * @param elo the ELO rating
+     * @param uuid       the player's UUID
+     * @param kills      the kill amount
+     * @param deaths     the death amount
+     * @param elo        the ELO rating
      */
     @Override
     public void addFirstStat(String playerName, UUID uuid, int kills, int deaths, int elo) {
@@ -73,9 +78,10 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Add a kill to the player's count
+     *
      * @param playerName the player's name
-     * @param uuid the player's uuid
-     * @param kill true if they did kill, false if they were killed
+     * @param uuid       the player's uuid
+     * @param kill       true if they did kill, false if they were killed
      */
     @Override
     public void addKill(String playerName, UUID uuid, boolean kill) {
@@ -87,19 +93,6 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
             executeQuery("INSERT INTO " + dbKillTable + " (`name`,`uid`,`kill`,`time`) VALUES(" +
                     "'" + playerName + "', '" + uuid + "', '" + (kill ? 1 : 0) + "', " + time + ")", true);
         } catch (SQLException e) {
-        }
-    }
-
-    /**
-     * Run a custom query. THIS WILL BE REMOVED
-     * @param query the query to run
-     */
-    @Override
-    public void customQuery(String query) {
-        try {
-            executeQuery(query, true);
-        } catch (SQLException e) {
-
         }
     }
 
@@ -119,6 +112,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Delete kill stats of a player
+     *
      * @param playerName the player's name
      */
     @Override
@@ -135,7 +129,8 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Delete kill stats older than a timestamp
-     * @param timestamp to compare to
+     *
+     * @param timestamp the timestamp to compare to
      * @throws SQLException
      */
     @Override
@@ -146,11 +141,11 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
         int count = 0;
 
-        ResultSet result = executeQuery("SELECT `time` FROM `" + dbKillTable + "` WHERE `time` < "+timestamp+";", false);
+        ResultSet result = executeQuery("SELECT `time` FROM `" + dbKillTable + "` WHERE `time` < " + timestamp + ";", false);
         while (result.next()) {
             count++;
         }
-        executeQuery("DELETE FROM `" + dbKillTable + "` WHERE `time` < "+timestamp+";", true);
+        executeQuery("DELETE FROM `" + dbKillTable + "` WHERE `time` < " + timestamp + ";", true);
         return count;
     }
 
@@ -167,6 +162,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Delete statistics by player name
+     *
      * @param playerName the player's name
      */
     @Override
@@ -181,6 +177,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Delete statistics older than a timestamp
+     *
      * @param timestamp the timestamp to compare to
      * @throws SQLException
      */
@@ -189,19 +186,20 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
         int count = 0;
 
-        ResultSet result = executeQuery("SELECT `time` FROM `" + dbTable + "` WHERE `time` < "+timestamp+";", false);
+        ResultSet result = executeQuery("SELECT `time` FROM `" + dbTable + "` WHERE `time` < " + timestamp + ";", false);
         while (result.next()) {
             count++;
         }
-        executeQuery("DELETE FROM `" + dbTable + "` WHERE `time` < "+timestamp+";", true);
+        executeQuery("DELETE FROM `" + dbTable + "` WHERE `time` < " + timestamp + ";", true);
         return count;
     }
 
     /**
      * Get a statistic value by exact player name
-     * @param stat the statistic value
+     *
+     * @param stat       the statistic value
      * @param playerName the exact player's name to look for
-     * @return a matching statistical value otherwise 0
+     * @return a set of all matching entries
      * @throws SQLException
      */
     @Override
@@ -212,9 +210,10 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Get a statistic value by matching partial player name
-     * @param stat the statistic value
+     *
+     * @param stat       the statistic value
      * @param playerName the partial player's name to look for
-     * @return a matching statistical value otherwise 0
+     * @return a set of all matching entries
      * @throws SQLException
      */
     @Override
@@ -225,8 +224,9 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Get statistics by exact player name
+     *
      * @param playerName the exact player's name to look for
-     * @return a set of all matching entries
+     * @return the first matching player stat entry
      * @throws SQLException
      */
     @Override
@@ -245,8 +245,9 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Get statistics by matching partial player name
+     *
      * @param playerName the partial player's name to look for
-     * @return a set of all matching entries
+     * @return the first matching player stat entry
      * @throws SQLException
      */
     @Override
@@ -266,7 +267,8 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Get all player names
-     * @return list of all player names
+     *
+     * @return all player names
      * @throws SQLException
      */
     @Override
@@ -281,6 +283,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Get a player's saved UUID entry
+     *
      * @param player the player to look for
      * @return their UID
      * @throws SQLException
@@ -288,7 +291,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     @Override
     public String getStatUIDFromPlayer(Player player) throws SQLException {
         ResultSet result = executeQuery("SELECT `uid` FROM `" + dbTable + "` WHERE `name` = '" + player.getName() + "';", false);
-        while (result.next()) {
+        if (result.next()) {
             return result.getString("uid");
         }
         return "";
@@ -296,16 +299,17 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Get the top players sorted by a given column
-     * @param amount the amount to return
-     * @param orderBy the column to sort by
+     *
+     * @param amount    the amount to return
+     * @param orderBy   the column to sort by
      * @param ascending true if ascending order, false otherwise
-     * @return a set of all stats from the top players
+     * @return a list of all stats from the top players
      * @throws SQLException
      */
     @Override
     public List<PlayerStatistic> getTopSorted(int amount, String orderBy, boolean ascending) throws SQLException {
         String query = "SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`,`elo` FROM `" +
-                dbTable + "` WHERE 1 ORDER BY `" + orderBy + "` " + (ascending?"ASC":"DESC") + " LIMIT " + amount + ";";
+                dbTable + "` WHERE 1 ORDER BY `" + orderBy + "` " + (ascending ? "ASC" : "DESC") + " LIMIT " + amount + ";";
 
         List<PlayerStatistic> list = new ArrayList<>();
 
@@ -328,6 +332,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Check whether an entry matches a player UUID
+     *
      * @param uuid the UUID to find
      * @return true if found, false otherwise
      */
@@ -343,8 +348,9 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Increase player death count, update ELO score and reset streak
+     *
      * @param uuid the player's UUID
-     * @param elo the new ELO rating
+     * @param elo  the new ELO rating
      */
     @Override
     public void increaseDeaths(UUID uuid, int elo) {
@@ -358,8 +364,9 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Increase player kill count, update ELO score and the max and current streak
+     *
      * @param uuid the player's UUID
-     * @param elo the new ELO rating
+     * @param elo  the new ELO rating
      */
     @Override
     public void increaseKillsAndMaxStreak(UUID uuid, int elo) {
@@ -374,8 +381,9 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Increase player kill count, update ELO score and the current streak
+     *
      * @param uuid the player's UUID
-     * @param elo the new ELO rating
+     * @param elo  the new ELO rating
      */
     @Override
     public void increaseKillsAndStreak(UUID uuid, int elo) {
@@ -389,10 +397,19 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     }
 
     /**
+     * @return whether the connection was established properly
+     */
+    @Override
+    public boolean isConnected() {
+        return this.databaseConnection != null;
+    }
+
+    /**
      * Set specific statistical value of a player
+     *
      * @param playerName the player to find
-     * @param entry the entry to set
-     * @param value the value to set
+     * @param entry      the entry to set
+     * @param value      the value to set
      */
     @Override
     public void setSpecificStat(String playerName, String entry, int value) throws SQLException {
@@ -401,6 +418,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
     /**
      * Set the UUID of a certain player entry
+     *
      * @param player the player to find and update
      * @throws SQLException
      */

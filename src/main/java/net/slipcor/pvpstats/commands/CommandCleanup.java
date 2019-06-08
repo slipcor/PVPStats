@@ -1,8 +1,8 @@
 package net.slipcor.pvpstats.commands;
 
-import net.slipcor.pvpstats.Language;
-import net.slipcor.pvpstats.PSMySQL;
 import net.slipcor.pvpstats.PVPStats;
+import net.slipcor.pvpstats.api.DatabaseAPI;
+import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
@@ -20,7 +20,7 @@ public class CommandCleanup extends AbstractCommand {
             return;
         }
 
-        final int count = PSMySQL.clean();
+        final int count = DatabaseAPI.clean();
         PVPStats.getInstance().sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
     }
 

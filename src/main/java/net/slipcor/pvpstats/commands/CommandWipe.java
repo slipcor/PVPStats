@@ -1,8 +1,8 @@
 package net.slipcor.pvpstats.commands;
 
-import net.slipcor.pvpstats.Language;
-import net.slipcor.pvpstats.PSMySQL;
 import net.slipcor.pvpstats.PVPStats;
+import net.slipcor.pvpstats.api.DatabaseAPI;
+import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
@@ -21,11 +21,11 @@ public class CommandWipe extends AbstractCommand {
         }
 
         if (args.length < 2) {
-            PSMySQL.wipe(null);
+            DatabaseAPI.wipe(null);
             PVPStats.getInstance().sendPrefixed(sender, Language.MSG_WIPED.toString());
         } else {
-            PSMySQL.wipe(args[1]);
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_WIPED.toString(args[1]));
+            DatabaseAPI.wipe(args[1]);
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_WIPEDFOR.toString(args[1]));
         }
     }
 

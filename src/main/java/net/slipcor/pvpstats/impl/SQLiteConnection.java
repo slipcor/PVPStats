@@ -1,12 +1,15 @@
 package net.slipcor.pvpstats.impl;
 
 import net.slipcor.pvpstats.PVPStats;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.*;
-import java.util.*;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SQLiteConnection extends AbstractSQLConnection {
     // SQL connection details
@@ -18,6 +21,8 @@ public class SQLiteConnection extends AbstractSQLConnection {
     }
 
     /**
+     * Try to connect to the database
+     *
      * @param printError should we print errors that we encounter?
      * @return true if the connection was made successfully, false otherwise.
      */
@@ -40,15 +45,14 @@ public class SQLiteConnection extends AbstractSQLConnection {
     }
 
     /**
+     * Check whether a table exists
+     *
      * @param database The database to check for the table in.
      * @param table    The table to check for existence.
      * @return true if the table exists, false if there was an error or the database doesn't exist.
-     * <p/>
-     * This method looks through the information schema that comes with a MySQL installation and checks
-     * if a certain table exists within a database.
      */
     public boolean tableExists(String database, String table) {
-        String query = "SELECT name FROM sqlite_master WHERE type='table' AND name='"+table+"'";
+        String query = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + table + "'";
         try {
             ResultSet set = executeQuery(query, false);
             return set != null && set.next();
@@ -65,7 +69,8 @@ public class SQLiteConnection extends AbstractSQLConnection {
      */
 
     /**
-     * create the kill stat table
+     * Create the kill stat table
+     *
      * @param printError should we print errors that we encounter?
      */
     @Override
@@ -83,7 +88,8 @@ public class SQLiteConnection extends AbstractSQLConnection {
     }
 
     /**
-     * create the statistics table
+     * Create the statistics table
+     *
      * @param printError should we print errors that we encounter?
      */
     @Override
@@ -106,6 +112,7 @@ public class SQLiteConnection extends AbstractSQLConnection {
 
     /**
      * Delete all statistics by ID
+     *
      * @param list the list of IDs to delete
      * @throws SQLException
      */
@@ -133,7 +140,8 @@ public class SQLiteConnection extends AbstractSQLConnection {
 
     /**
      * Get ALL statistics player names and entry IDs
-     * @return a set of all entry IDs and player names
+     *
+     * @return a map of all entry IDs and player names
      * @throws SQLException
      */
     @Override

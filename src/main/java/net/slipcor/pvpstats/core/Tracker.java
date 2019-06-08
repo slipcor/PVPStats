@@ -1,4 +1,4 @@
-package net.slipcor.pvpstats;
+package net.slipcor.pvpstats.core;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -17,7 +17,7 @@ import java.net.URLEncoder;
  */
 
 public class Tracker implements Runnable {
-    private Plugin plugin;
+    private final Plugin plugin;
 
     public Tracker(Plugin p) {
         plugin = p;

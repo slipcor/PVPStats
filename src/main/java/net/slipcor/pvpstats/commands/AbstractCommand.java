@@ -1,13 +1,16 @@
 package net.slipcor.pvpstats.commands;
 
 
-import net.slipcor.pvpstats.Language;
+import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A base class for commands to fully implement
+ */
 public abstract class AbstractCommand {
     final String[] perms;
 
@@ -15,6 +18,14 @@ public abstract class AbstractCommand {
         perms = permissions.clone();
     }
 
+    /**
+     * Are the given arguments of valid count?
+     *
+     * @param sender      the sender issuing the command
+     * @param args        the arguments given
+     * @param validCounts valid argument counts
+     * @return whether the amount of arguments is valid
+     */
     static boolean argCountValid(final CommandSender sender, final String[] args,
                                  final Integer[] validCounts) {
 
@@ -28,16 +39,40 @@ public abstract class AbstractCommand {
         return false;
     }
 
+    /**
+     * Do what the command is supposed to do
+     *
+     * @param sender the sender issuing the command
+     * @param args   the command arguments
+     */
     public abstract void commit(CommandSender sender, String[] args);
 
-    public abstract List<String> getMain();
+    /**
+     * @return a list of command names
+     */
+    protected abstract List<String> getMain();
 
+    /**
+     * @return the command class name
+     */
     public abstract String getName();
 
-    public abstract List<String> getShort();
+    /**
+     * @return a list of command shorthand names
+     */
+    protected abstract List<String> getShort();
 
+    /**
+     * @return an info text explaining the command
+     */
     public abstract String getShortInfo();
 
+    /**
+     * Check whether a sender has the permission to use this command
+     *
+     * @param sender the sender trying to issue the command
+     * @return whether they have the permission
+     */
     public boolean hasPerms(final CommandSender sender) {
         for (final String perm : perms) {
             if (sender.hasPermission(perm)) {
@@ -47,6 +82,12 @@ public abstract class AbstractCommand {
         return false;
     }
 
+    /**
+     * Load the command into the plugin's command list and map
+     *
+     * @param list the list to add to
+     * @param map  the map to add to
+     */
     public void load(final List<AbstractCommand> list, final Map<String, AbstractCommand> map) {
         for (String sShort : getShort()) {
             map.put(sShort, this);
@@ -57,10 +98,18 @@ public abstract class AbstractCommand {
         list.add(this);
     }
 
+    // TODO: add tab completion
     public List<String> completeTab(String[] args) {
         return new ArrayList<>(); // we have no arguments
     }
 
+    /**
+     * Helper function to join an array of strings together
+     *
+     * @param array the array to join
+     * @param glue  the joining string, can be empty
+     * @return a joined string
+     */
     private static String joinArray(final Object[] array, final String glue) {
         final StringBuilder result = new StringBuilder();
         for (final Object o : array) {

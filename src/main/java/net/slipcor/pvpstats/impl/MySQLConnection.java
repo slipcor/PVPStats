@@ -1,10 +1,11 @@
 package net.slipcor.pvpstats.impl;
 
-
-import org.bukkit.entity.Player;
-
-import java.sql.*;
-import java.util.*;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Based on MySQLConnection by Jesika(Kaitlyn) Tremaine aka JesiKat
@@ -27,10 +28,11 @@ public class MySQLConnection extends AbstractSQLConnection {
     }
 
     /**
+     * Try to connect to the database
+     *
      * @param printError should we print errors that we encounter?
      * @return true if the connection was made successfully, false otherwise.
      */
-    @Override
     public boolean connect(boolean printError) {
         try {
             this.databaseConnection = DriverManager.getConnection("jdbc:mysql://" + this.dbUrl + this.dbOptions, this.dbUsername, this.dbPassword);
@@ -45,12 +47,11 @@ public class MySQLConnection extends AbstractSQLConnection {
     }
 
     /**
+     * Check whether a table exists
+     *
      * @param database The database to check for the table in.
      * @param table    The table to check for existence.
      * @return true if the table exists, false if there was an error or the database doesn't exist.
-     * <p/>
-     * This method looks through the information schema that comes with a MySQL installation and checks
-     * if a certain table exists within a database.
      */
     public boolean tableExists(String database, String table) {
         String format = "SELECT * FROM `information_schema`.`TABLES` WHERE TABLE_SCHEMA = '$DB' && TABLE_NAME = '$TABLE';";
@@ -68,7 +69,8 @@ public class MySQLConnection extends AbstractSQLConnection {
      */
 
     /**
-     * create the kill stat table
+     * Create the kill stat table
+     *
      * @param printError should we print errors that we encounter?
      */
     @Override
@@ -88,7 +90,8 @@ public class MySQLConnection extends AbstractSQLConnection {
     }
 
     /**
-     * create the statistics table
+     * Create the statistics table
+     *
      * @param printError should we print errors that we encounter?
      */
     @Override
@@ -113,6 +116,7 @@ public class MySQLConnection extends AbstractSQLConnection {
 
     /**
      * Delete all statistics by ID
+     *
      * @param list the list of IDs to delete
      * @throws SQLException
      */
@@ -140,7 +144,8 @@ public class MySQLConnection extends AbstractSQLConnection {
 
     /**
      * Get ALL statistics player names and entry IDs
-     * @return a set of all entry IDs and player names
+     *
+     * @return a map of all entry IDs and player names
      * @throws SQLException
      */
     @Override

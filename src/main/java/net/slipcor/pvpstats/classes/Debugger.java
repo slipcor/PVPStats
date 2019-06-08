@@ -1,5 +1,6 @@
-package net.slipcor.pvpstats;
+package net.slipcor.pvpstats.classes;
 
+import net.slipcor.pvpstats.PVPStats;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -9,22 +10,18 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.*;
 import java.util.logging.Formatter;
+import java.util.logging.*;
 
 
 /**
- * <pre>
- * Debug class
- * </pre>
- * <p/>
- * provides methods for logging when in debug mode
+ * Debugger class, provides methods for logging when in debug mode
  *
  * @author slipcor
  */
 
-public class Debug {
-    public static boolean override;
+public class Debugger {
+    private static boolean override;
     private static boolean server_log;
 
     private static final String prefix = "[PS-debug] ";
@@ -36,10 +33,10 @@ public class Debug {
     private static Logger logger;
 
     private static final List<Logger> loggers = new ArrayList<>();
-    private static final List<Debug> debugs = new ArrayList<>();
+    private static final List<Debugger> DEBUGGERS = new ArrayList<>();
     private boolean active;
 
-    public Debug(final int iID) {
+    public Debugger(final int iID) {
         debugID = iID;
     }
 
@@ -81,7 +78,7 @@ public class Debug {
     /**
      * does this class debug?
      *
-     * @return true if debugs, false otherwise
+     * @return true if DEBUGGERS, false otherwise
      */
     private boolean debugs() {
         return override || active || check.contains(debugID) || check.contains(666);
@@ -150,10 +147,8 @@ public class Debug {
             }
 
         } else {
-
-            server_log = instance.getConfig().getBoolean("server_log");
             if ("on".equalsIgnoreCase(debugs) || "full".equalsIgnoreCase(debugs)) {
-                Debug.check.add(666);
+                Debugger.check.add(666);
                 override = true;
                 if (isPlayer) {
                     sender.sendMessage("debugging on!");
@@ -169,7 +164,7 @@ public class Debug {
                 }
                 for (final String s : sIds) {
                     try {
-                        Debug.check.add(Integer.valueOf(s));
+                        Debugger.check.add(Integer.valueOf(s));
                     } catch (final Exception e) {
                         strings.add(s);
                     }
@@ -184,13 +179,13 @@ public class Debug {
 
     public static void destroy() {
 
-        for (final Logger log : Debug.loggers) {
+        for (final Logger log : Debugger.loggers) {
             final Handler[] handlers = log.getHandlers().clone();
             for (final Handler hand : handlers) {
                 log.removeHandler(hand);
             }
         }
-        Debug.loggers.clear();
+        Debugger.loggers.clear();
     }
 
 
@@ -198,7 +193,7 @@ public class Debug {
 
         private final SimpleDateFormat date;
 
-        public static LogFileFormatter newInstance() {
+        static LogFileFormatter newInstance() {
             return new LogFileFormatter();
         }
 

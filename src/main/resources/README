@@ -1,3 +1,4 @@
+v1.3.0 - this will be the last rewrite for a while, a lot of classes have been renamed and a lot of JavaDocs have been added
 v1.2.1 - new command /pvp set [player] [type] [amount] to set specific player statistcs
 v1.2.0 - add YML support - use double caution!
 v1.1.0 - add SQLite support - use with caution!

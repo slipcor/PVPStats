@@ -1,8 +1,13 @@
-package net.slipcor.pvpstats;
+package net.slipcor.pvpstats.core;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
+/**
+ * A YML based language system implementation allowing for placeholders
+ *
+ * @author slipcor
+ */
 public enum Language {
     HEAD_LINE("head.line", "&7---------------"),
     HEAD_HEADLINE("head.headline", "&cPVP Stats Top &7%0% &c%1%"),
@@ -51,16 +56,25 @@ public enum Language {
         sDefault = content;
     }
 
-    public void override(final String value) {
+    private void override(final String value) {
         this.value = value;
     }
 
+    /**
+     * @return the node colorized content
+     */
     @Override
     public String toString() {
         final String result = (value == null) ? sDefault : value;
         return ChatColor.translateAlternateColorCodes('&', result);
     }
 
+    /**
+     * Return a colorized string with replaced placeholders
+     *
+     * @param args the placeholders to replace
+     * @return the replaced colorized string
+     */
     public String toString(String... args) {
         String result = value == null ? sDefault : value;
         for (int pos = 0; pos < args.length; pos++) {

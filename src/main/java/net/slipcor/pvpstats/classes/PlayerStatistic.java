@@ -1,12 +1,15 @@
-package net.slipcor.pvpstats.impl;
+package net.slipcor.pvpstats.classes;
 
+/**
+ * A container class that holds all player stats, used when handling database results
+ */
 public class PlayerStatistic {
-    private String name;
-    private int kills;
-    private int deaths;
-    private int streak;
-    private int currentstreak;
-    private int elo;
+    private final String name;
+    private final int kills;
+    private final int deaths;
+    private final int streak;
+    private final int currentstreak;
+    private final int elo;
 
     public PlayerStatistic(String name, int kills, int deaths, int streak, int currentstreak, int elo) {
         this.name = name;

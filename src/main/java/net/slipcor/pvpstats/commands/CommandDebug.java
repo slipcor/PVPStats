@@ -1,9 +1,8 @@
 package net.slipcor.pvpstats.commands;
 
-import net.slipcor.pvpstats.Debug;
-import net.slipcor.pvpstats.Language;
-import net.slipcor.pvpstats.PSMySQL;
 import net.slipcor.pvpstats.PVPStats;
+import net.slipcor.pvpstats.classes.Debugger;
+import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
@@ -23,12 +22,12 @@ public class CommandDebug extends AbstractCommand {
         if (!argCountValid(sender, args, new Integer[]{2})) {
             return;
         }
-        Debug.destroy();
+        Debugger.destroy();
         if (args.length > 1) {
             PVPStats.getInstance().getConfig().set("debug", args[1]);
         }
 
-        Debug.load(PVPStats.getInstance(), sender);
+        Debugger.load(PVPStats.getInstance(), sender);
     }
 
     @Override

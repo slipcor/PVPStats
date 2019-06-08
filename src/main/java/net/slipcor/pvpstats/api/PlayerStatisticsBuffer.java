@@ -1,12 +1,19 @@
-package net.slipcor.pvpstats;
+package net.slipcor.pvpstats.api;
+
+import net.slipcor.pvpstats.PVPStats;
+import net.slipcor.pvpstats.core.Config;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * class for full access to player statistics
+ * Class for fast temporary access to player statistics
+ * <p>
+ * Should never used to SET variables, only for quick access to existing values
+ *
+ * @author slipcor
  */
-public final class PVPData {
+public final class PlayerStatisticsBuffer {
 
     private static Map<String, Integer> kills = new HashMap<>();
     private static Map<String, Integer> deaths = new HashMap<>();
@@ -14,21 +21,21 @@ public final class PVPData {
     private static Map<String, Integer> maxStreaks = new HashMap<>();
     private static Map<String, Integer> eloScore = new HashMap<>();
 
-    private PVPData() {
+    private PlayerStatisticsBuffer() {
     }
 
     /**
-     * increase a player killstreak - eventually increases the maximum killstreak
+     * Increase a player killstreak - eventually increases the maximum killstreak
      *
      * @param name the player name to handle
-     * @return true if the maximum streak should be increased database wise
+     * @return true if the maximum streak should be increased wise
      */
     public static boolean addStreak(String name) {
         final int streak = streaks.get(name) + 1;
         streaks.put(name, streak);
         if (hasMaxStreak(name)) {
-            if (PVPData.maxStreaks.get(name) < streak) {
-                PVPData.maxStreaks.put(name, Math.max(PVPData.maxStreaks.get(name), streak));
+            if (PlayerStatisticsBuffer.maxStreaks.get(name) < streak) {
+                PlayerStatisticsBuffer.maxStreaks.put(name, Math.max(PlayerStatisticsBuffer.maxStreaks.get(name), streak));
                 return true;
             }
         } else {
@@ -43,20 +50,28 @@ public final class PVPData {
     }
 
     /**
-     * clear a player's temporary variables
+     * Clear a player's temporary variables
      *
-     * @param name the player to clear
+     * @param name the player to clear, null to clear everything
      */
     public static void clear(String name) {
-        clearDeaths(name);
-        clearKills(name);
-        clearMaxStreak(name);
-        clearStreak(name);
-        clearEloScore(name);
+        if (name == null) {
+            deaths.clear();
+            kills.clear();
+            maxStreaks.clear();
+            streaks.clear();
+            eloScore.clear();
+        } else {
+            clearDeaths(name);
+            clearKills(name);
+            clearMaxStreak(name);
+            clearStreak(name);
+            clearEloScore(name);
+        }
     }
 
     /**
-     * clear a player's death count
+     * Clear a player's death count
      *
      * @param name the player to clear
      */
@@ -65,7 +80,7 @@ public final class PVPData {
     }
 
     /**
-     * clear a player's kill count
+     * Clear a player's kill count
      *
      * @param name the player to clear
      */
@@ -74,7 +89,7 @@ public final class PVPData {
     }
 
     /**
-     * clear a player's maximum kill streak
+     * Clear a player's maximum kill streak
      *
      * @param name the player to clear
      */
@@ -83,7 +98,7 @@ public final class PVPData {
     }
 
     /**
-     * clear a player's current kill streak
+     * Clear a player's current kill streak
      *
      * @param name the player to clear
      */
@@ -92,7 +107,7 @@ public final class PVPData {
     }
 
     /**
-     * clear a player's current elo score
+     * Clear a player's current elo score
      *
      * @param name the player to read
      */
@@ -101,7 +116,7 @@ public final class PVPData {
     }
 
     /**
-     * get a player's death count
+     * Get a player's death count
      *
      * @param name the player to read
      * @return the player's death count
@@ -111,13 +126,13 @@ public final class PVPData {
             return deaths.get(name);
         }
 
-        final int value = PSMySQL.getEntry(name, "deaths");
+        final int value = DatabaseAPI.getEntry(name, "deaths");
         deaths.put(name, value);
         return value;
     }
 
     /**
-     * get a player's kill count
+     * Get a player's kill count
      *
      * @param name the player to read
      * @return the player's kill count
@@ -127,13 +142,13 @@ public final class PVPData {
             return kills.get(name);
         }
 
-        final int value = PSMySQL.getEntry(name, "kills");
+        final int value = DatabaseAPI.getEntry(name, "kills");
         kills.put(name, value);
         return value;
     }
 
     /**
-     * get a player's maximum kill streak
+     * Get a player's maximum kill streak
      *
      * @param name the player to read
      * @return the player's maximum kill streak
@@ -143,13 +158,13 @@ public final class PVPData {
             return maxStreaks.get(name);
         }
 
-        final int value = PSMySQL.getEntry(name, "streak");
+        final int value = DatabaseAPI.getEntry(name, "streak");
         maxStreaks.put(name, value);
         return value;
     }
 
     /**
-     * get a player's current kill streak
+     * Get a player's current kill streak
      *
      * @param name the player to read
      * @return the player's current kill streak
@@ -159,13 +174,13 @@ public final class PVPData {
             return streaks.get(name);
         }
 
-        final int value = PSMySQL.getEntry(name, "currentstreak");
+        final int value = DatabaseAPI.getEntry(name, "currentstreak");
         streaks.put(name, value);
         return value;
     }
 
     /**
-     * get a player's current elo score
+     * Get a player's current elo score
      *
      * @param name the player to read
      * @return the player's current elo score
@@ -175,20 +190,20 @@ public final class PVPData {
             return eloScore.get(name);
         }
 
-        final int value = PSMySQL.getEntry(name, "elo");
+        final int value = DatabaseAPI.getEntry(name, "elo");
 
         if (value > 0) {
             eloScore.put(name, value);
             return value;
         }
 
-        Integer idefault = PVPStats.getInstance().getConfig().getInt("eloscore.default");
+        Integer idefault = PVPStats.getInstance().config().getInt(Config.Entry.ELO_DEFAULT);
         eloScore.put(name, idefault);
         return idefault;
     }
 
     /**
-     * does a player already have a maximum kill streak
+     * Does a player already have a maximum kill streak
      *
      * @param name the player to check
      * @return true if the player has a maximum kill streak
@@ -198,7 +213,7 @@ public final class PVPData {
     }
 
     /**
-     * does a player already have a kill streak
+     * Does a player already have a kill streak
      *
      * @param name the player to check
      * @return true if the player has a kill streak
@@ -208,7 +223,7 @@ public final class PVPData {
     }
 
     /**
-     * does a player already have a elo score
+     * Does a player already have a elo score
      *
      * @param name the player to check
      * @return true if the player has a elo score
@@ -218,7 +233,7 @@ public final class PVPData {
     }
 
     /**
-     * force set a player's death count - this does NOT update the database!
+     * Force set a player's death count - this does NOT update the database!
      *
      * @param name  the player to update
      * @param value the value to set
@@ -228,7 +243,7 @@ public final class PVPData {
     }
 
     /**
-     * force set a player's kill count - this does NOT update the database!
+     * Force set a player's kill count - this does NOT update the database!
      *
      * @param name  the player to update
      * @param value the value to set
@@ -238,7 +253,7 @@ public final class PVPData {
     }
 
     /**
-     * force set a player's max killstreak count - this does NOT update the database!
+     * Force set a player's max killstreak count - this does NOT update the database!
      *
      * @param name  the player to update
      * @param value the value to set
@@ -248,7 +263,7 @@ public final class PVPData {
     }
 
     /**
-     * force set a player's killstreak count - this does NOT update the database!
+     * Force set a player's killstreak count - this does NOT update the database!
      *
      * @param name  the player to update
      * @param value the value to set
@@ -258,7 +273,7 @@ public final class PVPData {
     }
 
     /**
-     * force set a player's elo score - this does NOT update the database!
+     * Force set a player's elo score - this does NOT update the database!
      *
      * @param name  the player to update
      * @param value the value to set

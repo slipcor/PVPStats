@@ -1,8 +1,8 @@
 package net.slipcor.pvpstats.commands;
 
-import net.slipcor.pvpstats.Language;
-import net.slipcor.pvpstats.PSMySQL;
 import net.slipcor.pvpstats.PVPStats;
+import net.slipcor.pvpstats.api.DatabaseAPI;
+import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
@@ -36,13 +36,13 @@ public class CommandPurge extends AbstractCommand {
 
         if (args.length > 1) {
             if (args[1].equalsIgnoreCase("specific")) {
-                final int count = PSMySQL.purgeKillStats(days);
+                final int count = DatabaseAPI.purgeKillStats(days);
                 PVPStats.getInstance().sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
             } else if (args[1].equalsIgnoreCase("standard")) {
-                final int count = PSMySQL.purgeStats(days);
+                final int count = DatabaseAPI.purgeStats(days);
                 PVPStats.getInstance().sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
             } else if (args[1].equalsIgnoreCase("both")) {
-                final int count = PSMySQL.purgeKillStats(days) + PSMySQL.purgeStats(days);
+                final int count = DatabaseAPI.purgeKillStats(days) + DatabaseAPI.purgeStats(days);
                 PVPStats.getInstance().sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
             } else {
                 PVPStats.getInstance().sendPrefixed(sender, "/pvpstats purge [specific | standard | both] [days]");

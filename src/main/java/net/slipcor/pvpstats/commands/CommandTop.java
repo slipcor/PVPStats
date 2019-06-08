@@ -1,8 +1,8 @@
 package net.slipcor.pvpstats.commands;
 
-import net.slipcor.pvpstats.Language;
-import net.slipcor.pvpstats.PSMySQL;
 import net.slipcor.pvpstats.PVPStats;
+import net.slipcor.pvpstats.api.DatabaseAPI;
+import net.slipcor.pvpstats.core.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -64,7 +64,7 @@ public class CommandTop extends AbstractCommand {
 
                         @Override
                         public void run() {
-                            String[] top = PSMySQL.top(amount, name);
+                            String[] top = DatabaseAPI.top(amount, name);
                             sender.sendMessage(Language.HEAD_LINE.toString());
                             sender.sendMessage(Language.HEAD_HEADLINE.toString(
                                     String.valueOf(amount),
@@ -117,7 +117,7 @@ public class CommandTop extends AbstractCommand {
 
                     @Override
                     public void run() {
-                        final String[] top = PSMySQL.top(count, "K-D");
+                        final String[] top = DatabaseAPI.top(count, "K-D");
                         sender.sendMessage(Language.HEAD_LINE.toString());
                         sender.sendMessage(Language.HEAD_HEADLINE.toString(
                                 args[0],
@@ -125,14 +125,12 @@ public class CommandTop extends AbstractCommand {
                         sender.sendMessage(Language.HEAD_LINE.toString());
                         int pos = 1;
                         for (String stat : top) {
-                            sender.sendMessage(String.valueOf(pos++) + ": " + stat);
+                            sender.sendMessage(pos++ + ": " + stat);
                         }
                     }
 
                 }
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new RunLater(count));
-
-                return;
             } catch (Exception e) {
                 e.printStackTrace();
             }

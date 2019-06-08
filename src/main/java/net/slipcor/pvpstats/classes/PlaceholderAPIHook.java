@@ -1,9 +1,12 @@
-package net.slipcor.pvpstats;
+package net.slipcor.pvpstats.classes;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
 import org.bukkit.entity.Player;
 
 /**
+ * Hook class to hook into the Placeholder API
+ * <p>
  * Created by Yaël on 27/02/2016.
  * Updated with code by extendedclip on 15/05/2019
  */
@@ -16,11 +19,6 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     @Override
     public String getAuthor() {
         return "SLiPCoR";
-    }
-
-    @Override
-    public String getPlugin() {
-        return null;
     }
 
     @Override
@@ -37,23 +35,23 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     public String onPlaceholderRequest(Player player, String s) {
 
         if (s.equals("kills")) {
-            return String.valueOf(PVPData.getKills(player.getName()));
+            return String.valueOf(PlayerStatisticsBuffer.getKills(player.getName()));
         }
 
         if (s.equals("deaths")) {
-            return String.valueOf(PVPData.getDeaths(player.getName()));
+            return String.valueOf(PlayerStatisticsBuffer.getDeaths(player.getName()));
         }
 
         if (s.equals("streak")) {
-            return String.valueOf(PVPData.getStreak(player.getName()));
+            return String.valueOf(PlayerStatisticsBuffer.getStreak(player.getName()));
         }
 
         if (s.equals("maxstreak")) {
-            return String.valueOf(PVPData.getMaxStreak(player.getName()));
+            return String.valueOf(PlayerStatisticsBuffer.getMaxStreak(player.getName()));
         }
 
         if (s.equals("elo")) {
-            return String.valueOf(PVPData.getEloScore(player.getName()));
+            return String.valueOf(PlayerStatisticsBuffer.getEloScore(player.getName()));
         }
 
         return null;
