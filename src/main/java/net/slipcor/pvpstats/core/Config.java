@@ -26,6 +26,7 @@ public class Config {
     public Config(final JavaPlugin plugin) {
         super();
         this.plugin = plugin;
+        this.saveDefaultConfig();
         this.appendComments();
     }
 
@@ -224,6 +225,7 @@ public class Config {
      * On reloading, append the comments
      */
     public void reload() {
+        saveDefaultConfig();
         appendComments();
     }
 
@@ -234,6 +236,7 @@ public class Config {
      * already.
      */
     private void appendComments() {
+
         final File ymlFile = new File(plugin.getDataFolder(), "config.yml");
 
         try {
@@ -260,7 +263,7 @@ public class Config {
 
             while ((stringLine = reader.readLine()) != null) {
 
-                if (key == null && writer.toString().length() < 1 && !stringLine.startsWith("#")) {
+                if (key == null && writer.toString().length() < 1) {
                     writer.append("# === [ PVP Stats Config ] ===");
                     writer.newLine();
                 }
@@ -270,6 +273,7 @@ public class Config {
                     writer.close();
                     reader.close();
                     tempFile.delete();
+                    plugin.getLogger().warning("Config already has comments!");
                     return;
                 }
 
@@ -376,6 +380,18 @@ public class Config {
 
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Workaround to the config not updating defaults.
+     */
+    private void saveDefaultConfig() {
+        plugin.getConfig().options().copyDefaults(true);
+        try {
+            plugin.getConfig().save(new File(plugin.getDataFolder(), "config.yml"));
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -19,6 +19,8 @@ MySQL:
   options: ?autoReconnect=true
 # === [ SQLite Settings ] ===
 SQLite:
+  # database file name, plugin will append extension '.db'
+  filename: database
   # activate SQLite
   active: false
   # general statistic table name
@@ -27,9 +29,9 @@ SQLite:
   killtable: pvpkillstats
 # === [ YML Database Emulation Settings ] ===
 YML:
-  # general statistic table name
+  # general statistic file name, plugin will append extension '.yml'
   table: pvpstats
-  # kill statistic table name
+  # # kill statistic file name, plugin will append extension '.yml'
   killtable: pvpkillstats
 # === [ Statistic Settings ] ===
 statistics:

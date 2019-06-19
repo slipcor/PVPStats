@@ -143,6 +143,8 @@ public class PVPStats extends JavaPlugin {
     public void loadConfig() {
         DatabaseAPI.initiate(this);
 
+        config().reload();
+
         String dbHost = null;
         String dbUser = null;
         String dbPass = null;

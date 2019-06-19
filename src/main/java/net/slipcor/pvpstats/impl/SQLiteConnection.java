@@ -147,9 +147,9 @@ public class SQLiteConnection extends AbstractSQLConnection {
     @Override
     public Map<Integer, String> getStatsIDsAndNames() throws SQLException {
         Map<Integer, String> map = new LinkedHashMap<>();
-        ResultSet result = executeQuery("SELECT `oid`, `name` FROM `" + dbTable + "` WHERE 1 ORDER BY `kills` DESC;", false);
+        ResultSet result = executeQuery("SELECT `rowid`, `name` FROM `" + dbTable + "` WHERE 1 ORDER BY `kills` DESC;", false);
         while (result.next()) {
-            map.put(result.getInt("oid"), result.getString("name"));
+            map.put(result.getInt("rowid"), result.getString("name"));
         }
         return map;
     }
