@@ -177,11 +177,15 @@ public class PVPStats extends JavaPlugin {
             dbTable = config().get(Config.Entry.SQLITE_TABLE);
             if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
                 dbKillTable = config().get(Config.Entry.SQLITE_KILLTABLE);
+                getLogger().warning("Specific stats can be turned off as they are never used, they are intended for SQL and web frontend usage!");
+                getLogger().warning("We recommend you set '" + Config.Entry.STATISTICS_COLLECT_PRECISE.getNode() + "' to false");
             }
         } else {
             dbTable = config().get(Config.Entry.YML_TABLE);
             if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
                 dbKillTable = config().get(Config.Entry.MYSQL_KILLTABLE);
+                getLogger().warning("Specific stats can be turned off as they are never used, they are intended for SQL and web frontend usage!");
+                getLogger().warning("We recommend you set '" + Config.Entry.STATISTICS_COLLECT_PRECISE.getNode() + "' to false");
             }
         }
 
