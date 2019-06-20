@@ -25,6 +25,28 @@ public final class PlayerStatisticsBuffer {
     }
 
     /**
+     * Increase a player's death count
+     *
+     * @param playerName the player's name
+     */
+    public static void addDeath(String playerName) {
+        int value = deaths.containsKey(playerName) ? deaths.get(playerName) : 0;
+
+        deaths.put(playerName, ++value);
+    }
+
+    /**
+     * Increase a player's kill count
+     *
+     * @param playerName the player's name
+     */
+    public static void addKill(String playerName) {
+        int value = kills.containsKey(playerName) ? kills.get(playerName) : 0;
+
+        kills.put(playerName, ++value);
+    }
+
+    /**
      * Increase a player killstreak - eventually increases the maximum killstreak
      *
      * @param name the player name to handle

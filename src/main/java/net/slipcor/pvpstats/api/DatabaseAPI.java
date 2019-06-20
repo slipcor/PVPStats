@@ -669,6 +669,11 @@ public final class DatabaseAPI {
 
         DEBUGGER.i("adding Kill: " + kill);
         plugin.getSQLHandler().addKill(playerName, uuid, kill);
+        if (kill) {
+            PlayerStatisticsBuffer.addKill(playerName);
+        } else {
+            PlayerStatisticsBuffer.addDeath(playerName);
+        }
     }
 
     private static boolean incDeath(final Player player, int elo) {

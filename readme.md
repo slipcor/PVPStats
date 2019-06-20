@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.3.1 - fix various weird issues with the config, causing all sorts of errors
+- v1.3.2 - address #15 and update kills and death for other plugins to get the current stats (e.g. placeholders)
 - [read more](doc/changelog.md)
 
 ***
