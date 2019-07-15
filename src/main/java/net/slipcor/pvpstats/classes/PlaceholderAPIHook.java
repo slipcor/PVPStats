@@ -32,7 +32,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, String s) {
+    public String onRequest(OfflinePlayer p, String s)
 
         if (s.equals("kills")) {
             return String.valueOf(PlayerStatisticsBuffer.getKills(player.getName()));
