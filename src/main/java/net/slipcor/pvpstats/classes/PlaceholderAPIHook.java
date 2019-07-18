@@ -35,23 +35,23 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     public String onRequest(OfflinePlayer p, String s)
 
         if (s.equals("kills")) {
-            return String.valueOf(PlayerStatisticsBuffer.getKills(player.getName()));
+            return String.valueOf(PlayerStatisticsBuffer.getKills(p.getName()));
         }
 
         if (s.equals("deaths")) {
-            return String.valueOf(PlayerStatisticsBuffer.getDeaths(player.getName()));
+            return String.valueOf(PlayerStatisticsBuffer.getDeaths(p.getName()));
         }
 
         if (s.equals("streak")) {
-            return String.valueOf(PlayerStatisticsBuffer.getStreak(player.getName()));
+            return String.valueOf(PlayerStatisticsBuffer.getStreak(p.getName()));
         }
 
         if (s.equals("maxstreak")) {
-            return String.valueOf(PlayerStatisticsBuffer.getMaxStreak(player.getName()));
+            return String.valueOf(PlayerStatisticsBuffer.getMaxStreak(p.getName()));
         }
 
         if (s.equals("elo")) {
-            return String.valueOf(PlayerStatisticsBuffer.getEloScore(player.getName()));
+            return String.valueOf(PlayerStatisticsBuffer.getEloScore(p.getName()));
         }
 
         return null;
