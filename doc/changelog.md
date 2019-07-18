@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.3.4 - use OfflinePlayer when hooking to Placeholder API
 - v1.3.3 - add warning if precise kill stat collection is activated, as these stats show up nowhere in the plugin or API
 - v1.3.2 - address #15 and update kills and death for other plugins to get the current stats (e.g. placeholders)
 - v1.3.1 - fix various weird issues with the config, causing all sorts of errors

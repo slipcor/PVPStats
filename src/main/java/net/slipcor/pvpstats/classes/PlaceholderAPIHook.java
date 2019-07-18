@@ -2,7 +2,7 @@ package net.slipcor.pvpstats.classes;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 
 /**
  * Hook class to hook into the Placeholder API
@@ -23,7 +23,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     @Override
     public String getVersion() {
-        return "0.0.1";
+        return "0.0.2";
     }
 
     @Override
@@ -32,7 +32,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     }
 
     @Override
-    public String onRequest(OfflinePlayer p, String s)
+    public String onRequest(OfflinePlayer player, String s) {
 
         if (s.equals("kills")) {
             return String.valueOf(PlayerStatisticsBuffer.getKills(player.getName()));
