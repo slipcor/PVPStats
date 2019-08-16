@@ -1,5 +1,7 @@
 package net.slipcor.pvpstats.impl;
 
+import org.bukkit.Bukkit;
+
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -75,12 +77,14 @@ public class MySQLConnection extends AbstractSQLConnection {
      */
     @Override
     public void createKillStatsTable(boolean printError) {
+        String world = Bukkit.getServer().getWorlds().get(0).getName();
         final String query2 = "CREATE TABLE `" + dbKillTable + "` ( " +
                 "`id` int(16) NOT NULL AUTO_INCREMENT, " +
                 "`name` varchar(42) NOT NULL, " +
                 "`uid` varchar(42), " +
                 "`kill` int(1) not null default 0, " +
                 "`time` int(16) not null default 0, " +
+                "`world` varchar(42) not null default '" + world + "', " +
                 "PRIMARY KEY (`id`) ) AUTO_INCREMENT=1 ;";
         try {
             executeQuery(query2, true);

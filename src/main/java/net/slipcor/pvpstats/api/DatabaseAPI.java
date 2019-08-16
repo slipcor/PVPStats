@@ -636,8 +636,9 @@ public final class DatabaseAPI {
      * @param kill         true if the player did a kill, false if they were killed
      * @param addMaxStreak should we increase the max streak?
      * @param elo          the new ELO score to set
+     * @param world        the world the kill happened in
      */
-    private static void checkAndDo(final String playerName, final UUID uuid, final boolean kill, final boolean addMaxStreak, int elo) {
+    private static void checkAndDo(final String playerName, final UUID uuid, final boolean kill, final boolean addMaxStreak, int elo, String world) {
 
         if (!plugin.getSQLHandler().hasEntry(uuid)) {
 
@@ -651,7 +652,7 @@ public final class DatabaseAPI {
             PlayerStatisticsBuffer.setKills(playerName, kills);
             PlayerStatisticsBuffer.setDeaths(playerName, deaths);
 
-            plugin.getSQLHandler().addKill(playerName, uuid, kill);
+            plugin.getSQLHandler().addKill(playerName, uuid, kill, world);
 
             return;
         }
@@ -668,7 +669,7 @@ public final class DatabaseAPI {
         }
 
         DEBUGGER.i("adding Kill: " + kill);
-        plugin.getSQLHandler().addKill(playerName, uuid, kill);
+        plugin.getSQLHandler().addKill(playerName, uuid, kill, world);
         if (kill) {
             PlayerStatisticsBuffer.addKill(playerName);
         } else {
@@ -679,7 +680,7 @@ public final class DatabaseAPI {
     private static boolean incDeath(final Player player, int elo) {
         if (player.hasPermission("pvpstats.count")) {
             PlayerStatisticsBuffer.setStreak(player.getName(), 0);
-            checkAndDo(player.getName(), player.getUniqueId(), false, false, elo);
+            checkAndDo(player.getName(), player.getUniqueId(), false, false, elo, player.getWorld().getName());
             return true;
         }
         return false;
@@ -703,7 +704,7 @@ public final class DatabaseAPI {
                 }
 
             }
-            checkAndDo(player.getName(), player.getUniqueId(), true, incMaxStreak, elo);
+            checkAndDo(player.getName(), player.getUniqueId(), true, incMaxStreak, elo, player.getWorld().getName());
             return true;
         }
         return false;

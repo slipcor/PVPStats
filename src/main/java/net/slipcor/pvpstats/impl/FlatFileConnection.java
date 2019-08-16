@@ -62,6 +62,18 @@ public class FlatFileConnection implements DatabaseConnection {
     }
 
     /**
+     * Check whether the database has a column
+     *
+     * @param tableName the table to check
+     * @param column the column to find
+     * @return whether the database has this column
+     */
+    @Override
+    public boolean hasColumn(String tableName, String column) {
+        return true;
+    }
+
+    /**
      * Check whether a table exists
      *
      * @param database The database to check for the table in.
@@ -71,6 +83,18 @@ public class FlatFileConnection implements DatabaseConnection {
     public boolean tableExists(String database, String table) {
         File file = new File(PVPStats.getInstance().getDataFolder(), table + ".yml");
         return file.exists();
+    }
+    /*
+     * ----------------------
+     *  TABLE UPDATES
+     * ----------------------
+     */
+
+    /**
+     * Add the world column to the database structure
+     */
+    @Override
+    public void addWorldColumn() {
     }
 
     /*
@@ -122,9 +146,10 @@ public class FlatFileConnection implements DatabaseConnection {
      * @param playerName the player's name
      * @param uuid       the player's uuid
      * @param kill       true if they did kill, false if they were killed
+     * @param world      the world in which the kill happened
      */
     @Override
-    public void addKill(String playerName, UUID uuid, boolean kill) {
+    public void addKill(String playerName, UUID uuid, boolean kill, String world) {
         if (!collectPrecise) {
             return;
         }

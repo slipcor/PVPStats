@@ -37,6 +37,17 @@ public interface DatabaseConnection {
 
     /*
      * ----------------------
+     *  TABLE UPDATES
+     * ----------------------
+     */
+
+    /**
+     * Add the world column to the database structure
+     */
+    void addWorldColumn();
+
+    /*
+     * ----------------------
      *  TABLE ENTRY CREATION
      * ----------------------
      */
@@ -58,8 +69,9 @@ public interface DatabaseConnection {
      * @param playerName the player's name
      * @param uuid       the player's uuid
      * @param kill       true if they did kill, false if they were killed
+     * @param world      the world name where the kill happened
      */
-    void addKill(String playerName, UUID uuid, boolean kill);
+    void addKill(String playerName, UUID uuid, boolean kill, String world);
 
     /**
      * Create the kill stat table
@@ -196,6 +208,14 @@ public interface DatabaseConnection {
      * @throws SQLException
      */
     List<PlayerStatistic> getTopSorted(int amount, String orderBy, boolean ascending) throws SQLException;
+
+    /**
+     * Check whether the database has a column
+     *
+     * @param column the column to find
+     * @return whether the database has this column
+     */
+    boolean hasColumn(String tableName, String column);
 
     /**
      * Check whether an entry matches a player UUID

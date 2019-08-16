@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.3.4 - use OfflinePlayer when hooking to Placeholder API
+- v1.3.5 - add kill world to the kill stats databases
 - [read more](doc/changelog.md)
 
 ***

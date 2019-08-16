@@ -240,6 +240,8 @@ public class PVPStats extends JavaPlugin {
                     getLogger().info("Creating table " + dbKillTable);
                     dbHandler.createKillStatsTable(true);
                 }
+            } else if (!dbHandler.hasColumn(dbTable, "world")) {
+                dbHandler.addWorldColumn();
             }
         } else {
             getLogger().severe("Database connection failed");

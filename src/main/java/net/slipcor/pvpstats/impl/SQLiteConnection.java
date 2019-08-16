@@ -1,6 +1,7 @@
 package net.slipcor.pvpstats.impl;
 
 import net.slipcor.pvpstats.PVPStats;
+import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,11 +76,12 @@ public class SQLiteConnection extends AbstractSQLConnection {
      */
     @Override
     public void createKillStatsTable(boolean printError) {
+        String world = Bukkit.getServer().getWorlds().get(0).getName();
         final String query2 = "CREATE TABLE `" + dbKillTable + "` ( " +
                 "`name` varchar(42) NOT NULL, " +
                 "`uid` varchar(42), " +
-                "`kill` int(1) not null default 0, " +
-                "`time` int(16) not null default 0);";
+                "`kill` int(1) NOT NULL default 0," +
+                "`world` varchar(42) NOT NULL DEFAULT '" + world + "';";
         try {
             executeQuery(query2, true);
         } catch (SQLException e) {

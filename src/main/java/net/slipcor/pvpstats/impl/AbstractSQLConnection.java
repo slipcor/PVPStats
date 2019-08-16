@@ -2,6 +2,7 @@ package net.slipcor.pvpstats.impl;
 
 import net.slipcor.pvpstats.api.DatabaseConnection;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.sql.Connection;
@@ -49,6 +50,43 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
         }
     }
 
+    /**
+     * Check whether the database has a column
+     *
+     * @param tableName the table to check
+     * @param column the column to find
+     * @return whether the database has this column
+     */
+    @Override
+    public boolean hasColumn(String tableName, String column) {
+        try {
+            ResultSet result = executeQuery(
+                    "SELECT `" + column + "` FROM `" + tableName + "` WHERE 1 LIMIT 1", false);
+            return result.getString(column).length() > 0;
+        } catch (SQLException e) {
+        }
+        return false;
+    }
+
+    /*
+     * ----------------------
+     *  TABLE UPDATES
+     * ----------------------
+     */
+
+    /**
+     * Add the world column to the database structure
+     */
+    @Override
+    public void addWorldColumn() {
+        try {
+            String world = Bukkit.getServer().getWorlds().get(0).getName();
+            executeQuery("ALTER TABLE `" + dbKillTable + "` ADD `world` varchar(42) NOT NULL DEFAULT '" + world + "';", true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     /*
      * ----------------------
      *  TABLE ENTRY CREATION
@@ -82,16 +120,17 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
      * @param playerName the player's name
      * @param uuid       the player's uuid
      * @param kill       true if they did kill, false if they were killed
+     * @param world      the world in which the kill happened
      */
     @Override
-    public void addKill(String playerName, UUID uuid, boolean kill) {
+    public void addKill(String playerName, UUID uuid, boolean kill, String world) {
         if (!collectPrecise) {
             return;
         }
         long time = System.currentTimeMillis() / 1000;
         try {
-            executeQuery("INSERT INTO " + dbKillTable + " (`name`,`uid`,`kill`,`time`) VALUES(" +
-                    "'" + playerName + "', '" + uuid + "', '" + (kill ? 1 : 0) + "', " + time + ")", true);
+            executeQuery("INSERT INTO " + dbKillTable + " (`name`,`uid`,`kill`,`time`,`world`) VALUES(" +
+                    "'" + playerName + "', '" + uuid + "', '" + (kill ? 1 : 0) + "', " + time + ", '" + world +"')", true);
         } catch (SQLException e) {
         }
     }
