@@ -62,7 +62,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
         try {
             ResultSet result = executeQuery(
                     "SELECT `" + column + "` FROM `" + tableName + "` WHERE 1 LIMIT 1", false);
-            return result.getString(column).length() > 0;
+            return result.getString(column).length() >= 0;
         } catch (SQLException e) {
         }
         return false;

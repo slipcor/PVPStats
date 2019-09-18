@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.3.6 - check kill stats table for column, not the normal stats table
+- v1.3.7 - support MySQL expansion without kill entries
 - [read more](doc/changelog.md)
 
 ***
