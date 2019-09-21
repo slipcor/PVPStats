@@ -83,7 +83,6 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
             String world = Bukkit.getServer().getWorlds().get(0).getName();
             executeQuery("ALTER TABLE `" + dbKillTable + "` ADD `world` varchar(42) NOT NULL DEFAULT '" + world + "';", true);
         } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
