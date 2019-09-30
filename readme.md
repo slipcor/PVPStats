@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.3.9 - address #20 and add players to database for SQLite databases
+- v1.3.10 - address #21 and allow to use /pvpstats [playername] if the name is valid
 - [read more](doc/changelog.md)
 
 ***

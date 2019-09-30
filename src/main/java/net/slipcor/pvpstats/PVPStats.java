@@ -317,6 +317,12 @@ public class PVPStats extends JavaPlugin {
                 found = true;
             }
         }
+
+        if (!found && DatabaseAPI.hasEntry(args[0])) {
+            commandMap.get("show").commit(sender, args);
+            return true;
+        }
+
         return found;
     }
 

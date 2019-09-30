@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.3.10 - address #21 and allow to use /pvpstats [playername] if the name is valid
 - v1.3.9 - address #20 and add players to database for SQLite databases
 - v1.3.8 - stop displaying warnings for the world column addition - it does not matter
 - v1.3.7 - support MySQL expansion without kill entries
