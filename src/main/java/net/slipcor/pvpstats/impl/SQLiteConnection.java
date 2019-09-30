@@ -2,6 +2,7 @@ package net.slipcor.pvpstats.impl;
 
 import net.slipcor.pvpstats.PVPStats;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -154,5 +155,14 @@ public class SQLiteConnection extends AbstractSQLConnection {
             map.put(result.getInt("rowid"), result.getString("name"));
         }
         return map;
+    }
+
+    /**
+     * Initiate a player entry
+     *
+     * @param player the player name
+     */
+    public void initiatePlayer(String player) {
+
     }
 }

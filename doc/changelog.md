@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.3.9 - address #20 and add players to database for SQLite databases
 - v1.3.8 - stop displaying warnings for the world column addition - it does not matter
 - v1.3.7 - support MySQL expansion without kill entries
 - v1.3.6 - check kill stats table for column, not the normal stats table

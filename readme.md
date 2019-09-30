@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.3.8 - stop displaying warnings for the world column addition - it does not matter
+- v1.3.9 - address #20 and add players to database for SQLite databases
 - [read more](doc/changelog.md)
 
 ***
