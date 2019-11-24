@@ -5,6 +5,7 @@ import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
+import net.slipcor.pvpstats.impl.AbstractSQLConnection;
 import net.slipcor.pvpstats.impl.SQLiteConnection;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -335,7 +336,7 @@ public final class DatabaseAPI {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        } else if (plugin.getSQLHandler() instanceof SQLiteConnection) {
+        } else if (plugin.getSQLHandler() instanceof AbstractSQLConnection) {
             plugin.getSQLHandler().addFirstStat(
                     player.getName(), player.getUniqueId(), 0, 0,
                     PVPStats.getInstance().config().getInt(Config.Entry.ELO_DEFAULT));
