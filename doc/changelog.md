@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.3.12 - add placeholder and API calculation for the ratio
 - v1.3.11 - address SQL databases not getting any updates
 - v1.3.10 - address #21 and allow to use /pvpstats [playername] if the name is valid
 - v1.3.9 - address #20 and add players to database for SQLite databases

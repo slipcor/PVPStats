@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.3.11 - address SQL databases not getting any updates
+- v1.3.12 - add placeholder and API calculation for the ratio
 - [read more](doc/changelog.md)
 
 ***

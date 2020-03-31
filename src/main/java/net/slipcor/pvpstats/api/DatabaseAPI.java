@@ -6,7 +6,6 @@ import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
 import net.slipcor.pvpstats.impl.AbstractSQLConnection;
-import net.slipcor.pvpstats.impl.SQLiteConnection;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -255,7 +254,7 @@ public final class DatabaseAPI {
         int deaths = result.getDeaths();
         int streak = result.getCurrentStreak();
         int maxStreak = result.getMaxStreak();
-        Double ratio = calcResult(kills, deaths, maxStreak, streak);
+        Double ratio = calculateRatio(kills, deaths, maxStreak, streak);
 
         if (plugin.config().getBoolean(Config.Entry.MESSAGES_OVERRIDES)) {
             List<String> lines = plugin.config().getList(Config.Entry.MESSAGES_OVERRIDE_LIST);
@@ -487,7 +486,7 @@ public final class DatabaseAPI {
                     default:
                         results.put(
                                 entry.getName(),
-                                calcResult(entry.getKills(),
+                                calculateRatio(entry.getKills(),
                                         entry.getDeaths(),
                                         entry.getMaxStreak(), PlayerStatisticsBuffer.getStreak(entry.getName())));
                         break;
@@ -534,8 +533,8 @@ public final class DatabaseAPI {
      * @param maxstreak to take into account
      * @return the calculated value
      */
-    private static Double calcResult(final int kills, final int deaths, final int streak,
-                                     final int maxstreak) {
+    public static Double calculateRatio(final int kills, final int deaths, final int streak,
+                                        final int maxstreak) {
 
         String string = plugin.config().get(Config.Entry.STATISTICS_KD_CALCULATION);
 

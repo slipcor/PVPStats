@@ -54,6 +54,10 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             return String.valueOf(PlayerStatisticsBuffer.getEloScore(player.getName()));
         }
 
+        if (s.equals("ratio")) {
+            return String.valueOf(PlayerStatisticsBuffer.getRatio(player.getName()));
+        }
+
         return null;
     }
 }

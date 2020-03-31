@@ -225,6 +225,16 @@ public final class PlayerStatisticsBuffer {
     }
 
     /**
+     * Get a player's current configurable kill/death ratio
+     *
+     * @param name the player to read
+     * @return the player's current k/d ratio
+     */
+    public static Double getRatio(String name) {
+        return DatabaseAPI.calculateRatio(getKills(name), getDeaths(name), getStreak(name), getMaxStreak(name));
+    }
+
+    /**
      * Does a player already have a maximum kill streak
      *
      * @param name the player to check
