@@ -5,6 +5,7 @@ import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +23,10 @@ public class CommandCleanup extends AbstractCommand {
 
         final int count = DatabaseAPI.clean();
         PVPStats.getInstance().sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
+    }
+
+    public List<String> completeTab(String[] args) {
+        return new ArrayList<>(); // we have no arguments
     }
 
     @Override

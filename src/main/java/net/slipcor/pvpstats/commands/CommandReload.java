@@ -4,6 +4,7 @@ import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,7 +24,10 @@ public class CommandReload extends AbstractCommand {
         PVPStats.getInstance().loadConfig();
         PVPStats.getInstance().loadLanguage();
         PVPStats.getInstance().sendPrefixed(sender, Language.MSG_RELOADED.toString());
+    }
 
+    public List<String> completeTab(String[] args) {
+        return new ArrayList<>(); // we have no arguments
     }
 
     @Override

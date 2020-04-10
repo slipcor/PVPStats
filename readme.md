@@ -21,7 +21,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Dependencies
 
-- Spigot 1.13
+- Spigot 1.8 and up
 
 ***
 
@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.4.15 - add a debugkill command to manually add a kill for debugging
+- v1.4.16 - add tab-complete - works even in 1.8!
 - [read more](doc/changelog.md)
 
 ***

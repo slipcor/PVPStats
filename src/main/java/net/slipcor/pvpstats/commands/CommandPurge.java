@@ -5,6 +5,7 @@ import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,6 +51,29 @@ public class CommandPurge extends AbstractCommand {
         } else {
             PVPStats.getInstance().sendPrefixed(sender, "/pvpstats purge [specific | standard | both] [days]");
         }
+    }
+
+    public List<String> completeTab(String[] args) {
+        List<String> results = new ArrayList<>();
+
+        if (args.length < 2 || args[1].equals("")) {
+            // list first argument possibilities
+            results.add("specific");
+            results.add("standard");
+            results.add("both");
+            return results;
+        }
+
+        if (args.length > 2) {
+            return results; // don't go too far!
+        }
+
+        // we started typing!
+        addIfMatches(results, "specific", args[1].toLowerCase());
+        addIfMatches(results, "standard", args[1].toLowerCase());
+        addIfMatches(results, "both", args[1].toLowerCase());
+
+        return results;
     }
 
     @Override

@@ -18,6 +18,12 @@ public abstract class AbstractCommand {
         perms = permissions.clone();
     }
 
+    protected void addIfMatches(List<String> list, String word, String check) {
+        if (check.equals("") || word.startsWith(check)) {
+            list.add(word);
+        }
+    }
+
     /**
      * Are the given arguments of valid count?
      *
@@ -50,7 +56,7 @@ public abstract class AbstractCommand {
     /**
      * @return a list of command names
      */
-    protected abstract List<String> getMain();
+    public abstract List<String> getMain();
 
     /**
      * @return the command class name
@@ -60,7 +66,7 @@ public abstract class AbstractCommand {
     /**
      * @return a list of command shorthand names
      */
-    protected abstract List<String> getShort();
+    public abstract List<String> getShort();
 
     /**
      * @return an info text explaining the command
@@ -98,10 +104,13 @@ public abstract class AbstractCommand {
         list.add(this);
     }
 
-    // TODO: add tab completion
-    public List<String> completeTab(String[] args) {
-        return new ArrayList<>(); // we have no arguments
-    }
+    /**
+     * Return tab complete matches
+     *
+     * @param args the current command progress
+     * @return a list of matches to complete with
+     */
+    public abstract List<String> completeTab(String[] args);
 
     /**
      * Helper function to join an array of strings together

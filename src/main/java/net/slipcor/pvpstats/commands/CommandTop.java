@@ -6,6 +6,7 @@ import net.slipcor.pvpstats.core.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -136,6 +137,31 @@ public class CommandTop extends AbstractCommand {
             }
 
         }
+    }
+
+    public List<String> completeTab(String[] args) {
+        List<String> results = new ArrayList<>();
+
+        if (args.length < 2 || args[1].equals("")) {
+            // list first argument possibilities
+            results.add("kills");
+            results.add("deaths");
+            results.add("streak");
+            results.add("elo");
+            return results;
+        }
+
+        if (args.length > 2) {
+            return results; // don't go too far!
+        }
+
+        // we started typing!
+        addIfMatches(results, "kills", args[1].toLowerCase());
+        addIfMatches(results, "deaths", args[1].toLowerCase());
+        addIfMatches(results, "streak", args[1].toLowerCase());
+        addIfMatches(results, "elo", args[1].toLowerCase());
+
+        return results;
     }
 
     @Override

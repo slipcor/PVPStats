@@ -11,6 +11,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -88,6 +89,28 @@ public class CommandDebugKill extends AbstractCommand {
             PlayerStatisticsBuffer.setEloScore(victim, newP);
         }
         PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, victim));
+    }
+
+    public List<String> completeTab(String[] args) {
+        List<String> results = new ArrayList<>();
+
+        if (args.length < 2 || args[1].equals("")) {
+            // list first argument possibilities
+            for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+                results.add(p.getName());
+            }
+            return results;
+        }
+
+        if (args.length > 3) {
+            return results; // don't go too far!
+        }
+
+        // we started typing!
+        for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+            addIfMatches(results, p.getName(), p.getName());
+        }
+        return results;
     }
 
     @Override

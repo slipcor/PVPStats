@@ -3,8 +3,11 @@ package net.slipcor.pvpstats.commands;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.core.Language;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,6 +63,34 @@ public class CommandMigrate extends AbstractCommand {
 
         final int count = DatabaseAPI.clean();
         PVPStats.getInstance().sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
+    }
+
+    public List<String> completeTab(String[] args) {
+        List<String> results = new ArrayList<>();
+
+        if (args.length < 2 || args[1].equals("")) {
+            // list first argument possibilities
+            results.add("to");
+            results.add("from");
+            return results;
+        }
+
+        if (args.length > 3) {
+            return results; // don't go too far!
+        }
+
+        if (args.length < 3) {
+            // first argument!
+            addIfMatches(results, "to", args[1].toLowerCase());
+            addIfMatches(results, "from", args[1].toLowerCase());
+        } else {
+            // second argument!
+            addIfMatches(results, "mysql", args[2].toLowerCase());
+            addIfMatches(results, "sqlite", args[2].toLowerCase());
+            addIfMatches(results, "yml", args[2].toLowerCase());
+        }
+
+        return results;
     }
 
     @Override

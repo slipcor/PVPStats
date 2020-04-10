@@ -398,6 +398,11 @@ public class PVPStats extends JavaPlugin {
         getLogger().info("enabled. (version " + pdfFile.getVersion() + ")");
     }
 
+    @Override
+    public List<String> onTabComplete(final CommandSender sender, final Command cmd, final String alias, final String[] args) {
+        return TabComplete.getMatches(sender, commandList, args);
+    }
+
     public void sendPrefixed(final CommandSender sender, final String message) {
         if (!"".equals(message)) {
             sender.sendMessage(Language.MSG_PREFIX + message);
