@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.3.13 - round placeholder ratio to 2 digits
+- v1.4.15 - add a debugkill command to manually add a kill for debugging
 - [read more](doc/changelog.md)
 
 ***

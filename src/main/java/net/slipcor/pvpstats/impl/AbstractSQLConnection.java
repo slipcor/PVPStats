@@ -233,6 +233,38 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     }
 
     /**
+     * Get all statistics
+     *
+     * @return a list of all stats
+     * @throws SQLException
+     */
+    @Override
+    public List<PlayerStatistic> getAll() throws SQLException {
+        String query = "SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`,`elo`,`time`,`uid` FROM `" +
+                dbTable + "` WHERE 1;";
+
+        List<PlayerStatistic> list = new ArrayList<>();
+
+        ResultSet result = executeQuery(query, false);
+
+        if (result == null) {
+            return null;
+        }
+
+        while (result.next()) {
+            list.add(new PlayerStatistic(result.getString("name"),
+                    result.getInt("kills"),
+                    result.getInt("deaths"),
+                    result.getInt("streak"),
+                    result.getInt("currentstreak"),
+                    result.getInt("elo"),
+                    result.getLong("time"),
+                    result.getString("uid")));
+        }
+        return list;
+    }
+
+    /**
      * Get a statistic value by exact player name
      *
      * @param stat       the statistic value
@@ -432,6 +464,14 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
                     " WHERE `uid` = '" + uuid + "'", true);
         } catch (SQLException e) {
         }
+    }
+
+    @Override
+    public void insert(PlayerStatistic stat) throws SQLException {
+        executeQuery("INSERT INTO `" + dbTable +
+                "` (`name`, `uid`, `kills`,`deaths`,`streak`,`currentstreak`,`elo`,`time`) VALUES ('"
+                + stat.getName() + "', '" + stat.getUid() + "', " + stat.getKills() + ", " + stat.getDeaths() + ", " +
+                stat.getMaxStreak() + ", " + stat.getCurrentStreak() + ", " + stat.getELO() + ", " + stat.getTime() + ")", true);
     }
 
     /**

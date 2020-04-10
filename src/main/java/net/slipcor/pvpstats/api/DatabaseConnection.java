@@ -136,6 +136,14 @@ public interface DatabaseConnection {
     int deleteStatsOlderThan(long timestamp) throws SQLException;
 
     /**
+     * Get all statistics
+     *
+     * @return a list of all stats
+     * @throws SQLException
+     */
+    List<PlayerStatistic> getAll() throws SQLException;
+
+    /**
      * Get a statistic value by exact player name
      *
      * @param stat       the statistic value
@@ -248,6 +256,13 @@ public interface DatabaseConnection {
      * @param elo  the new ELO rating
      */
     void increaseKillsAndStreak(UUID uuid, int elo);
+
+    /**
+     * Add player statistic to the database
+     *
+     * @param stat the player's stats
+     */
+    void insert(PlayerStatistic stat) throws SQLException;
 
     /**
      * @return whether the connection was established properly

@@ -1,5 +1,7 @@
 package net.slipcor.pvpstats.classes;
 
+import java.util.UUID;
+
 /**
  * A container class that holds all player stats, used when handling database results
  */
@@ -10,14 +12,22 @@ public class PlayerStatistic {
     private final int streak;
     private final int currentstreak;
     private final int elo;
+    private final long time;
+    private final String uid;
 
     public PlayerStatistic(String name, int kills, int deaths, int streak, int currentstreak, int elo) {
+        this(name, kills, deaths, streak, currentstreak, elo, System.currentTimeMillis()/1000, "");
+    }
+
+    public PlayerStatistic(String name, int kills, int deaths, int streak, int currentstreak, int elo, long time, String uid) {
         this.name = name;
         this.kills = kills;
         this.deaths = deaths;
         this.streak = streak;
         this.currentstreak = currentstreak;
         this.elo = elo;
+        this.time = time;
+        this.uid = uid;
     }
 
     public String getName() {
@@ -43,4 +53,10 @@ public class PlayerStatistic {
     public int getELO() {
         return elo;
     }
+
+    public long getTime() {
+        return time;
+    }
+
+    public String getUid() { return uid; }
 }

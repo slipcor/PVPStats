@@ -391,6 +391,35 @@ public class FlatFileConnection implements DatabaseConnection {
     }
 
     /**
+     * Get all statistics
+     *
+     * @return a list of all stats
+     */
+    @Override
+    public List<PlayerStatistic> getAll() {
+        ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
+
+        Map<String, Object> uuids = root.getValues(false);
+
+        List<PlayerStatistic> result = new ArrayList<>();
+
+        for (String uuid : uuids.keySet()) {
+            ConfigurationSection player = root.getConfigurationSection(uuid);
+
+            result.add(new PlayerStatistic(player.getString("name", ""),
+                    player.getInt("kills", 0),
+                    player.getInt("deaths", 0),
+                    player.getInt("streak", 0),
+                    player.getInt("currentstreak", 0),
+                    player.getInt("elo", 0),
+                    player.getLong("time", 0),
+                    uuid));
+        }
+
+        return result;
+    }
+
+    /**
      * Get a statistic value by exact player name
      *
      * @param stat       the statistic value
@@ -740,6 +769,34 @@ public class FlatFileConnection implements DatabaseConnection {
         statConfig.set(root + "elo", elo);
         statConfig.set(root + "currentstreak", statConfig.getInt(root + "currentstreak", 0) + 1);
         statConfig.set(root + "time", time);
+
+        save(statConfig, dbTable);
+    }
+
+    @Override
+    public void insert(PlayerStatistic stat) {
+        long time = stat.getTime();
+
+        String root = stat.getUid() + ".";
+
+        int count = 0;
+
+        try {
+            count = statConfig.getConfigurationSection(statConfig.getCurrentPath()).getValues(false).keySet().size();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        count++;
+
+        statConfig.set(root + "oid", count);
+        statConfig.set(root + "name", stat.getName());
+        statConfig.set(root + "kills", stat.getKills());
+        statConfig.set(root + "deaths", stat.getDeaths());
+        statConfig.set(root + "streak", stat.getMaxStreak());
+        statConfig.set(root + "currentstreak", stat.getCurrentStreak());
+        statConfig.set(root + "elo", stat.getELO());
+        statConfig.set(root + "time", stat.getTime());
 
         save(statConfig, dbTable);
     }

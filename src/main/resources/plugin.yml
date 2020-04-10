@@ -1,6 +1,6 @@
 name: pvpstats
 main: net.slipcor.pvpstats.PVPStats
-version: 1.3.13
+version: 1.4.14
 api-version: 1.13
 author: slipcor
 softdepend: [pvparena,PlaceholderAPI]
@@ -16,6 +16,9 @@ permissions:
   pvpstats.cleanup:
     description: Ability to cleanup
     default: op
+  pvpstats.migrate:
+    description: Ability to migrate
+    default: op
   pvpstats.purge:
     description: Ability to purge
     default: op
@@ -24,6 +27,9 @@ permissions:
     default: op
   pvpstats.debug:
     description: Ability to debug
+    default: op
+  pvpstats.debugkill:
+    description: Ability to add a debug kill
     default: op
   pvpstats.count:
     description: Permission to be counted

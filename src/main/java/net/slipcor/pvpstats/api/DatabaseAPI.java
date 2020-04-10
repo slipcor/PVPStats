@@ -6,7 +6,12 @@ import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
 import net.slipcor.pvpstats.impl.AbstractSQLConnection;
+import net.slipcor.pvpstats.impl.FlatFileConnection;
+import net.slipcor.pvpstats.impl.MySQLConnection;
+import net.slipcor.pvpstats.impl.SQLiteConnection;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.script.ScriptEngine;
@@ -243,6 +248,7 @@ public final class DatabaseAPI {
         if (result == null) {
             String[] output = new String[1];
             output[0] = Language.INFO_PLAYERNOTFOUND.toString(playerName);
+            output[1] = Language.INFO_PLAYERNOTFOUND2.toString();
             return output;
         }
         String[] output;
@@ -347,6 +353,152 @@ public final class DatabaseAPI {
         PlayerStatisticsBuffer.getEloScore(player.getName());
         PlayerStatisticsBuffer.getKills(player.getName());
         PlayerStatisticsBuffer.getMaxStreak(player.getName());
+    }
+    
+    private static DatabaseConnection connectToOther(String method, CommandSender sender) {
+
+        DatabaseConnection dbHandler = null;
+
+        String dbHost = null;
+        String dbUser = null;
+        String dbPass = null;
+        String dbDatabase = null;
+        String dbTable = null;
+        String dbOptions = null;
+        String dbKillTable = null;
+        int dbPort = 0;
+        
+        Config config = PVPStats.getInstance().config();
+
+        if (method.equals("yml")) {
+            if (PVPStats.getInstance().getSQLHandler() instanceof FlatFileConnection) {
+                PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_DATABASE_METHOD.toString());
+                return null;
+            }
+
+            dbTable = config.get(Config.Entry.YML_TABLE);
+            if (config.getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
+                dbKillTable = config.get(Config.Entry.MYSQL_KILLTABLE);
+            }
+
+            dbHandler = new FlatFileConnection(dbTable, dbKillTable);
+        } else if (method.equals("sqlite")) {
+            if (PVPStats.getInstance().getSQLHandler() instanceof SQLiteConnection) {
+                PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_DATABASE_METHOD.toString());
+                return null;
+            }
+
+            dbDatabase = config.get(Config.Entry.SQLITE_FILENAME);
+
+            dbTable = config.get(Config.Entry.SQLITE_TABLE);
+            if (config.getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
+                dbKillTable = config.get(Config.Entry.SQLITE_KILLTABLE);
+            }
+
+            dbHandler = new SQLiteConnection(dbDatabase, dbTable, dbKillTable);
+        } else if (method.equals("mysql")) {
+            if (PVPStats.getInstance().getSQLHandler() instanceof MySQLConnection) {
+                PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_DATABASE_METHOD.toString());
+                return null;
+            }
+
+            dbHost = config.get(Config.Entry.MYSQL_HOST);
+            dbUser = config.get(Config.Entry.MYSQL_USERNAME);
+            dbPass = config.get(Config.Entry.MYSQL_PASSWORD);
+            dbDatabase = config.get(Config.Entry.MYSQL_DATABASE);
+            dbTable = config.get(Config.Entry.MYSQL_TABLE);
+            dbOptions = config.get(Config.Entry.MYSQL_OPTIONS);
+
+            if (config.getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
+                dbKillTable = config.get(Config.Entry.MYSQL_KILLTABLE);
+            }
+
+            dbPort = config.getInt(Config.Entry.MYSQL_PORT);
+
+            try {
+                dbHandler = new MySQLConnection(dbHost, dbPort, dbDatabase, dbUser,
+                        dbPass, dbOptions, dbTable, dbKillTable);
+            } catch (InstantiationException | ClassNotFoundException | IllegalAccessException e1) {
+                e1.printStackTrace();
+            }
+        } else {
+            return null;
+        }
+
+
+        if (dbHandler != null && dbHandler.connect(true)) {
+            sender.sendMessage("Database connection successful");
+            // Check if the tables exist, if not, create them
+            if (!dbHandler.tableExists(dbDatabase, dbTable)) {
+                // normal table doesnt exist, create both
+
+                sender.sendMessage("Creating table " + dbTable);
+                dbHandler.createStatsTable(true);
+
+                if (dbKillTable != null) {
+                    sender.sendMessage("Creating table " + dbKillTable);
+                    dbHandler.createKillStatsTable(true);
+                }
+            } else if (!dbHandler.hasColumn(dbKillTable, "world")) {
+                dbHandler.addWorldColumn();
+            }
+        } else {
+            sender.sendMessage("Database connection failed");
+        }
+
+        return dbHandler;
+    }
+
+    /**
+     * Read the current statistics from another database implementation
+     *
+     * @param method the other database method
+     * @return
+     */
+    public static int migrateFrom(String method, CommandSender sender) {
+        // database handler
+        DatabaseConnection dbHandler = connectToOther(method, sender);
+        if (dbHandler == null) {
+            return -1;
+        }
+
+        try {
+            List<PlayerStatistic> players = dbHandler.getAll();
+            for(PlayerStatistic stat : players) {
+                PVPStats.getInstance().getSQLHandler().insert(stat);
+            }
+            return players.size();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    /**
+     * Save the current statistics to another database implementation
+     * 
+     * @param method the other database method
+     * @return
+     */
+    public static int migrateTo(String method, CommandSender sender) {
+        // database handler
+        DatabaseConnection dbHandler = connectToOther(method, sender);
+        if (dbHandler == null) {
+            return -1;
+        }
+
+        try {
+            List<PlayerStatistic> players = PVPStats.getInstance().getSQLHandler().getAll();
+            for(PlayerStatistic stat : players) {
+                dbHandler.insert(stat);
+            }
+            return players.size();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 
     /**
@@ -612,7 +764,7 @@ public final class DatabaseAPI {
      * @param max      max ELO score
      * @return the new ELO score
      */
-    private static int calcElo(int myOld, int otherOld, int k, boolean win, int min, int max) {
+    public static int calcElo(int myOld, int otherOld, int k, boolean win, int min, int max) {
         double expected = 1.0f / (1.0f + Math.pow(10.0f, ((float) (otherOld - myOld)) / 400.0f));
 
         int newVal;
@@ -691,6 +843,12 @@ public final class DatabaseAPI {
         return false;
     }
 
+    public static boolean forceIncDeath(final String playerName, int elo, final OfflinePlayer admin) {
+        PlayerStatisticsBuffer.setStreak(playerName, 0);
+        checkAndDo(playerName, admin.getUniqueId(), false, false, elo, "world");
+        return true;
+    }
+
     private static boolean incKill(final Player player, int elo) {
         if (player.hasPermission("pvpstats.count")) {
             boolean incMaxStreak;
@@ -713,6 +871,27 @@ public final class DatabaseAPI {
             return true;
         }
         return false;
+    }
+
+    public static boolean forceIncKill(final String playerName, int elo, final OfflinePlayer admin) {
+        boolean incMaxStreak;
+        if (PlayerStatisticsBuffer.hasStreak(playerName)) {
+            incMaxStreak = PlayerStatisticsBuffer.addStreak(playerName);
+            PlayerStatisticsBuffer.getStreak(playerName);
+        } else {
+
+            int streakCheck = PlayerStatisticsBuffer.getStreak(playerName);
+            if (streakCheck < 1) {
+                PlayerStatisticsBuffer.setStreak(playerName, 1);
+                PlayerStatisticsBuffer.setMaxStreak(playerName, 1);
+                incMaxStreak = true;
+            } else {
+                incMaxStreak = PlayerStatisticsBuffer.addStreak(playerName);
+            }
+
+        }
+        checkAndDo(playerName, admin.getUniqueId(), true, incMaxStreak, elo, "world");
+        return true;
     }
 
     private static String[] sortParse(final Map<String, Double> results,

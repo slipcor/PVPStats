@@ -34,6 +34,8 @@ Command | Shorthand | Definition
 ------------- | ------------- | -------------
 [/pvpstats cleanup](commands/cleanup.md) | /stats !c | remove duplicate entries
 [/pvpstats debug](commands/debug.md) [on/off] | /stats !d [on/off] | activate or deactivate debugging
+[/pvpstats debugkill](commands/debugkill.md) {killer} {victim} | /stats !dk {killer} {victim} | manually add a kill for debugging
+[/pvpstats migrate](commands/migrate.md) [from/to] [yml/sqlite/mysql] | migrate from / to other database method
 [/pvpstats purge](commands/purge.md) [standard/specific/both] [days] | /stats !p [standard/specific/both] [days] | remove entries older than [days], defaults to 30
 [/pvpstats reload](commands/reload.md) | /stats !r | reload config and language files
 [/pvpstats wipe](commands/wipe.md) {player} | /stats !w {player} | wipe a player's or all statistics

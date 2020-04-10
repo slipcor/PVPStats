@@ -1,5 +1,7 @@
 # v1.X Changelog
 
+- v1.4.15 - add a debugkill command to manually add a kill for debugging
+- v1.4.14 - add a migrate command to backup or move to a different database implementation
 - v1.3.13 - round placeholder ratio to 2 digits
 - v1.3.12 - add placeholder and API calculation for the ratio
 - v1.3.11 - address SQL databases not getting any updates
