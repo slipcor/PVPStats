@@ -341,7 +341,7 @@ public final class DatabaseAPI {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        } else if (plugin.getSQLHandler() instanceof AbstractSQLConnection) {
+        } else if (plugin.config().getBoolean(Config.Entry.STATISTICS_CREATE_ON_JOIN)) {
             plugin.getSQLHandler().addFirstStat(
                     player.getName(), player.getUniqueId(), 0, 0,
                     PVPStats.getInstance().config().getInt(Config.Entry.ELO_DEFAULT));

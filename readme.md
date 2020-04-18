@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.4.16 - add tab-complete - works even in 1.8!
+- v1.4.17 - add new config for statistics, 'createOnJoin', defaulting to true
 - [read more](doc/changelog.md)
 
 ***

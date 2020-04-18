@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.4.17 - add new config for statistics, 'createOnJoin', defaulting to true
 - v1.4.16 - add tab-complete - works even in 1.8!
 - v1.4.15 - add a debugkill command to manually add a kill for debugging
 - v1.4.14 - add a migrate command to backup or move to a different database implementation

@@ -37,6 +37,8 @@ YML:
 statistics:
   # clear (duplicated) statistics on every start
   clearOnStart: true
+  # create empty player entry when they join
+  createOnJoin: true
   # prevent players from getting kills from the same victim
   checkAbuse: true
   # seconds to wait before allowing to kill the same player again to count (-1 will never reset)

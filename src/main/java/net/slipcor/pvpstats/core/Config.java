@@ -81,6 +81,8 @@ public class Config {
                 "# === [ Statistic Settings ] ==="}),
         STATISTICS_CLEAR_ON_START(Boolean.class, "statistics.clearOnStart", true, new String[]{
                 "# clear (duplicated) statistics on every start"}),
+        STATISTICS_CREATE_ON_JOIN(Boolean.class, "statistics.createOnJoin", true, new String[]{
+                "# create empty player entry when they join"}),
         STATISTICS_COLLECT_PRECISE(Boolean.class, "statistics.collectPrecise", true, new String[]{
                 "# save every kill - is never read internally, so only for web stats or alike"}),
         STATISTICS_COUNT_REGULAR_DEATHS(Boolean.class, "statistics.countRegularDeaths", false, new String[]{

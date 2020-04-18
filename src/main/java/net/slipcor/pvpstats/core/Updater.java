@@ -314,7 +314,7 @@ public class Updater extends Thread {
             return;
         }
 
-        System.out.print(Language.LOG_UPDATE_ENABLED);
+        System.out.println(Language.LOG_UPDATE_ENABLED);
         for (UpdateInstance instance : instances) {
             instance.runMe();
         }
