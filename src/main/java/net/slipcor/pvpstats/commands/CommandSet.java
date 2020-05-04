@@ -57,6 +57,8 @@ public class CommandSet extends AbstractCommand {
                     }
 
                     sender.sendMessage(Language.MSG_SET.toString(args[2], args[1], String.valueOf(amount)));
+
+                    DatabaseAPI.refresh();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

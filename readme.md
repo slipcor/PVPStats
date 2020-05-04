@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.4.17 - add new config for statistics, 'createOnJoin', defaulting to true
+- v1.4.19 - update the preloaded RAM player values when changing the database not by killing
 - [read more](doc/changelog.md)
 
 ***

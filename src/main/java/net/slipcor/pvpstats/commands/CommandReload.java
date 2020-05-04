@@ -1,6 +1,7 @@
 package net.slipcor.pvpstats.commands;
 
 import net.slipcor.pvpstats.PVPStats;
+import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
@@ -24,6 +25,8 @@ public class CommandReload extends AbstractCommand {
         PVPStats.getInstance().loadConfig();
         PVPStats.getInstance().loadLanguage();
         PVPStats.getInstance().sendPrefixed(sender, Language.MSG_RELOADED.toString());
+
+        DatabaseAPI.refresh();
     }
 
     public List<String> completeTab(String[] args) {

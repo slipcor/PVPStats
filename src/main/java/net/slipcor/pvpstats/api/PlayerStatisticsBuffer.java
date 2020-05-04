@@ -2,8 +2,12 @@ package net.slipcor.pvpstats.api;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.core.Config;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -312,5 +316,18 @@ public final class PlayerStatisticsBuffer {
      */
     public static void setEloScore(String name, int value) {
         eloScore.put(name, value);
+    }
+
+    /**
+     * Refresh the maps after making changes
+     */
+    static void refresh() {
+        List<String> names = new ArrayList<>(DatabaseAPI.getAllPlayers());
+
+        clear(null); // clear all entries
+
+        for (String player : names) {
+            DatabaseAPI.info(player); // pre-load previously loaded players
+        }
     }
 }

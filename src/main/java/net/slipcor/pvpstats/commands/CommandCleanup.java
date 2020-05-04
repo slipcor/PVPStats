@@ -23,6 +23,8 @@ public class CommandCleanup extends AbstractCommand {
 
         final int count = DatabaseAPI.clean();
         PVPStats.getInstance().sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
+
+        DatabaseAPI.refresh();
     }
 
     public List<String> completeTab(String[] args) {

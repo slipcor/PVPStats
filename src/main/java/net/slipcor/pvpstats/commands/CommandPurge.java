@@ -48,6 +48,8 @@ public class CommandPurge extends AbstractCommand {
             } else {
                 PVPStats.getInstance().sendPrefixed(sender, "/pvpstats purge [specific | standard | both] [days]");
             }
+
+            DatabaseAPI.refresh();
         } else {
             PVPStats.getInstance().sendPrefixed(sender, "/pvpstats purge [specific | standard | both] [days]");
         }

@@ -30,6 +30,8 @@ public class CommandWipe extends AbstractCommand {
             DatabaseAPI.wipe(args[1]);
             PVPStats.getInstance().sendPrefixed(sender, Language.MSG_WIPEDFOR.toString(args[1]));
         }
+
+        DatabaseAPI.refresh();
     }
 
     public List<String> completeTab(String[] args) {

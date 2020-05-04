@@ -46,6 +46,8 @@ public class CommandMigrate extends AbstractCommand {
                     PVPStats.getInstance().sendPrefixed(sender, Language.MSG_MIGRATE_EMPTY.toString());
                 }
             }
+
+            DatabaseAPI.refresh();
             return;
         } else if (args[1].toLowerCase().equals("to")) {
             int result = DatabaseAPI.migrateTo(method, sender);

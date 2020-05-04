@@ -5,7 +5,6 @@ import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
-import net.slipcor.pvpstats.impl.AbstractSQLConnection;
 import net.slipcor.pvpstats.impl.FlatFileConnection;
 import net.slipcor.pvpstats.impl.MySQLConnection;
 import net.slipcor.pvpstats.impl.SQLiteConnection;
@@ -22,7 +21,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 /**
- * Database access class to handle player statisticsm, possibly from other plugins
+ * Database access class to handle player statistics, possibly from other plugins
  *
  * @author slipcor
  */
@@ -219,7 +218,7 @@ public final class DatabaseAPI {
     }
 
     /**
-     * Get a player's stats in the form of a strong array
+     * Get a player's stats in the form of a string array
      *
      * @param playerName the player name to find
      * @return the player info in lines as overridable in the config
@@ -450,10 +449,10 @@ public final class DatabaseAPI {
     }
 
     /**
-     * Read the current statistics from another database implementation
+     * Read the current statistics from another database implementation - this does NOT clear an existing database!
      *
      * @param method the other database method
-     * @return
+     * @return the entries migrated
      */
     public static int migrateFrom(String method, CommandSender sender) {
         // database handler
@@ -464,7 +463,7 @@ public final class DatabaseAPI {
 
         try {
             List<PlayerStatistic> players = dbHandler.getAll();
-            for(PlayerStatistic stat : players) {
+            for (PlayerStatistic stat : players) {
                 PVPStats.getInstance().getSQLHandler().insert(stat);
             }
             return players.size();
@@ -476,10 +475,10 @@ public final class DatabaseAPI {
     }
 
     /**
-     * Save the current statistics to another database implementation
+     * Save the current statistics to another database implementation - this does NOT clear an existing database!
      * 
      * @param method the other database method
-     * @return
+     * @return the entries migrated
      */
     public static int migrateTo(String method, CommandSender sender) {
         // database handler
@@ -502,7 +501,7 @@ public final class DatabaseAPI {
     }
 
     /**
-     * Purge the kill statistics older than a certan amount of days
+     * Purge the kill statistics older than a certain amount of days
      *
      * @param days the amount
      * @return the amount of removed entries
@@ -527,7 +526,7 @@ public final class DatabaseAPI {
     }
 
     /**
-     * Purge the general statistics older than a certan amount of days
+     * Purge the general statistics older than a certain amount of days
      *
      * @param days the amount
      * @return the amount of removed entries
@@ -843,6 +842,14 @@ public final class DatabaseAPI {
         return false;
     }
 
+    /**
+     * Force increase a death count
+     *
+     * @param playerName the player to increase
+     * @param elo        the ELO score to set
+     * @param admin      the player issuing the command
+     * @return whether the setting succeeded
+     */
     public static boolean forceIncDeath(final String playerName, int elo, final OfflinePlayer admin) {
         PlayerStatisticsBuffer.setStreak(playerName, 0);
         checkAndDo(playerName, admin.getUniqueId(), false, false, elo, "world");
@@ -873,6 +880,14 @@ public final class DatabaseAPI {
         return false;
     }
 
+    /**
+     * Force increase a kill count
+     *
+     * @param playerName the player to increase
+     * @param elo        the ELO score to set
+     * @param admin      the player issuing the command
+     * @return whether the setting succeeded
+     */
     public static boolean forceIncKill(final String playerName, int elo, final OfflinePlayer admin) {
         boolean incMaxStreak;
         if (PlayerStatisticsBuffer.hasStreak(playerName)) {
@@ -937,5 +952,12 @@ public final class DatabaseAPI {
         System.arraycopy(result, 0, output, 0, output.length);
 
         return output;
+    }
+
+    /**
+     * Refresh the RAM values after making changes
+     */
+    public static void refresh() {
+        PlayerStatisticsBuffer.refresh();
     }
 }
