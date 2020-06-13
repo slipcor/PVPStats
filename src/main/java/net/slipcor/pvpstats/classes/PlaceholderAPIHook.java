@@ -1,6 +1,5 @@
 package net.slipcor.pvpstats.classes;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
@@ -68,7 +67,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
                 String[] split = s.split("_");
                 int pos = Integer.parseInt(s.split("_")[2]);
-                String name = split[1].toUpperCase();;
+                String name = split[1].toUpperCase();
 
                 if (split.length > 3) {
                     return Language.HEAD_HEADLINE.toString(

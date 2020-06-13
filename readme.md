@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.4.19 - update the preloaded RAM player values when changing the database not by killing
+- v1.4.20 - update player names when they rename via Mojang
 - [read more](doc/changelog.md)
 
 ***

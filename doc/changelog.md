@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.4.20 - update player names when they rename via Mojang
 - v1.4.19 - update the preloaded RAM player values when changing the database not by killing
 - v1.4.18 - add placeholders for TOP lists, use with caution!
 - v1.4.17 - add new config for statistics, 'createOnJoin', defaulting to true

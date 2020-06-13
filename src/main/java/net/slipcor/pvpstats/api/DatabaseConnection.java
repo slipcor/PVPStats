@@ -198,6 +198,14 @@ public interface DatabaseConnection {
     List<String> getStatsNames() throws SQLException;
 
     /**
+     * Get all player UUIDs
+     *
+     * @return all player UUIDs
+     * @throws SQLException
+     */
+    List<UUID> getStatsUUIDs() throws SQLException;
+
+    /**
      * Get a player's saved UUID entry
      *
      * @param player the player to look for
@@ -268,6 +276,14 @@ public interface DatabaseConnection {
      * @return whether the connection was established properly
      */
     boolean isConnected();
+
+    /**
+     * Update the database with the new name of a player
+     *
+     * @param uuid    the UUID to look for
+     * @param newName the new name to set
+     */
+    void renamePlayer(UUID uuid, String newName);
 
     /**
      * Set specific statistical value of a player

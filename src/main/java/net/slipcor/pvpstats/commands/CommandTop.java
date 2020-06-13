@@ -110,7 +110,7 @@ public class CommandTop extends AbstractCommand {
                     args[0] = String.valueOf(count);
                 }
                 class RunLater implements Runnable {
-                    int count;
+                    final int count;
 
                     RunLater(int i) {
                         count = i;

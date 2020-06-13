@@ -1,7 +1,5 @@
 package net.slipcor.pvpstats.classes;
 
-import java.util.UUID;
-
 /**
  * A container class that holds all player stats, used when handling database results
  */

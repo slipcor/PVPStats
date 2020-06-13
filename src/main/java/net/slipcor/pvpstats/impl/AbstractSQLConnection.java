@@ -1,5 +1,6 @@
 package net.slipcor.pvpstats.impl;
 
+import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseConnection;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import org.bukkit.Bukkit;
@@ -9,9 +10,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A partial implementation of methods that are handled the same by all SQL implementations
@@ -352,6 +351,22 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     }
 
     /**
+     * Get all player UUIDs
+     *
+     * @return all player UUIDs
+     * @throws SQLException
+     */
+    @Override
+    public List<UUID> getStatsUUIDs() throws SQLException {
+        List<UUID> ids = new ArrayList<>();
+        ResultSet result = executeQuery("SELECT `uid` FROM `" + dbTable + "` GROUP BY `uid`;", false);
+        while (result.next()) {
+            ids.add(UUID.fromString(result.getString("uid")));
+        }
+        return ids;
+    }
+
+    /**
      * Get a player's saved UUID entry
      *
      * @param player the player to look for
@@ -480,6 +495,54 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     @Override
     public boolean isConnected() {
         return this.databaseConnection != null;
+    }
+
+    /**
+     * Update the database with the new name of a player
+     *
+     * @param uuid    the UUID to look for
+     * @param newName the new name to set
+     */
+    @Override
+    public void renamePlayer(UUID uuid, String newName) {
+        int kills = 0;
+        int deaths = 0;
+        int streak = 0;
+        int currentstreak = 0;
+        int elo = 0;
+
+        try {
+            ResultSet result = executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + dbTable + "` WHERE `uid` = '" + uuid.toString() + "'", false);
+            while (result.next()) {
+                String thisName = result.getString("name");
+
+                if (thisName.equals(newName)) {
+                    currentstreak = result.getInt("currentstreak");
+                }
+
+                streak = Math.max(streak, result.getInt("streak"));
+                elo = Math.max(elo, result.getInt("elo"));
+                kills += result.getInt("kills");
+                deaths += result.getInt("deaths");
+            }
+
+            executeQuery("DELETE FROM `" + dbTable + "` WHERE `uid` = '" + uuid.toString() + "'", true);
+
+            long time = System.currentTimeMillis() / 1000;
+            executeQuery("INSERT INTO `" + dbTable +
+                    "` (`name`, `uid`, `kills`,`deaths`,`streak`,`currentstreak`,`elo`,`time`) VALUES ('"
+                    + newName + "', '" + uuid + "', " + kills + ", " + deaths + ", " +
+                    streak + ", " + currentstreak + ", " + elo + ", " + time + ")", true);
+
+            if (!collectPrecise) {
+                return;
+            }
+            executeQuery("UPDATE " + dbKillTable + " SET `name` = '" + newName +
+                    "' WHERE `uid` = '" + uuid.toString() + "'", true);
+        } catch (SQLException e) {
+            PVPStats.getInstance().getLogger().severe("Error while trying to update a player entry!");
+            e.printStackTrace();
+        }
     }
 
     /**

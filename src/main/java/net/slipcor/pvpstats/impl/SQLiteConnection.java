@@ -2,7 +2,6 @@ package net.slipcor.pvpstats.impl;
 
 import net.slipcor.pvpstats.PVPStats;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,7 +81,7 @@ public class SQLiteConnection extends AbstractSQLConnection {
                 "`name` varchar(42) NOT NULL, " +
                 "`uid` varchar(42), " +
                 "`kill` int(1) NOT NULL default 0," +
-                "`world` varchar(42) NOT NULL DEFAULT '" + world + "';";
+                "`world` varchar(42) NOT NULL DEFAULT '" + world + "');";
         try {
             executeQuery(query2, true);
         } catch (SQLException e) {

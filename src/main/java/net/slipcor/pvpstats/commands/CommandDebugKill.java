@@ -3,7 +3,6 @@ package net.slipcor.pvpstats.commands;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
-import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.Bukkit;

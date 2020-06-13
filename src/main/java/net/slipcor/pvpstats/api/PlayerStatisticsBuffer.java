@@ -2,8 +2,6 @@ package net.slipcor.pvpstats.api;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.core.Config;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,11 +17,11 @@ import java.util.Map;
  */
 public final class PlayerStatisticsBuffer {
 
-    private static Map<String, Integer> kills = new HashMap<>();
-    private static Map<String, Integer> deaths = new HashMap<>();
-    private static Map<String, Integer> streaks = new HashMap<>();
-    private static Map<String, Integer> maxStreaks = new HashMap<>();
-    private static Map<String, Integer> eloScore = new HashMap<>();
+    private static final Map<String, Integer> kills = new HashMap<>();
+    private static final Map<String, Integer> deaths = new HashMap<>();
+    private static final Map<String, Integer> streaks = new HashMap<>();
+    private static final Map<String, Integer> maxStreaks = new HashMap<>();
+    private static final Map<String, Integer> eloScore = new HashMap<>();
 
     private PlayerStatisticsBuffer() {
     }

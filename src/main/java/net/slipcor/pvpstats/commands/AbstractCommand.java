@@ -4,7 +4,6 @@ package net.slipcor.pvpstats.commands;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

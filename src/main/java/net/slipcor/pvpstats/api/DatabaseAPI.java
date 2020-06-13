@@ -141,6 +141,26 @@ public final class DatabaseAPI {
     }
 
     /**
+     * @return a list of all UUIDs of players that have statistic entries
+     */
+    public static List<UUID> getAllUUIDs() {
+        if (!plugin.getSQLHandler().isConnected()) {
+            plugin.getLogger().severe("Database is not connected!");
+            return null;
+        }
+        List<UUID> output = new ArrayList<>();
+
+        try {
+            List<UUID> result = plugin.getSQLHandler().getStatsUUIDs();
+            output.addAll(result);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return output;
+    }
+
+    /**
      * @return a list of all players that have statistic entries
      */
     public static List<String> getAllPlayers() {
@@ -340,6 +360,10 @@ public final class DatabaseAPI {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        } else if (getAllUUIDs().contains(player.getUniqueId())) {
+            // they were here but with a different name!
+            PVPStats.getInstance().getLogger().info("Trying to rename player with UUID '" + player.getUniqueId() + "' to '" + player.getName() + "'");
+            DatabaseAPI.renamePlayer(player.getUniqueId(), player.getName());
         } else if (plugin.config().getBoolean(Config.Entry.STATISTICS_CREATE_ON_JOIN)) {
             plugin.getSQLHandler().addFirstStat(
                     player.getName(), player.getUniqueId(), 0, 0,
@@ -353,7 +377,7 @@ public final class DatabaseAPI {
         PlayerStatisticsBuffer.getKills(player.getName());
         PlayerStatisticsBuffer.getMaxStreak(player.getName());
     }
-    
+
     private static DatabaseConnection connectToOther(String method, CommandSender sender) {
 
         DatabaseConnection dbHandler = null;
@@ -959,5 +983,15 @@ public final class DatabaseAPI {
      */
     public static void refresh() {
         PlayerStatisticsBuffer.refresh();
+    }
+
+    /**
+     * Update the database with the new name of a player
+     *
+     * @param uuid    the UUID to look for
+     * @param newName the new name to set
+     */
+    public static void renamePlayer(UUID uuid, String newName) {
+        plugin.getSQLHandler().renamePlayer(uuid, newName);
     }
 }

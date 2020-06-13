@@ -628,6 +628,21 @@ public class FlatFileConnection implements DatabaseConnection {
         return names;
     }
 
+    @Override
+    public List<UUID> getStatsUUIDs() {
+        List<UUID> ids = new ArrayList<>();
+
+        ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
+
+        Map<String, Object> uuids = root.getValues(false);
+
+        for (String uuid : uuids.keySet()) {
+            ids.add(UUID.fromString(uuid));
+        }
+
+        return ids;
+    }
+
     /**
      * Get a player's saved UUID entry
      *
@@ -822,6 +837,61 @@ public class FlatFileConnection implements DatabaseConnection {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Update the database with the new name of a player
+     *
+     * @param uuid    the UUID to look for
+     * @param newName the new name to set
+     */
+    @Override
+    public void renamePlayer(UUID uuid, String newName) {
+        String oldName = statConfig.getString(uuid.toString() + ".name");
+        if (!newName.equals(oldName)) {
+            statConfig.set(uuid.toString() + ".name", newName);
+            save(statConfig, dbTable);
+            if (!collectPrecise) {
+                return;
+            }
+
+            ConfigurationSection root = killStatConfig.getConfigurationSection(killStatConfig.getCurrentPath());
+
+            Map<String, Object> uuids = root.getValues(false);
+
+            List<String> updating = new ArrayList<>();
+
+            for (String keyUUID : uuids.keySet()) {
+                ConfigurationSection player = root.getConfigurationSection(keyUUID);
+
+                Map<String, Object> kills = player.getConfigurationSection("kills").getValues(false);
+                Map<String, Object> deaths = player.getConfigurationSection("deaths").getValues(false);
+
+                for (String key : kills.keySet()) {
+                    if (player.getConfigurationSection("kills").getString(key, "").equals(oldName)) {
+                        updating.add(keyUUID+".kills."+key);
+                    }
+                }
+
+                for (String key : deaths.keySet()) {
+                    if (player.getConfigurationSection("deaths").getString(key, "").equals(oldName)) {
+                        updating.add(keyUUID+".deaths."+key);
+                    }
+                }
+            }
+
+            if (updating.size() > 0) {
+                for (String key : updating) {
+                    killStatConfig.set(key, newName);
+                }
+
+                save(killStatConfig, dbKillTable);
+                return;
+            }
+            PVPStats.getInstance().getLogger().warning("Stats entry set correctly, specific stats not found!");
+            return;
+        }
+        PVPStats.getInstance().getLogger().warning("Stats entry not found!");
     }
 
     /**
