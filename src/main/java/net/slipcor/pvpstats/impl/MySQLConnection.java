@@ -3,11 +3,8 @@ package net.slipcor.pvpstats.impl;
 import org.bukkit.Bukkit;
 
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Based on MySQLConnection by Jesika(Kaitlyn) Tremaine aka JesiKat
@@ -116,49 +113,5 @@ public class MySQLConnection extends AbstractSQLConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Delete all statistics by ID
-     *
-     * @param list the list of IDs to delete
-     * @throws SQLException
-     */
-    @Override
-    public void deleteStatsByIDs(List<Integer> list) throws SQLException {
-
-        StringBuilder buff = new StringBuilder("DELETE FROM `");
-        buff.append(dbTable);
-        buff.append("` WHERE `id` IN (");
-
-        boolean first = true;
-
-        for (Integer i : list) {
-            if (!first) {
-                buff.append(',');
-            }
-            first = false;
-            buff.append(i);
-        }
-
-        buff.append(");");
-
-        executeQuery(buff.toString(), true);
-    }
-
-    /**
-     * Get ALL statistics player names and entry IDs
-     *
-     * @return a map of all entry IDs and player names
-     * @throws SQLException
-     */
-    @Override
-    public Map<Integer, String> getStatsIDsAndNames() throws SQLException {
-        Map<Integer, String> map = new LinkedHashMap<>();
-        ResultSet result = executeQuery("SELECT `id`, `name` FROM `" + dbTable + "` WHERE 1 ORDER BY `kills` DESC;", false);
-        while (result.next()) {
-            map.put(result.getInt("id"), result.getString("name"));
-        }
-        return map;
     }
 }

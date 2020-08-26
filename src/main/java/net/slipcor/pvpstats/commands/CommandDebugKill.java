@@ -45,12 +45,12 @@ public class CommandDebugKill extends AbstractCommand {
         }
 
         if (victim.equalsIgnoreCase("null")) {
-            DatabaseAPI.forceIncKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker), offlineAttacker);
+            DatabaseAPI.forceIncKill(offlineAttacker, PlayerStatisticsBuffer.getEloScore(offlineAttacker.getUniqueId()));
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, "null"));
             return;
         }
         if (attacker.equalsIgnoreCase("null")) {
-            DatabaseAPI.forceIncDeath(victim, PlayerStatisticsBuffer.getEloScore(victim), offlineVictim);
+            DatabaseAPI.forceIncDeath(offlineVictim, PlayerStatisticsBuffer.getEloScore(offlineVictim.getUniqueId()));
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString("null", victim));
             return;
         }
@@ -58,8 +58,8 @@ public class CommandDebugKill extends AbstractCommand {
         Config config = PVPStats.getInstance().config();
 
         if (!config.getBoolean(Config.Entry.ELO_ACTIVE)) {
-            DatabaseAPI.forceIncKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker), offlineAttacker);
-            DatabaseAPI.forceIncDeath(victim, PlayerStatisticsBuffer.getEloScore(victim), offlineVictim);
+            DatabaseAPI.forceIncKill(offlineAttacker, PlayerStatisticsBuffer.getEloScore(offlineAttacker.getUniqueId()));
+            DatabaseAPI.forceIncDeath(offlineVictim, PlayerStatisticsBuffer.getEloScore(offlineVictim.getUniqueId()));
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, victim));
             return;
         }
@@ -70,8 +70,8 @@ public class CommandDebugKill extends AbstractCommand {
         final int kAbove = config.getInt(Config.Entry.ELO_K_ABOVE);
         final int kThreshold = config.getInt(Config.Entry.ELO_K_THRESHOLD);
 
-        final int oldA = PlayerStatisticsBuffer.getEloScore(attacker);
-        final int oldP = PlayerStatisticsBuffer.getEloScore(victim);
+        final int oldA = PlayerStatisticsBuffer.getEloScore(offlineAttacker.getUniqueId());
+        final int oldP = PlayerStatisticsBuffer.getEloScore(offlineVictim.getUniqueId());
 
         final int kA = oldA >= kThreshold ? kAbove : kBelow;
         final int kP = oldP >= kThreshold ? kAbove : kBelow;
@@ -79,13 +79,13 @@ public class CommandDebugKill extends AbstractCommand {
         final int newA = DatabaseAPI.calcElo(oldA, oldP, kA, true, min, max);
         final int newP = DatabaseAPI.calcElo(oldP, oldA, kP, false, min, max);
 
-        if (DatabaseAPI.forceIncKill(attacker, newA, offlineAttacker)) {
+        if (DatabaseAPI.forceIncKill(offlineAttacker, newA)) {
             PVPStats.getInstance().sendPrefixed(sender, Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
-            PlayerStatisticsBuffer.setEloScore(attacker, newA);
+            PlayerStatisticsBuffer.setEloScore(offlineAttacker.getUniqueId(), newA);
         }
-        if (DatabaseAPI.forceIncDeath(victim, newP, offlineVictim)) {
+        if (DatabaseAPI.forceIncDeath(offlineVictim, newP)) {
             PVPStats.getInstance().sendPrefixed(sender, Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
-            PlayerStatisticsBuffer.setEloScore(victim, newP);
+            PlayerStatisticsBuffer.setEloScore(offlineVictim.getUniqueId(), newP);
         }
         PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, victim));
     }

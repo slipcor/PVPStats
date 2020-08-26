@@ -1,5 +1,9 @@
 # v1.X Changelog
 
+- v1.5.3 - Set specific values asynchronously
+- v1.5.2 - Start preparing the assisting logic by adding last damage history
+- v1.5.1 - Remove Cleanup Command
+- v1.5.0 - Move all internal logic to UUIDs
 - v1.4.20 - update player names when they rename via Mojang
 - v1.4.19 - update the preloaded RAM player values when changing the database not by killing
 - v1.4.18 - add placeholders for TOP lists, use with caution!

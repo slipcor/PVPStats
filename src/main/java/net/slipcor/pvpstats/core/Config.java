@@ -79,6 +79,8 @@ public class Config {
 
         STATISTICS(Null.class, "statistics", null, new String[]{
                 "# === [ Statistic Settings ] ==="}),
+        STATISTICS_ASSIST_SECONDS(Integer.class, "statistics.assistSeconds", 60, new String[]{
+                "# time in seconds to consider a former kill an assist"}),
         STATISTICS_CLEAR_ON_START(Boolean.class, "statistics.clearOnStart", true, new String[]{
                 "# clear (duplicated) statistics on every start"}),
         STATISTICS_CREATE_ON_JOIN(Boolean.class, "statistics.createOnJoin", true, new String[]{

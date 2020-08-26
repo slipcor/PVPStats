@@ -1,9 +1,9 @@
 package net.slipcor.pvpstats.impl;
 
-import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseConnection;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.sql.Connection;
@@ -150,15 +150,15 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     /**
      * Delete kill stats of a player
      *
-     * @param playerName the player's name
+     * @param uuid the player's UUID
      */
     @Override
-    public void deleteKillsByName(String playerName) {
+    public void deleteKillsByUUID(UUID uuid) {
         if (!collectPrecise) {
             return;
         }
         try {
-            executeQuery("DELETE FROM `" + dbKillTable + "` WHERE `name` = '" + playerName
+            executeQuery("DELETE FROM `" + dbKillTable + "` WHERE `uid` = '" + uuid
                     + "';", true);
         } catch (SQLException e) {
         }
@@ -198,14 +198,14 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     }
 
     /**
-     * Delete statistics by player name
+     * Delete statistics by player UUID
      *
-     * @param playerName the player's name
+     * @param uuid the player's UUID
      */
     @Override
-    public void deleteStatsByName(String playerName) {
+    public void deleteStatsByUUID(UUID uuid) {
         try {
-            executeQuery("DELETE FROM `" + dbTable + "` WHERE `name` = '" + playerName
+            executeQuery("DELETE FROM `" + dbTable + "` WHERE `uid` = '" + uuid
                     + "';", true);
         } catch (SQLException e) {
 
@@ -258,92 +258,58 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
                     result.getInt("currentstreak"),
                     result.getInt("elo"),
                     result.getLong("time"),
-                    result.getString("uid")));
+                    UUID.fromString(result.getString("uid"))));
         }
         return list;
     }
 
     /**
-     * Get a statistic value by exact player name
+     * Get a statistic value by player UUID
      *
      * @param stat       the statistic value
-     * @param playerName the exact player's name to look for
+     * @param uuid the player's UUID to look for
      * @return a set of all matching entries
      * @throws SQLException
      */
     @Override
-    public int getStatExact(String stat, String playerName) throws SQLException {
-        ResultSet result = executeQuery("SELECT `" + stat + "` FROM `" + dbTable + "` WHERE `name` = '" + playerName + "' LIMIT 1;", false);
+    public int getStats(String stat, UUID uuid) throws SQLException {
+        ResultSet result = executeQuery("SELECT `" + stat + "` FROM `" + dbTable + "` WHERE `uid` = '" + uuid + "' LIMIT 1;", false);
         return (result != null && result.next()) ? result.getInt(stat) : -1;
     }
 
     /**
-     * Get a statistic value by matching partial player name
+     * Get statistics by player UUID
      *
-     * @param stat       the statistic value
-     * @param playerName the partial player's name to look for
-     * @return a set of all matching entries
-     * @throws SQLException
-     */
-    @Override
-    public int getStatLike(String stat, String playerName) throws SQLException {
-        ResultSet result = executeQuery("SELECT `" + stat + "` FROM `" + dbTable + "` WHERE `name` LIKE '%" + playerName + "%' LIMIT 1;", false);
-        return (result != null && result.next()) ? result.getInt(stat) : -1;
-    }
-
-    /**
-     * Get statistics by exact player name
-     *
-     * @param playerName the exact player's name to look for
+     * @param offlinePlayer the player to look for
      * @return the first matching player stat entry
      * @throws SQLException
      */
     @Override
-    public PlayerStatistic getStatsExact(String playerName) throws SQLException {
-        ResultSet result = executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + dbTable + "` WHERE `name` = '" + playerName + "' LIMIT 1;", false);
+    public PlayerStatistic getStats(OfflinePlayer offlinePlayer) throws SQLException {
+        ResultSet result = executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo`,`time`,`uid` FROM `" + dbTable + "` WHERE `uid` = '" + offlinePlayer.getUniqueId() + "' LIMIT 1;", false);
         if (result.next()) {
             return new PlayerStatistic(result.getString("name"),
                     result.getInt("kills"),
                     result.getInt("deaths"),
                     result.getInt("streak"),
                     result.getInt("currentstreak"),
-                    result.getInt("elo"));
+                    result.getInt("elo"),
+                    result.getInt("time"),
+                    UUID.fromString(result.getString("uid")));
         }
         return null;
     }
 
     /**
-     * Get statistics by matching partial player name
+     * Get all player names that have no UUID
      *
-     * @param playerName the partial player's name to look for
-     * @return the first matching player stat entry
+     * @return all player names that have no UUID attached
      * @throws SQLException
      */
     @Override
-    public PlayerStatistic getStatsLike(String playerName) throws SQLException {
-        ResultSet result = executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + dbTable + "` WHERE `name` LIKE '%" + playerName + "%' LIMIT 1;", false);
-        List<PlayerStatistic> list = new ArrayList<>();
-        if (result.next()) {
-            return new PlayerStatistic(result.getString("name"),
-                    result.getInt("kills"),
-                    result.getInt("deaths"),
-                    result.getInt("streak"),
-                    result.getInt("currentstreak"),
-                    result.getInt("elo"));
-        }
-        return null;
-    }
-
-    /**
-     * Get all player names
-     *
-     * @return all player names
-     * @throws SQLException
-     */
-    @Override
-    public List<String> getStatsNames() throws SQLException {
+    public List<String> getNamesWithoutUUIDs() throws SQLException {
         List<String> list = new ArrayList<>();
-        ResultSet result = executeQuery("SELECT `name` FROM `" + dbTable + "` GROUP BY `name`;", false);
+        ResultSet result = executeQuery("SELECT `name` FROM `" + dbTable + "` WHERE `uid` = '';", false);
         while (result.next()) {
             list.add(result.getString("name"));
         }
@@ -359,27 +325,11 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     @Override
     public List<UUID> getStatsUUIDs() throws SQLException {
         List<UUID> ids = new ArrayList<>();
-        ResultSet result = executeQuery("SELECT `uid` FROM `" + dbTable + "` GROUP BY `uid`;", false);
+        ResultSet result = executeQuery("SELECT `uid` FROM `" + dbTable + "` WHERE 1;", false);
         while (result.next()) {
             ids.add(UUID.fromString(result.getString("uid")));
         }
         return ids;
-    }
-
-    /**
-     * Get a player's saved UUID entry
-     *
-     * @param player the player to look for
-     * @return their UID
-     * @throws SQLException
-     */
-    @Override
-    public String getStatUIDFromPlayer(Player player) throws SQLException {
-        ResultSet result = executeQuery("SELECT `uid` FROM `" + dbTable + "` WHERE `name` = '" + player.getName() + "';", false);
-        if (result.next()) {
-            return result.getString("uid");
-        }
-        return "";
     }
 
     /**
@@ -393,7 +343,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
      */
     @Override
     public List<PlayerStatistic> getTopSorted(int amount, String orderBy, boolean ascending) throws SQLException {
-        String query = "SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`,`elo` FROM `" +
+        String query = "SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`,`elo`,`time`,`uid` FROM `" +
                 dbTable + "` WHERE 1 ORDER BY `" + orderBy + "` " + (ascending ? "ASC" : "DESC") + " LIMIT " + amount + ";";
 
         List<PlayerStatistic> list = new ArrayList<>();
@@ -410,7 +360,9 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
                     result.getInt("deaths"),
                     result.getInt("streak"),
                     result.getInt("currentstreak"),
-                    result.getInt("elo")));
+                    result.getInt("elo"),
+                    result.getInt("time"),
+                    UUID.fromString(result.getString("uid"))));
         }
         return list;
     }
@@ -434,14 +386,15 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     /**
      * Increase player death count, update ELO score and reset streak
      *
+     * @param name the player's name
      * @param uuid the player's UUID
      * @param elo  the new ELO rating
      */
     @Override
-    public void increaseDeaths(UUID uuid, int elo) {
+    public void increaseDeaths(String name, UUID uuid, int elo) {
         long time = System.currentTimeMillis() / 1000;
         try {
-            executeQuery("UPDATE `" + dbTable + "` SET `deaths` = `deaths`+1, `elo` = " + elo +
+            executeQuery("UPDATE `" + dbTable + "` SET `name` = '" + name + "', `deaths` = `deaths`+1, `elo` = " + elo +
                     ", `currentstreak` = 0, `time` = " + time + " WHERE `uid` = '" + uuid + "'", true);
         } catch (SQLException e) {
         }
@@ -450,14 +403,15 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     /**
      * Increase player kill count, update ELO score and the max and current streak
      *
+     * @param name the player's name
      * @param uuid the player's UUID
      * @param elo  the new ELO rating
      */
     @Override
-    public void increaseKillsAndMaxStreak(UUID uuid, int elo) {
+    public void increaseKillsAndMaxStreak(String name, UUID uuid, int elo) {
         long time = System.currentTimeMillis() / 1000;
         try {
-            executeQuery("UPDATE `" + dbTable + "` SET `kills` = `kills`+1, `elo` = '" + elo +
+            executeQuery("UPDATE `" + dbTable + "` SET `name` = '" + name + "', `kills` = `kills`+1, `elo` = '" + elo +
                     "', `streak` = `streak`+1, `currentstreak` = `currentstreak`+1, `time` = " + time +
                     " WHERE `uid` = '" + uuid + "'", true);
         } catch (SQLException e) {
@@ -467,14 +421,15 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     /**
      * Increase player kill count, update ELO score and the current streak
      *
+     * @param name the player's name
      * @param uuid the player's UUID
      * @param elo  the new ELO rating
      */
     @Override
-    public void increaseKillsAndStreak(UUID uuid, int elo) {
+    public void increaseKillsAndStreak(String name, UUID uuid, int elo) {
         long time = System.currentTimeMillis() / 1000;
         try {
-            executeQuery("UPDATE `" + dbTable + "` SET `kills` = `kills`+1, `elo` = '" + elo +
+            executeQuery("UPDATE `" + dbTable + "` SET `name` = '" + name + "', `kills` = `kills`+1, `elo` = '" + elo +
                     "', `currentstreak` = `currentstreak`+1, `time` = " + time +
                     " WHERE `uid` = '" + uuid + "'", true);
         } catch (SQLException e) {
@@ -497,64 +452,17 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
         return this.databaseConnection != null;
     }
 
-    /**
-     * Update the database with the new name of a player
-     *
-     * @param uuid    the UUID to look for
-     * @param newName the new name to set
-     */
-    @Override
-    public void renamePlayer(UUID uuid, String newName) {
-        int kills = 0;
-        int deaths = 0;
-        int streak = 0;
-        int currentstreak = 0;
-        int elo = 0;
-
-        try {
-            ResultSet result = executeQuery("SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`, `elo` FROM `" + dbTable + "` WHERE `uid` = '" + uuid.toString() + "'", false);
-            while (result.next()) {
-                String thisName = result.getString("name");
-
-                if (thisName.equals(newName)) {
-                    currentstreak = result.getInt("currentstreak");
-                }
-
-                streak = Math.max(streak, result.getInt("streak"));
-                elo = Math.max(elo, result.getInt("elo"));
-                kills += result.getInt("kills");
-                deaths += result.getInt("deaths");
-            }
-
-            executeQuery("DELETE FROM `" + dbTable + "` WHERE `uid` = '" + uuid.toString() + "'", true);
-
-            long time = System.currentTimeMillis() / 1000;
-            executeQuery("INSERT INTO `" + dbTable +
-                    "` (`name`, `uid`, `kills`,`deaths`,`streak`,`currentstreak`,`elo`,`time`) VALUES ('"
-                    + newName + "', '" + uuid + "', " + kills + ", " + deaths + ", " +
-                    streak + ", " + currentstreak + ", " + elo + ", " + time + ")", true);
-
-            if (!collectPrecise) {
-                return;
-            }
-            executeQuery("UPDATE " + dbKillTable + " SET `name` = '" + newName +
-                    "' WHERE `uid` = '" + uuid.toString() + "'", true);
-        } catch (SQLException e) {
-            PVPStats.getInstance().getLogger().severe("Error while trying to update a player entry!");
-            e.printStackTrace();
-        }
-    }
 
     /**
      * Set specific statistical value of a player
      *
-     * @param playerName the player to find
+     * @param uuid the player to find
      * @param entry      the entry to set
      * @param value      the value to set
      */
     @Override
-    public void setSpecificStat(String playerName, String entry, int value) throws SQLException {
-        executeQuery("UPDATE `" + dbTable + "` SET `" + entry + "` = " + value + " WHERE `name` = '" + playerName + "';", true);
+    public void setSpecificStat(UUID uuid, String entry, int value) throws SQLException {
+        executeQuery("UPDATE `" + dbTable + "` SET `" + entry + "` = " + value + " WHERE `uid` = '" + uuid.toString() + "';", true);
     }
 
     /**
@@ -565,6 +473,6 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
      */
     @Override
     public void setStatUIDByPlayer(Player player) throws SQLException {
-        executeQuery("UPDATE `" + dbTable + "` SET `uid` = '" + player.getUniqueId() + "' WHERE `name` = '" + player.getName() + "';", true);
+        executeQuery("UPDATE `" + dbTable + "` SET `uid` = '" + player.getUniqueId() + "' WHERE `uid` = '" + player.getUniqueId() + "';", true);
     }
 }

@@ -2,8 +2,10 @@ package net.slipcor.pvpstats.commands;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
+import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -27,7 +29,14 @@ public class CommandWipe extends AbstractCommand {
             DatabaseAPI.wipe(null);
             PVPStats.getInstance().sendPrefixed(sender, Language.MSG_WIPED.toString());
         } else {
-            DatabaseAPI.wipe(args[1]);
+            OfflinePlayer player =  PlayerNameHandler.findPlayer(args[1]);
+
+            if (player == null) {
+                sender.sendMessage("Player not found: " + args[1]);
+                return;
+            }
+
+            DatabaseAPI.wipe(player.getUniqueId());
             PVPStats.getInstance().sendPrefixed(sender, Language.MSG_WIPEDFOR.toString(args[1]));
         }
 

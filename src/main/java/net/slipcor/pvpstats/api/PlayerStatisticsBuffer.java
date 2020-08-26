@@ -2,26 +2,25 @@ package net.slipcor.pvpstats.api;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.core.Config;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Class for fast temporary access to player statistics
  * <p>
- * Should never used to SET variables, only for quick access to existing values
+ * Should never be publicly used to SET variables, only for quick access to existing values
  *
  * @author slipcor
  */
 public final class PlayerStatisticsBuffer {
 
-    private static final Map<String, Integer> kills = new HashMap<>();
-    private static final Map<String, Integer> deaths = new HashMap<>();
-    private static final Map<String, Integer> streaks = new HashMap<>();
-    private static final Map<String, Integer> maxStreaks = new HashMap<>();
-    private static final Map<String, Integer> eloScore = new HashMap<>();
+    private static final Map<UUID, Integer> kills = new HashMap<>();
+    private static final Map<UUID, Integer> deaths = new HashMap<>();
+    private static final Map<UUID, Integer> streaks = new HashMap<>();
+    private static final Map<UUID, Integer> maxStreaks = new HashMap<>();
+    private static final Map<UUID, Integer> eloScore = new HashMap<>();
 
     private PlayerStatisticsBuffer() {
     }
@@ -29,45 +28,45 @@ public final class PlayerStatisticsBuffer {
     /**
      * Increase a player's death count
      *
-     * @param playerName the player's name
+     * @param uuid the player's UUID
      */
-    public static void addDeath(String playerName) {
-        int value = deaths.containsKey(playerName) ? deaths.get(playerName) : 0;
+    public static void addDeath(UUID uuid) {
+        int value = deaths.containsKey(uuid) ? deaths.get(uuid) : 0;
 
-        deaths.put(playerName, ++value);
+        deaths.put(uuid, ++value);
     }
 
     /**
      * Increase a player's kill count
      *
-     * @param playerName the player's name
+     * @param uuid the player's UUID
      */
-    public static void addKill(String playerName) {
-        int value = kills.containsKey(playerName) ? kills.get(playerName) : 0;
+    public static void addKill(UUID uuid) {
+        int value = kills.containsKey(uuid) ? kills.get(uuid) : 0;
 
-        kills.put(playerName, ++value);
+        kills.put(uuid, ++value);
     }
 
     /**
      * Increase a player killstreak - eventually increases the maximum killstreak
      *
-     * @param name the player name to handle
+     * @param uuid the player UUID to handle
      * @return true if the maximum streak should be increased wise
      */
-    public static boolean addStreak(String name) {
-        final int streak = streaks.get(name) + 1;
-        streaks.put(name, streak);
-        if (hasMaxStreak(name)) {
-            if (PlayerStatisticsBuffer.maxStreaks.get(name) < streak) {
-                PlayerStatisticsBuffer.maxStreaks.put(name, Math.max(PlayerStatisticsBuffer.maxStreaks.get(name), streak));
+    public static boolean addStreak(UUID uuid) {
+        final int streak = streaks.get(uuid) + 1;
+        streaks.put(uuid, streak);
+        if (hasMaxStreak(uuid)) {
+            if (PlayerStatisticsBuffer.maxStreaks.get(uuid) < streak) {
+                PlayerStatisticsBuffer.maxStreaks.put(uuid, Math.max(PlayerStatisticsBuffer.maxStreaks.get(uuid), streak));
                 return true;
             }
         } else {
-            int max = getMaxStreak(name); // load the streaks
+            int max = getMaxStreak(uuid); // load the streaks
             if (max > streak) {
                 return false;
             }
-            maxStreaks.put(name, streak);
+            maxStreaks.put(uuid, streak);
             return true;
         }
         return false;
@@ -76,255 +75,256 @@ public final class PlayerStatisticsBuffer {
     /**
      * Clear a player's temporary variables
      *
-     * @param name the player to clear, null to clear everything
+     * @param uuid the player UUID to clear, null to clear everything
      */
-    public static void clear(String name) {
-        if (name == null) {
+    public static void clear(UUID uuid) {
+        if (uuid == null) {
             deaths.clear();
             kills.clear();
             maxStreaks.clear();
             streaks.clear();
             eloScore.clear();
         } else {
-            clearDeaths(name);
-            clearKills(name);
-            clearMaxStreak(name);
-            clearStreak(name);
-            clearEloScore(name);
+            clearDeaths(uuid);
+            clearKills(uuid);
+            clearMaxStreak(uuid);
+            clearStreak(uuid);
+            clearEloScore(uuid);
         }
     }
 
     /**
      * Clear a player's death count
      *
-     * @param name the player to clear
+     * @param uuid the player UUID to clear
      */
-    public static void clearDeaths(String name) {
-        deaths.remove(name);
+    public static void clearDeaths(UUID uuid) {
+        deaths.remove(uuid);
     }
 
     /**
      * Clear a player's kill count
      *
-     * @param name the player to clear
+     * @param uuid the player UUID to clear
      */
-    public static void clearKills(String name) {
-        kills.remove(name);
+    public static void clearKills(UUID uuid) {
+        kills.remove(uuid);
     }
 
     /**
      * Clear a player's maximum kill streak
      *
-     * @param name the player to clear
+     * @param uuid the player UUID to clear
      */
-    public static void clearMaxStreak(String name) {
-        maxStreaks.remove(name);
+    public static void clearMaxStreak(UUID uuid) {
+        maxStreaks.remove(uuid);
     }
 
     /**
      * Clear a player's current kill streak
      *
-     * @param name the player to clear
+     * @param uuid the player UUID to clear
      */
-    public static void clearStreak(String name) {
-        streaks.remove(name);
+    public static void clearStreak(UUID uuid) {
+        streaks.remove(uuid);
     }
 
     /**
      * Clear a player's current elo score
      *
-     * @param name the player to read
+     * @param uuid the player UUID to read
      */
-    public static void clearEloScore(String name) {
-        eloScore.remove(name);
+    public static void clearEloScore(UUID uuid) {
+        eloScore.remove(uuid);
     }
 
     /**
      * Get a player's death count
      *
-     * @param name the player to read
+     * @param uuid the player UUID to read
      * @return the player's death count
      */
-    public static Integer getDeaths(String name) {
-        if (deaths.containsKey(name)) {
-            return deaths.get(name);
+    public static Integer getDeaths(UUID uuid) {
+        if (deaths.containsKey(uuid)) {
+            return deaths.get(uuid);
         }
 
-        final int value = DatabaseAPI.getEntry(name, "deaths");
-        deaths.put(name, value);
+        final int value = DatabaseAPI.getEntry(uuid, "deaths");
+        deaths.put(uuid, value);
         return value;
     }
 
     /**
      * Get a player's kill count
      *
-     * @param name the player to read
+     * @param uuid the player to read
      * @return the player's kill count
      */
-    public static Integer getKills(String name) {
-        if (kills.containsKey(name)) {
-            return kills.get(name);
+    public static Integer getKills(UUID uuid) {
+        if (kills.containsKey(uuid)) {
+            return kills.get(uuid);
         }
 
-        final int value = DatabaseAPI.getEntry(name, "kills");
-        kills.put(name, value);
+        final int value = DatabaseAPI.getEntry(uuid, "kills");
+        kills.put(uuid, value);
         return value;
     }
 
     /**
      * Get a player's maximum kill streak
      *
-     * @param name the player to read
+     * @param uuid the player to read
      * @return the player's maximum kill streak
      */
-    public static Integer getMaxStreak(String name) {
-        if (hasMaxStreak(name)) {
-            return maxStreaks.get(name);
+    public static Integer getMaxStreak(UUID uuid) {
+        if (hasMaxStreak(uuid)) {
+            return maxStreaks.get(uuid);
         }
 
-        final int value = DatabaseAPI.getEntry(name, "streak");
-        maxStreaks.put(name, value);
+        final int value = DatabaseAPI.getEntry(uuid, "streak");
+        maxStreaks.put(uuid, value);
         return value;
     }
 
     /**
      * Get a player's current kill streak
      *
-     * @param name the player to read
+     * @param uuid the player to read
      * @return the player's current kill streak
      */
-    public static Integer getStreak(String name) {
-        if (hasStreak(name)) {
-            return streaks.get(name);
+    public static Integer getStreak(UUID uuid) {
+        if (hasStreak(uuid)) {
+            return streaks.get(uuid);
         }
 
-        final int value = DatabaseAPI.getEntry(name, "currentstreak");
-        streaks.put(name, value);
+        final int value = DatabaseAPI.getEntry(uuid, "currentstreak");
+        streaks.put(uuid, value);
         return value;
     }
 
     /**
      * Get a player's current elo score
      *
-     * @param name the player to read
+     * @param uuid the player to read
      * @return the player's current elo score
      */
-    public static Integer getEloScore(String name) {
-        if (hasEloScore(name)) {
-            return eloScore.get(name);
+    public static Integer getEloScore(UUID uuid) {
+        if (hasEloScore(uuid)) {
+            return eloScore.get(uuid);
         }
 
-        final int value = DatabaseAPI.getEntry(name, "elo");
+        final int value = DatabaseAPI.getEntry(uuid, "elo");
 
         if (value > 0) {
-            eloScore.put(name, value);
+            eloScore.put(uuid, value);
             return value;
         }
 
         Integer idefault = PVPStats.getInstance().config().getInt(Config.Entry.ELO_DEFAULT);
-        eloScore.put(name, idefault);
+        eloScore.put(uuid, idefault);
         return idefault;
     }
 
     /**
      * Get a player's current configurable kill/death ratio
      *
-     * @param name the player to read
+     * @param uuid the player UUID to read
      * @return the player's current k/d ratio
      */
-    public static Double getRatio(String name) {
-        return DatabaseAPI.calculateRatio(getKills(name), getDeaths(name), getStreak(name), getMaxStreak(name));
+    public static Double getRatio(UUID uuid) {
+        return DatabaseAPI.calculateRatio(getKills(uuid), getDeaths(uuid), getStreak(uuid), getMaxStreak(uuid));
     }
 
     /**
      * Does a player already have a maximum kill streak
      *
-     * @param name the player to check
+     * @param uuid the player UUID to check
      * @return true if the player has a maximum kill streak
      */
-    public static boolean hasMaxStreak(String name) {
-        return maxStreaks.containsKey(name);
+    public static boolean hasMaxStreak(UUID uuid) {
+        return maxStreaks.containsKey(uuid);
     }
 
     /**
      * Does a player already have a kill streak
      *
-     * @param name the player to check
+     * @param uuid the player UUID to check
      * @return true if the player has a kill streak
      */
-    public static boolean hasStreak(String name) {
-        return streaks.containsKey(name);
+    public static boolean hasStreak(UUID uuid) {
+        return streaks.containsKey(uuid);
     }
 
     /**
      * Does a player already have a elo score
      *
-     * @param name the player to check
+     * @param uuid the player UUID to check
      * @return true if the player has a elo score
      */
-    public static boolean hasEloScore(String name) {
-        return eloScore.containsKey(name);
+    public static boolean hasEloScore(UUID uuid) {
+        return eloScore.containsKey(uuid);
     }
 
     /**
      * Force set a player's death count - this does NOT update the database!
      *
-     * @param name  the player to update
+     * @param uuid  the player UUID to update
      * @param value the value to set
      */
-    public static void setDeaths(String name, int value) {
-        deaths.put(name, value);
+    public static void setDeaths(UUID uuid, int value) {
+        deaths.put(uuid, value);
     }
 
     /**
      * Force set a player's kill count - this does NOT update the database!
      *
-     * @param name  the player to update
+     * @param uuid  the player UUID to update
      * @param value the value to set
      */
-    public static void setKills(String name, int value) {
-        kills.put(name, value);
+    public static void setKills(UUID uuid, int value) {
+        kills.put(uuid, value);
     }
 
     /**
      * Force set a player's max killstreak count - this does NOT update the database!
      *
-     * @param name  the player to update
+     * @param uuid  the player UUID to update
      * @param value the value to set
      */
-    public static void setMaxStreak(String name, int value) {
-        maxStreaks.put(name, value);
+    public static void setMaxStreak(UUID uuid, int value) {
+        maxStreaks.put(uuid, value);
     }
 
     /**
      * Force set a player's killstreak count - this does NOT update the database!
      *
-     * @param name  the player to update
+     * @param uuid  the player UUID to update
      * @param value the value to set
      */
-    public static void setStreak(String name, int value) {
-        streaks.put(name, value);
+    public static void setStreak(UUID uuid, int value) {
+        streaks.put(uuid, value);
     }
 
     /**
      * Force set a player's elo score - this does NOT update the database!
      *
-     * @param name  the player to update
+     * @param uuid  the player UUID to update
      * @param value the value to set
      */
-    public static void setEloScore(String name, int value) {
-        eloScore.put(name, value);
+    public static void setEloScore(UUID uuid, int value) {
+        eloScore.put(uuid, value);
     }
 
     /**
-     * Refresh the maps after making changes
+     * Refresh the maps after making changes by command
      */
     static void refresh() {
-        List<String> names = new ArrayList<>(DatabaseAPI.getAllPlayers());
+        List<UUID> uuids = new ArrayList<>(DatabaseAPI.getAllUUIDs());
 
         clear(null); // clear all entries
 
-        for (String player : names) {
+        for (UUID uuid : uuids) {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
             DatabaseAPI.info(player); // pre-load previously loaded players
         }
     }

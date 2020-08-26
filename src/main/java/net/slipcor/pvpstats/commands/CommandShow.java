@@ -2,7 +2,9 @@ package net.slipcor.pvpstats.commands;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
+import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -23,28 +25,39 @@ public class CommandShow extends AbstractCommand {
 
         if (args == null || args.length < 1 || (args.length == 1 && args[0].equals("show"))) {
             // /pvpstats - show your pvp stats
+            if (sender instanceof Player) {
 
-            class TellLater implements Runnable {
+                class TellLater implements Runnable {
 
-                @Override
-                public void run() {
-                    final String[] info = DatabaseAPI.info(sender.getName());
-                    sender.sendMessage(info);
+                    @Override
+                    public void run() {
+                        final String[] info = DatabaseAPI.info((Player) sender);
+                        sender.sendMessage(info);
+                    }
+
                 }
-
+                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new TellLater());
+            } else {
+                sender.sendMessage("You do not have stats!");
             }
-            Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new TellLater());
             return;
         }
         if (sender.hasPermission("pvpstats.top")) {
 
             // /pvpstats [player] - show player's pvp stats
 
+            final OfflinePlayer player =  PlayerNameHandler.findPlayer(args[1]);
+
+            if (player == null) {
+                sender.sendMessage("Player not found: " + args[1]);
+                return;
+            }
+
             class TellLater implements Runnable {
 
                 @Override
                 public void run() {
-                    final String[] info = DatabaseAPI.info(args[1]);
+                    final String[] info = DatabaseAPI.info(player);
                     sender.sendMessage(info);
                 }
 

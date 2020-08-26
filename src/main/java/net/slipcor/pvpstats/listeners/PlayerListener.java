@@ -4,19 +4,26 @@ import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
 import net.slipcor.pvpstats.classes.Debugger;
+import net.slipcor.pvpstats.classes.PlayerDamageHistory;
 import net.slipcor.pvpstats.core.Config;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Player Event Listener class
@@ -32,8 +39,42 @@ public class PlayerListener implements Listener {
     private final Map<String, String> lastKill = new HashMap<>();
     private final Map<String, BukkitTask> killTask = new HashMap<>();
 
+    private boolean lock = false;
+
+    private int assistSeconds = 60;
+
+    private final Map<UUID, PlayerDamageHistory> lastDamage = new HashMap<>();
+
     public PlayerListener(final PVPStats instance) {
         this.plugin = instance;
+        assistSeconds = this.plugin.config().getInt(Config.Entry.STATISTICS_ASSIST_SECONDS);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerDamage(EntityDamageByEntityEvent event) {
+        if (event.getEntityType() != EntityType.PLAYER) {
+            return;
+        }
+
+        Player attacked = (Player) event.getEntity();
+        Player attacker = null;
+
+        if (event.getDamager() instanceof Player && !event.getDamager().equals(attacked)) {
+            attacker = (Player) event.getDamager();
+        } else if (event.getDamager() instanceof Projectile) {
+            Projectile projectile = (Projectile) event.getDamager();
+            if (projectile.getShooter() instanceof Player && !projectile.getShooter().equals(attacked)) {
+                attacker = (Player) projectile.getShooter();
+            }
+        }
+        if (lastDamage.containsKey(attacked.getUniqueId())) {
+            PlayerDamageHistory history = lastDamage.get(attacked.getUniqueId());
+            history.commitPlayerDamage(attacker);
+        } else {
+            PlayerDamageHistory history = new PlayerDamageHistory();
+            history.commitPlayerDamage(attacker);
+            lastDamage.put(attacked.getUniqueId(), history);
+        }
     }
 
     /**
@@ -63,7 +104,7 @@ public class PlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerQuit(final PlayerQuitEvent event) {
         if (plugin.config().getBoolean(Config.Entry.STATISTICS_RESET_KILLSTREAK_ON_QUIT)) {
-            PlayerStatisticsBuffer.setStreak(event.getPlayer().getName(), 0);
+            PlayerStatisticsBuffer.setStreak(event.getPlayer().getUniqueId(), 0);
         }
     }
 
@@ -78,19 +119,32 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        Debugger.i("Player killed!", event.getEntity());
+        final Player player = event.getEntity();
+        Debugger.i("Player killed!", player);
+        Player attacker = event.getEntity().getKiller();
 
-        if (event.getEntity().getKiller() == null) {
-            Debugger.i("Killer is null", event.getEntity());
-            if (plugin.config().getBoolean(Config.Entry.STATISTICS_COUNT_REGULAR_DEATHS)) {
-                Debugger.i("Kill will be counted", event.getEntity());
-                DatabaseAPI.AkilledB(null, event.getEntity());
+        if (attacker == null) {
+            Debugger.i("Killer is null", player);
+
+            if (lastDamage.containsKey(player.getUniqueId())) {
+                PlayerDamageHistory history = lastDamage.get(player.getUniqueId());
+                List<UUID> damagers = history.getLastDamage(assistSeconds);
+                if (damagers.size() > 0) {
+                    attacker = Bukkit.getPlayer(damagers.get(0));
+                }
+                lastDamage.remove(player.getUniqueId()); // clear map for next kill
             }
-            return;
+
+            if (attacker == null) {
+                Debugger.i("Killer is still null", player);
+                if (plugin.config().getBoolean(Config.Entry.STATISTICS_COUNT_REGULAR_DEATHS)) {
+                    Debugger.i("Kill will be counted", event.getEntity());
+                    DatabaseAPI.AkilledB(null, event.getEntity());
+                }
+                return;
+            }
         }
 
-        final Player attacker = event.getEntity().getKiller();
-        final Player player = event.getEntity();
 
         if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_ABUSE)) {
             Debugger.i("- checking abuse", event.getEntity());
@@ -102,12 +156,13 @@ public class PlayerListener implements Listener {
             lastKill.put(attacker.getName(), player.getName());
             int abusesec = plugin.config().getInt(Config.Entry.STATISTICS_ABUSE_SECONDS);
             if (abusesec > 0) {
+                Player finalAttacker = attacker;
                 class RemoveLater implements Runnable {
 
                     @Override
                     public void run() {
-                        lastKill.remove(attacker.getName());
-                        killTask.remove(attacker.getName());
+                        lastKill.remove(finalAttacker.getName());
+                        killTask.remove(finalAttacker.getName());
                     }
 
                 }

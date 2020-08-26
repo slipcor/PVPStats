@@ -8,6 +8,7 @@ import net.slipcor.pvpstats.core.Language;
 import net.slipcor.pvpstats.impl.FlatFileConnection;
 import net.slipcor.pvpstats.impl.MySQLConnection;
 import net.slipcor.pvpstats.impl.SQLiteConnection;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -52,12 +53,12 @@ public final class DatabaseAPI {
 
         if (victim == null) {
             DEBUGGER.i("victim is null", attacker);
-            incKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker.getName()));
+            incKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
             return;
         }
         if (attacker == null) {
             DEBUGGER.i("attacker is null", victim);
-            incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getName()));
+            incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
             return;
         }
 
@@ -68,8 +69,8 @@ public final class DatabaseAPI {
 
         if (!plugin.config().getBoolean(Config.Entry.ELO_ACTIVE)) {
             DEBUGGER.i("no elo", victim);
-            incKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker.getName()));
-            incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getName()));
+            incKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
+            incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
             return;
         }
 
@@ -79,8 +80,8 @@ public final class DatabaseAPI {
         final int kAbove = plugin.config().getInt(Config.Entry.ELO_K_ABOVE);
         final int kThreshold = plugin.config().getInt(Config.Entry.ELO_K_THRESHOLD);
 
-        final int oldA = PlayerStatisticsBuffer.getEloScore(attacker.getName());
-        final int oldP = PlayerStatisticsBuffer.getEloScore(victim.getName());
+        final int oldA = PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId());
+        final int oldP = PlayerStatisticsBuffer.getEloScore(victim.getUniqueId());
 
         final int kA = oldA >= kThreshold ? kAbove : kBelow;
         final int kP = oldP >= kThreshold ? kAbove : kBelow;
@@ -91,53 +92,13 @@ public final class DatabaseAPI {
         if (incKill(attacker, newA)) {
             DEBUGGER.i("increasing kill", attacker);
             plugin.sendPrefixed(attacker, Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
-            PlayerStatisticsBuffer.setEloScore(attacker.getName(), newA);
+            PlayerStatisticsBuffer.setEloScore(attacker.getUniqueId(), newA);
         }
         if (incDeath(victim, newP)) {
             DEBUGGER.i("increasing death", victim);
             plugin.sendPrefixed(victim, Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
-            PlayerStatisticsBuffer.setEloScore(victim.getName(), newP);
+            PlayerStatisticsBuffer.setEloScore(victim.getUniqueId(), newP);
         }
-    }
-
-    /**
-     * Clean up database, removing stat entries with the same player name
-     *
-     * @return the amount of entries removed
-     */
-    public static int clean() {
-        if (!plugin.getSQLHandler().isConnected()) {
-            plugin.getLogger().severe("Database is not connected!");
-            return 0;
-        }
-        Map<Integer, String> result;
-
-        List<Integer> ints = new ArrayList<>();
-        Map<String, Integer> players = new HashMap<>();
-
-        try {
-
-            result = plugin.getSQLHandler().getStatsIDsAndNames();
-
-            for (Integer key : result.keySet()) {
-                String playerName = result.get(key);
-
-                if (players.containsKey(playerName)) {
-                    ints.add(key);
-                    players.put(playerName, players.get(playerName) + 1);
-                } else {
-                    players.put(playerName, 1);
-                }
-            }
-
-            if (ints.size() > 0) {
-                plugin.getSQLHandler().deleteStatsByIDs(ints);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return ints.size();
     }
 
     /**
@@ -171,7 +132,7 @@ public final class DatabaseAPI {
         List<String> output = new ArrayList<>();
 
         try {
-            List<String> result = plugin.getSQLHandler().getStatsNames();
+            List<String> result = plugin.getSQLHandler().getNamesWithoutUUIDs();
             output.addAll(result);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -183,11 +144,11 @@ public final class DatabaseAPI {
     /**
      * Get a player's statistic entry
      *
-     * @param playerName the player name to find
+     * @param uuid the player id to find
      * @param entry      the entry to find
      * @return the entry value, 0 if not found, throwing an Exception if there was a bigger problem
      */
-    public static Integer getEntry(String playerName, String entry) {
+    public static Integer getEntry(UUID uuid, String entry) {
         if (entry == null) {
             throw new IllegalArgumentException("entry can not be null!");
         }
@@ -206,12 +167,9 @@ public final class DatabaseAPI {
         }
         int result = -1;
         try {
-            result = plugin.getSQLHandler().getStatExact(entry, playerName);
+            result = plugin.getSQLHandler().getStats(entry, uuid);
             if (result < 0) {
-                result = plugin.getSQLHandler().getStatLike(entry, playerName);
-                if (result < 0) {
-                    return 0;
-                }
+                return 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -225,13 +183,13 @@ public final class DatabaseAPI {
      * <p>
      * YML will return true always as this is only about deciding between INSERT and UPDATE query
      *
-     * @param playerName the player name to find
+     * @param uuid the player id to find
      * @return true if an entry was found
      */
-    public static boolean hasEntry(String playerName) {
+    public static boolean hasEntry(UUID uuid) {
         int result = -1;
         try {
-            result = plugin.getSQLHandler().getStatExact("kills", playerName);
+            result = plugin.getSQLHandler().getStats("kills", uuid);
         } catch (SQLException e) {
         }
         return result > -1;
@@ -240,25 +198,23 @@ public final class DatabaseAPI {
     /**
      * Get a player's stats in the form of a string array
      *
-     * @param playerName the player name to find
+     * @param player the player to find
      * @return the player info in lines as overridable in the config
      */
-    public static String[] info(final String playerName) {
+    public static String[] info(final OfflinePlayer player) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
             return null;
         }
-        DEBUGGER.i("getting info for " + playerName);
+
+        DEBUGGER.i("getting info for " + player.getName());
         PlayerStatistic result = null;
         try {
-            result = plugin.getSQLHandler().getStatsExact(playerName);
+            result = plugin.getSQLHandler().getStats(player);
             if (result == null) {
-                result = plugin.getSQLHandler().getStatsLike(playerName);
-                if (result == null) {
-                    String[] output = new String[1];
-                    output[0] = Language.INFO_PLAYERNOTFOUND.toString(playerName);
-                    return output;
-                }
+                String[] output = new String[1];
+                output[0] = Language.INFO_PLAYERNOTFOUND.toString(player.getName());
+                return output;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -266,7 +222,7 @@ public final class DatabaseAPI {
 
         if (result == null) {
             String[] output = new String[1];
-            output[0] = Language.INFO_PLAYERNOTFOUND.toString(playerName);
+            output[0] = Language.INFO_PLAYERNOTFOUND.toString(player.getName());
             output[1] = Language.INFO_PLAYERNOTFOUND2.toString();
             return output;
         }
@@ -344,26 +300,15 @@ public final class DatabaseAPI {
      * @param player the player to initiate
      */
     public static void initiatePlayer(Player player) {
-        String result = null;
-
-        if (getAllPlayers().contains(player.getName())) {
-
+        if (getAllUUIDs().contains(player.getUniqueId())) {
+            // an entry exists!
+        } else if (getAllPlayers().contains(player.getName())) {
+            // an entry without UUID exists!
             try {
-                result = plugin.getSQLHandler().getStatUIDFromPlayer(player);
+                 plugin.getSQLHandler().setStatUIDByPlayer(player);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            try {
-                if (result == null || result.equals("")) {
-                    plugin.getSQLHandler().setStatUIDByPlayer(player);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else if (getAllUUIDs().contains(player.getUniqueId())) {
-            // they were here but with a different name!
-            PVPStats.getInstance().getLogger().info("Trying to rename player with UUID '" + player.getUniqueId() + "' to '" + player.getName() + "'");
-            DatabaseAPI.renamePlayer(player.getUniqueId(), player.getName());
         } else if (plugin.config().getBoolean(Config.Entry.STATISTICS_CREATE_ON_JOIN)) {
             plugin.getSQLHandler().addFirstStat(
                     player.getName(), player.getUniqueId(), 0, 0,
@@ -371,11 +316,11 @@ public final class DatabaseAPI {
         }
 
         // read all the data from database
-        PlayerStatisticsBuffer.getStreak(player.getName());
-        PlayerStatisticsBuffer.getDeaths(player.getName());
-        PlayerStatisticsBuffer.getEloScore(player.getName());
-        PlayerStatisticsBuffer.getKills(player.getName());
-        PlayerStatisticsBuffer.getMaxStreak(player.getName());
+        PlayerStatisticsBuffer.getStreak(player.getUniqueId());
+        PlayerStatisticsBuffer.getDeaths(player.getUniqueId());
+        PlayerStatisticsBuffer.getEloScore(player.getUniqueId());
+        PlayerStatisticsBuffer.getKills(player.getUniqueId());
+        PlayerStatisticsBuffer.getMaxStreak(player.getUniqueId());
     }
 
     private static DatabaseConnection connectToOther(String method, CommandSender sender) {
@@ -576,12 +521,12 @@ public final class DatabaseAPI {
     /**
      * Set a player's statistic value
      *
-     * @param playerName the player to update
+     * @param player the player to update
      * @param entry      the entry to update
      * @param value      the value to set
      * @throws SQLException
      */
-    public static void setSpecificStat(String playerName, String entry, int value) throws SQLException {
+    public static void setSpecificStat(OfflinePlayer player, String entry, int value) {
         if (!entry.equals("elo") &&
                 !entry.equals("kills") &&
                 !entry.equals("deaths") &&
@@ -589,7 +534,21 @@ public final class DatabaseAPI {
                 !entry.equals("currentstreak")) {
             throw new IllegalArgumentException("entry can not be '" + entry + "'. Valid values: elo, kills, deaths, streak, currentstreak");
         }
-        plugin.getSQLHandler().setSpecificStat(playerName, entry, value);
+        class SetLater implements Runnable {
+
+            @Override
+            public void run() {
+                try {
+                    plugin.getSQLHandler().setSpecificStat(player.getUniqueId(), entry, value);
+                } catch (SQLException exception) {
+                    exception.printStackTrace();
+                }
+            }
+
+        }
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new SetLater());
+
     }
 
     /**
@@ -663,7 +622,7 @@ public final class DatabaseAPI {
                                 entry.getName(),
                                 calculateRatio(entry.getKills(),
                                         entry.getDeaths(),
-                                        entry.getMaxStreak(), PlayerStatisticsBuffer.getStreak(entry.getName())));
+                                        entry.getMaxStreak(), PlayerStatisticsBuffer.getStreak(entry.getUid())));
                         break;
                 }
             }
@@ -685,17 +644,17 @@ public final class DatabaseAPI {
     /**
      * Wipe all stats
      *
-     * @param name player name to wipe or null to wipe all stats
+     * @param uuid player name to wipe or null to wipe all stats
      */
-    public static void wipe(final String name) {
-        if (name == null) {
+    public static void wipe(final UUID uuid) {
+        if (uuid == null) {
             plugin.getSQLHandler().deleteStats();
             plugin.getSQLHandler().deleteKills();
         } else {
-            plugin.getSQLHandler().deleteStatsByName(name);
-            plugin.getSQLHandler().deleteKillsByName(name);
+            plugin.getSQLHandler().deleteStatsByUUID(uuid);
+            plugin.getSQLHandler().deleteKillsByUUID(uuid);
         }
-        PlayerStatisticsBuffer.clear(name);
+        PlayerStatisticsBuffer.clear(uuid);
     }
 
 
@@ -829,8 +788,8 @@ public final class DatabaseAPI {
 
             plugin.getSQLHandler().addFirstStat(playerName, uuid, kills, deaths, elo);
 
-            PlayerStatisticsBuffer.setKills(playerName, kills);
-            PlayerStatisticsBuffer.setDeaths(playerName, deaths);
+            PlayerStatisticsBuffer.setKills(uuid, kills);
+            PlayerStatisticsBuffer.setDeaths(uuid, deaths);
 
             plugin.getSQLHandler().addKill(playerName, uuid, kill, world);
 
@@ -839,27 +798,27 @@ public final class DatabaseAPI {
 
         if (addMaxStreak && kill) {
             DEBUGGER.i("increasing kills and max streak");
-            plugin.getSQLHandler().increaseKillsAndMaxStreak(uuid, elo);
+            plugin.getSQLHandler().increaseKillsAndMaxStreak(playerName, uuid, elo);
         } else if (kill) {
             DEBUGGER.i("increasing kills and current streak");
-            plugin.getSQLHandler().increaseKillsAndStreak(uuid, elo);
+            plugin.getSQLHandler().increaseKillsAndStreak(playerName, uuid, elo);
         } else {
             DEBUGGER.i("increasing deaths");
-            plugin.getSQLHandler().increaseDeaths(uuid, elo);
+            plugin.getSQLHandler().increaseDeaths(playerName, uuid, elo);
         }
 
         DEBUGGER.i("adding Kill: " + kill);
         plugin.getSQLHandler().addKill(playerName, uuid, kill, world);
         if (kill) {
-            PlayerStatisticsBuffer.addKill(playerName);
+            PlayerStatisticsBuffer.addKill(uuid);
         } else {
-            PlayerStatisticsBuffer.addDeath(playerName);
+            PlayerStatisticsBuffer.addDeath(uuid);
         }
     }
 
     private static boolean incDeath(final Player player, int elo) {
         if (player.hasPermission("pvpstats.count")) {
-            PlayerStatisticsBuffer.setStreak(player.getName(), 0);
+            PlayerStatisticsBuffer.setStreak(player.getUniqueId(), 0);
             checkAndDo(player.getName(), player.getUniqueId(), false, false, elo, player.getWorld().getName());
             return true;
         }
@@ -869,32 +828,31 @@ public final class DatabaseAPI {
     /**
      * Force increase a death count
      *
-     * @param playerName the player to increase
+     * @param player the player to increase
      * @param elo        the ELO score to set
-     * @param admin      the player issuing the command
      * @return whether the setting succeeded
      */
-    public static boolean forceIncDeath(final String playerName, int elo, final OfflinePlayer admin) {
-        PlayerStatisticsBuffer.setStreak(playerName, 0);
-        checkAndDo(playerName, admin.getUniqueId(), false, false, elo, "world");
+    public static boolean forceIncDeath(final OfflinePlayer player, int elo) {
+        PlayerStatisticsBuffer.setStreak(player.getUniqueId(), 0);
+        checkAndDo(player.getName(), player.getUniqueId(), false, false, elo, "world");
         return true;
     }
 
     private static boolean incKill(final Player player, int elo) {
         if (player.hasPermission("pvpstats.count")) {
             boolean incMaxStreak;
-            if (PlayerStatisticsBuffer.hasStreak(player.getName())) {
-                incMaxStreak = PlayerStatisticsBuffer.addStreak(player.getName());
-                PlayerStatisticsBuffer.getStreak(player.getName());
+            if (PlayerStatisticsBuffer.hasStreak(player.getUniqueId())) {
+                incMaxStreak = PlayerStatisticsBuffer.addStreak(player.getUniqueId());
+                PlayerStatisticsBuffer.getStreak(player.getUniqueId());
             } else {
 
-                int streakCheck = PlayerStatisticsBuffer.getStreak(player.getName());
+                int streakCheck = PlayerStatisticsBuffer.getStreak(player.getUniqueId());
                 if (streakCheck < 1) {
-                    PlayerStatisticsBuffer.setStreak(player.getName(), 1);
-                    PlayerStatisticsBuffer.setMaxStreak(player.getName(), 1);
+                    PlayerStatisticsBuffer.setStreak(player.getUniqueId(), 1);
+                    PlayerStatisticsBuffer.setMaxStreak(player.getUniqueId(), 1);
                     incMaxStreak = true;
                 } else {
-                    incMaxStreak = PlayerStatisticsBuffer.addStreak(player.getName());
+                    incMaxStreak = PlayerStatisticsBuffer.addStreak(player.getUniqueId());
                 }
 
             }
@@ -907,29 +865,29 @@ public final class DatabaseAPI {
     /**
      * Force increase a kill count
      *
-     * @param playerName the player to increase
+     * @param player the player to increase
      * @param elo        the ELO score to set
-     * @param admin      the player issuing the command
+     * @param player      the player issuing the command
      * @return whether the setting succeeded
      */
-    public static boolean forceIncKill(final String playerName, int elo, final OfflinePlayer admin) {
+    public static boolean forceIncKill(final OfflinePlayer player, int elo) {
         boolean incMaxStreak;
-        if (PlayerStatisticsBuffer.hasStreak(playerName)) {
-            incMaxStreak = PlayerStatisticsBuffer.addStreak(playerName);
-            PlayerStatisticsBuffer.getStreak(playerName);
+        if (PlayerStatisticsBuffer.hasStreak(player.getUniqueId())) {
+            incMaxStreak = PlayerStatisticsBuffer.addStreak(player.getUniqueId());
+            PlayerStatisticsBuffer.getStreak(player.getUniqueId());
         } else {
 
-            int streakCheck = PlayerStatisticsBuffer.getStreak(playerName);
+            int streakCheck = PlayerStatisticsBuffer.getStreak(player.getUniqueId());
             if (streakCheck < 1) {
-                PlayerStatisticsBuffer.setStreak(playerName, 1);
-                PlayerStatisticsBuffer.setMaxStreak(playerName, 1);
+                PlayerStatisticsBuffer.setStreak(player.getUniqueId(), 1);
+                PlayerStatisticsBuffer.setMaxStreak(player.getUniqueId(), 1);
                 incMaxStreak = true;
             } else {
-                incMaxStreak = PlayerStatisticsBuffer.addStreak(playerName);
+                incMaxStreak = PlayerStatisticsBuffer.addStreak(player.getUniqueId());
             }
 
         }
-        checkAndDo(playerName, admin.getUniqueId(), true, incMaxStreak, elo, "world");
+        checkAndDo(player.getName(), player.getUniqueId(), true, incMaxStreak, elo, "world");
         return true;
     }
 
@@ -979,19 +937,9 @@ public final class DatabaseAPI {
     }
 
     /**
-     * Refresh the RAM values after making changes
+     * Refresh the RAM values after making changes with a command
      */
     public static void refresh() {
         PlayerStatisticsBuffer.refresh();
-    }
-
-    /**
-     * Update the database with the new name of a player
-     *
-     * @param uuid    the UUID to look for
-     * @param newName the new name to set
-     */
-    public static void renamePlayer(UUID uuid, String newName) {
-        plugin.getSQLHandler().renamePlayer(uuid, newName);
     }
 }

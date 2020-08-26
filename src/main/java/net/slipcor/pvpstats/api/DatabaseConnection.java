@@ -1,11 +1,11 @@
 package net.slipcor.pvpstats.api;
 
 import net.slipcor.pvpstats.classes.PlayerStatistic;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -95,9 +95,9 @@ public interface DatabaseConnection {
     /**
      * Delete kill stats of a player
      *
-     * @param playerName the player's name
+     * @param uuid the player's name
      */
-    void deleteKillsByName(String playerName);
+    void deleteKillsByUUID(UUID uuid);
 
     /**
      * Delete kill stats older than a timestamp
@@ -113,19 +113,11 @@ public interface DatabaseConnection {
     void deleteStats();
 
     /**
-     * Delete all statistics by ID
-     *
-     * @param list the list of IDs to delete
-     * @throws SQLException
-     */
-    void deleteStatsByIDs(List<Integer> list) throws SQLException;
-
-    /**
      * Delete statistics by player name
      *
-     * @param playerName the player's name
+     * @param uuid the player's name
      */
-    void deleteStatsByName(String playerName);
+    void deleteStatsByUUID(UUID uuid);
 
     /**
      * Delete statistics older than a timestamp
@@ -144,58 +136,31 @@ public interface DatabaseConnection {
     List<PlayerStatistic> getAll() throws SQLException;
 
     /**
-     * Get a statistic value by exact player name
-     *
-     * @param stat       the statistic value
-     * @param playerName the exact player's name to look for
-     * @return a set of all matching entries
-     * @throws SQLException
-     */
-    int getStatExact(String stat, String playerName) throws SQLException;
-
-    /**
-     * Get a statistic value by matching partial player name
-     *
-     * @param stat       the statistic value
-     * @param playerName the partial player's name to look for
-     * @return a set of all matching entries
-     * @throws SQLException
-     */
-    int getStatLike(String stat, String playerName) throws SQLException;
-
-    /**
-     * Get statistics by exact player name
-     *
-     * @param playerName the exact player's name to look for
-     * @return the first matching player stat entry
-     * @throws SQLException
-     */
-    PlayerStatistic getStatsExact(String playerName) throws SQLException;
-
-    /**
-     * Get ALL statistics player names and entry IDs
-     *
-     * @return a map of all entry IDs and player names
-     * @throws SQLException
-     */
-    Map<Integer, String> getStatsIDsAndNames() throws SQLException;
-
-    /**
-     * Get statistics by matching partial player name
-     *
-     * @param playerName the partial player's name to look for
-     * @return the first matching player stat entry
-     * @throws SQLException
-     */
-    PlayerStatistic getStatsLike(String playerName) throws SQLException;
-
-    /**
      * Get all player names
      *
      * @return all player names
      * @throws SQLException
      */
-    List<String> getStatsNames() throws SQLException;
+    List<String> getNamesWithoutUUIDs() throws SQLException;
+
+    /**
+     * Get a statistic value by exact player name
+     *
+     * @param stat       the statistic value
+     * @param uuid the exact player's name to look for
+     * @return a set of all matching entries
+     * @throws SQLException
+     */
+    int getStats(String stat, UUID uuid) throws SQLException;
+
+    /**
+     * Get statistics by exact player name
+     *
+     * @param offlinePlayer the exact player's name to look for
+     * @return the first matching player stat entry
+     * @throws SQLException
+     */
+    PlayerStatistic getStats(OfflinePlayer offlinePlayer) throws SQLException;
 
     /**
      * Get all player UUIDs
@@ -204,15 +169,6 @@ public interface DatabaseConnection {
      * @throws SQLException
      */
     List<UUID> getStatsUUIDs() throws SQLException;
-
-    /**
-     * Get a player's saved UUID entry
-     *
-     * @param player the player to look for
-     * @return their UID
-     * @throws SQLException
-     */
-    String getStatUIDFromPlayer(Player player) throws SQLException;
 
     /**
      * Get the top players sorted by a given column
@@ -244,26 +200,29 @@ public interface DatabaseConnection {
     /**
      * Increase player death count, update ELO score and reset streak
      *
+     * @param name the player's name
      * @param uuid the player's UUID
      * @param elo  the new ELO rating
      */
-    void increaseDeaths(UUID uuid, int elo);
+    void increaseDeaths(String name, UUID uuid, int elo);
 
     /**
      * Increase player kill count, update ELO score and the max and current streak
      *
+     * @param name the player's name
      * @param uuid the player's UUID
      * @param elo  the new ELO rating
      */
-    void increaseKillsAndMaxStreak(UUID uuid, int elo);
+    void increaseKillsAndMaxStreak(String name, UUID uuid, int elo);
 
     /**
      * Increase player kill count, update ELO score and the current streak
      *
+     * @param name the player's name
      * @param uuid the player's UUID
      * @param elo  the new ELO rating
      */
-    void increaseKillsAndStreak(UUID uuid, int elo);
+    void increaseKillsAndStreak(String name, UUID uuid, int elo);
 
     /**
      * Add player statistic to the database
@@ -278,21 +237,13 @@ public interface DatabaseConnection {
     boolean isConnected();
 
     /**
-     * Update the database with the new name of a player
-     *
-     * @param uuid    the UUID to look for
-     * @param newName the new name to set
-     */
-    void renamePlayer(UUID uuid, String newName);
-
-    /**
      * Set specific statistical value of a player
      *
-     * @param playerName the player to find
+     * @param uuid the player id to find
      * @param entry      the entry to set
      * @param value      the value to set
      */
-    void setSpecificStat(String playerName, String entry, int value) throws SQLException;
+    void setSpecificStat(UUID uuid, String entry, int value) throws SQLException;
 
     /**
      * Set the UUID of a certain player entry

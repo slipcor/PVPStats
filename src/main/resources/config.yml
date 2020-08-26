@@ -51,6 +51,8 @@ statistics:
   countRegularDeaths: false
   # mathematical formula to calculate kill/death ratio
   killDeathCalculation: '&k/(&d+1)'
+  # time in seconds to consider a former kill an assist
+  assistSeconds: 60
 # === [ Integration into other Plugins ] ===
 other:
   # count PVP Arena deaths

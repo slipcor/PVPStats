@@ -2,8 +2,10 @@ package net.slipcor.pvpstats.commands;
 
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
+import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -34,34 +36,32 @@ public class CommandSet extends AbstractCommand {
         try {
             int amount = Integer.parseInt(args[3]);
 
-            if (DatabaseAPI.hasEntry(args[1])) {
-                try {
-                    if (args[2].toLowerCase().equals("kills")) {
-                        PlayerStatisticsBuffer.setKills(args[2], amount);
-                        DatabaseAPI.setSpecificStat(args[2], "kills", amount);
-                    } else if (args[2].toLowerCase().equals("deaths")) {
-                        PlayerStatisticsBuffer.setDeaths(args[2], amount);
-                        DatabaseAPI.setSpecificStat(args[2], "deaths", amount);
-                    } else if (args[2].toLowerCase().equals("streak")) {
-                        PlayerStatisticsBuffer.setStreak(args[2], amount);
-                        DatabaseAPI.setSpecificStat(args[2], "streak", amount);
-                    } else if (args[2].toLowerCase().equals("currentstreak")) {
-                        PlayerStatisticsBuffer.setMaxStreak(args[2], amount);
-                        DatabaseAPI.setSpecificStat(args[2], "currentstreak", amount);
-                    } else if (args[2].toLowerCase().equalsIgnoreCase("elo")) {
-                        PlayerStatisticsBuffer.setEloScore(args[2], amount);
-                        DatabaseAPI.setSpecificStat(args[2], "elo", amount);
-                    } else {
-                        sender.sendMessage(this.getShortInfo());
-                        return;
-                    }
+            OfflinePlayer player =  PlayerNameHandler.findPlayer(args[1]);
 
-                    sender.sendMessage(Language.MSG_SET.toString(args[2], args[1], String.valueOf(amount)));
-
-                    DatabaseAPI.refresh();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+            if (player != null && DatabaseAPI.hasEntry(player.getUniqueId())) {
+                if (args[2].toLowerCase().equals("kills")) {
+                    PlayerStatisticsBuffer.setKills(player.getUniqueId(), amount);
+                    DatabaseAPI.setSpecificStat(player, "kills", amount);
+                } else if (args[2].toLowerCase().equals("deaths")) {
+                    PlayerStatisticsBuffer.setDeaths(player.getUniqueId(), amount);
+                    DatabaseAPI.setSpecificStat(player, "deaths", amount);
+                } else if (args[2].toLowerCase().equals("streak")) {
+                    PlayerStatisticsBuffer.setStreak(player.getUniqueId(), amount);
+                    DatabaseAPI.setSpecificStat(player, "streak", amount);
+                } else if (args[2].toLowerCase().equals("currentstreak")) {
+                    PlayerStatisticsBuffer.setMaxStreak(player.getUniqueId(), amount);
+                    DatabaseAPI.setSpecificStat(player, "currentstreak", amount);
+                } else if (args[2].toLowerCase().equalsIgnoreCase("elo")) {
+                    PlayerStatisticsBuffer.setEloScore(player.getUniqueId(), amount);
+                    DatabaseAPI.setSpecificStat(player, "elo", amount);
+                } else {
+                    sender.sendMessage(this.getShortInfo());
+                    return;
                 }
+
+                sender.sendMessage(Language.MSG_SET.toString(args[2], args[1], String.valueOf(amount)));
+
+                DatabaseAPI.refresh();
             } else {
                 sender.sendMessage(Language.INFO_PLAYERNOTFOUND.toString(args[1]));
             }

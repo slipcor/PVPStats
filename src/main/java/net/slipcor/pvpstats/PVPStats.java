@@ -4,6 +4,7 @@ import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.DatabaseConnection;
 import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.classes.PlaceholderAPIHook;
+import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.commands.*;
 import net.slipcor.pvpstats.core.*;
 import net.slipcor.pvpstats.impl.FlatFileConnection;
@@ -54,7 +55,7 @@ public class PVPStats extends JavaPlugin {
     private Config configHandler = null;
 
     // listeners
-    private final PlayerListener playerListener = new PlayerListener(this);
+    private PlayerListener playerListener;
     private final PVPArenaListener pluginListener = new PVPArenaListener(this);
 
     // commands
@@ -127,7 +128,6 @@ public class PVPStats extends JavaPlugin {
      * Instantiate command
      */
     private void loadCommands() {
-        new CommandCleanup().load(commandList, commandMap);
         new CommandDebug().load(commandList, commandMap);
         new CommandDebugKill().load(commandList, commandMap);
         new CommandMigrate().load(commandList, commandMap);
@@ -320,7 +320,13 @@ public class PVPStats extends JavaPlugin {
             }
         }
 
-        if (!found && DatabaseAPI.hasEntry(args[0])) {
+        final OfflinePlayer player = PlayerNameHandler.findPlayer(args[0]);
+
+        if (player == null) {
+            sender.sendMessage("Player not found: " + args[0]);
+        }
+
+        if (!found && DatabaseAPI.hasEntry(player.getUniqueId())) {
             commandMap.get("show").commit(sender, args);
             return true;
         }
@@ -349,10 +355,11 @@ public class PVPStats extends JavaPlugin {
 
         final PluginDescriptionFile pdfFile = getDescription();
 
-        getServer().getPluginManager().registerEvents(playerListener, this);
-
         loadConfig();
         loadCommands();
+
+        playerListener = new PlayerListener(this);
+        getServer().getPluginManager().registerEvents(playerListener, this);
 
         if (dbHandler == null || !dbHandler.isConnected()) {
             getLogger().severe("Database not connected, plugin DISABLED!");

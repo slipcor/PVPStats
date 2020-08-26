@@ -60,9 +60,6 @@ public class CommandMigrate extends AbstractCommand {
         }
 
         sender.sendMessage(Language.ERROR_COMMAND_ARGUMENT.toString(args[1], "'from' or 'to'"));
-
-        final int count = DatabaseAPI.clean();
-        PVPStats.getInstance().sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
     }
 
     public List<String> completeTab(String[] args) {
