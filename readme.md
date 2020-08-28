@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.5.3 - Set specific values asynchronously
+- v1.5.4 - Prevent NPE when a player damages themselves
 - [read more](doc/changelog.md)
 
 ***

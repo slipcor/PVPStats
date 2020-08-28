@@ -67,6 +67,11 @@ public class PlayerListener implements Listener {
                 attacker = (Player) projectile.getShooter();
             }
         }
+
+        if (attacker == null) {
+            return;
+        }
+
         if (lastDamage.containsKey(attacked.getUniqueId())) {
             PlayerDamageHistory history = lastDamage.get(attacked.getUniqueId());
             history.commitPlayerDamage(attacker);

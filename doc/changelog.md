@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.5.4 - Prevent NPE when a player damages themselves
 - v1.5.3 - Set specific values asynchronously
 - v1.5.2 - Start preparing the assisting logic by adding last damage history
 - v1.5.1 - Remove Cleanup Command
