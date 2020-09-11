@@ -1,6 +1,6 @@
 name: pvpstats
 main: net.slipcor.pvpstats.PVPStats
-version: 1.5.3
+version: 1.5.jenkins-build-number
 api-version: 1.13
 author: slipcor
 softdepend: [pvparena,PlaceholderAPI]
