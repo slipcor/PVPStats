@@ -7,10 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
@@ -242,6 +239,7 @@ public class Updater extends Thread {
             }
 
             if (instance.outdated) {
+                boolean error = false;
                 if (!(player instanceof Player) && mode != UpdateMode.ANNOUNCE) {
                     // not only announce, download!
                     final File updateFolder = Bukkit.getServer().getUpdateFolderFile();
@@ -253,15 +251,21 @@ public class Updater extends Thread {
                         pluginFile.delete();
                     }
 
-                    final URL url = new URL(instance.url);
-                    final ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-                    final FileOutputStream output = new FileOutputStream(pluginFile);
-                    output.getChannel().transferFrom(rbc, 0, 1 << 24);
-                    output.close();
+                    try {
+
+                        final URL url = new URL(instance.url);
+                        final ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+                        final FileOutputStream output = new FileOutputStream(pluginFile);
+                        output.getChannel().transferFrom(rbc, 0, 1 << 24);
+                        output.close();
+
+                    } catch (IOException exception) {
+                        error = true;
+                    }
 
                 }
 
-                if (mode != UpdateMode.DOWNLOAD || (!(player instanceof Player))) {
+                if ((mode != UpdateMode.DOWNLOAD || error) || (!(player instanceof Player))) {
                     player.sendMessage("You are using " + instance.colorize('v' + instance.vThis)
                             + ", an outdated version! Latest: " + ChatColor.COLOR_CHAR + 'a' + 'v' + instance.vOnline);
                 }
@@ -269,10 +273,15 @@ public class Updater extends Thread {
                 if (mode == UpdateMode.ANNOUNCE) {
                     player.sendMessage(instance.url);
                 } else {
+                    boolean finalError = error;
                     class RunLater implements Runnable {
                         @Override
                         public void run() {
-                            player.sendMessage("The plugin has been updated, please restart the server!");
+                            if (finalError) {
+                                player.sendMessage("The plugin could not updated, download the new version here: https://www.spigotmc.org/resources/pvp-stats.59124/");
+                            } else {
+                                player.sendMessage("The plugin has been updated, please restart the server!");
+                            }
                         }
                     }
                     Bukkit.getScheduler().runTaskLater(PVPStats.getInstance(), new RunLater(), 60L);
