@@ -46,11 +46,23 @@ public class CommandDebugKill extends AbstractCommand {
 
         if (victim.equalsIgnoreCase("null")) {
             DatabaseAPI.forceIncKill(offlineAttacker, PlayerStatisticsBuffer.getEloScore(offlineAttacker.getUniqueId()));
+
+            PVPStats.getInstance().getSQLHandler().addKill(
+                    offlineAttacker.getName(), offlineAttacker.getUniqueId().toString(),
+                    "", "",
+                    ((Player)sender).getWorld().getName());
+
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, "null"));
             return;
         }
         if (attacker.equalsIgnoreCase("null")) {
             DatabaseAPI.forceIncDeath(offlineVictim, PlayerStatisticsBuffer.getEloScore(offlineVictim.getUniqueId()));
+
+            PVPStats.getInstance().getSQLHandler().addKill(
+                    "", "",
+                    offlineVictim.getName(), offlineVictim.getUniqueId().toString(),
+                    ((Player)sender).getWorld().getName());
+
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString("null", victim));
             return;
         }
@@ -60,6 +72,12 @@ public class CommandDebugKill extends AbstractCommand {
         if (!config.getBoolean(Config.Entry.ELO_ACTIVE)) {
             DatabaseAPI.forceIncKill(offlineAttacker, PlayerStatisticsBuffer.getEloScore(offlineAttacker.getUniqueId()));
             DatabaseAPI.forceIncDeath(offlineVictim, PlayerStatisticsBuffer.getEloScore(offlineVictim.getUniqueId()));
+
+            PVPStats.getInstance().getSQLHandler().addKill(
+                    offlineAttacker.getName(), offlineAttacker.getUniqueId().toString(),
+                    offlineVictim.getName(), offlineVictim.getUniqueId().toString(),
+                    ((Player)sender).getWorld().getName());
+
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, victim));
             return;
         }
@@ -87,6 +105,12 @@ public class CommandDebugKill extends AbstractCommand {
             PVPStats.getInstance().sendPrefixed(sender, Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
             PlayerStatisticsBuffer.setEloScore(offlineVictim.getUniqueId(), newP);
         }
+
+        PVPStats.getInstance().getSQLHandler().addKill(
+                offlineAttacker.getName(), offlineAttacker.getUniqueId().toString(),
+                offlineVictim.getName(), offlineVictim.getUniqueId().toString(),
+                ((Player)sender).getWorld().getName());
+
         PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, victim));
     }
 

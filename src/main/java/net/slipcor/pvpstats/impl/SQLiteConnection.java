@@ -78,7 +78,10 @@ public class SQLiteConnection extends AbstractSQLConnection {
         final String query2 = "CREATE TABLE `" + dbKillTable + "` ( " +
                 "`name` varchar(42) NOT NULL, " +
                 "`uid` varchar(42), " +
+                "`victimname` varchar(42), " +
+                "`victimuid` varchar(42), " +
                 "`kill` int(1) NOT NULL default 0," +
+                "`time` int(16) not null default 0, " +
                 "`world` varchar(42) NOT NULL DEFAULT '" + world + "');";
         try {
             executeQuery(query2, true);

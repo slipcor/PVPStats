@@ -98,6 +98,10 @@ public class FlatFileConnection implements DatabaseConnection {
     public void addWorldColumn() {
     }
 
+    @Override
+    public void addKillVictim() {
+    }
+
     /*
      * ----------------------
      *  TABLE ENTRY CREATION
@@ -133,25 +137,43 @@ public class FlatFileConnection implements DatabaseConnection {
     /**
      * Add a kill to the player's count
      *
-     * @param playerName the player's name
-     * @param uuid       the player's uuid
-     * @param kill       true if they did kill, false if they were killed
+     * @param playerName the killer's name
+     * @param uuid       the killer's uuid
+     * @param victimName the victim's name
+     * @param victimUUID the victim's uuid
      * @param world      the world in which the kill happened
      */
     @Override
-    public void addKill(String playerName, UUID uuid, boolean kill, String world) {
+    public void addKill(String playerName, String uuid, String victimName, String victimUUID, String world) {
         if (!collectPrecise) {
             return;
         }
 
         long time = System.currentTimeMillis() / 1000;
 
-        StringBuilder root = new StringBuilder(uuid.toString());
+        StringBuilder root = new StringBuilder();
+        root.append(uuid);
         root.append('.');
-        root.append(kill ? "kills." : "deaths.");
+        root.append("kills.");
         root.append(time);
 
-        killStatConfig.set(root.toString(), playerName);
+        if (uuid != null && !uuid.isEmpty()) {
+            killStatConfig.set(root.toString() + ".killerName", playerName);
+            killStatConfig.set(root.toString() + ".victimName", victimName);
+            killStatConfig.set(root.toString() + ".victimUUID", victimUUID);
+        }
+
+        root = new StringBuilder();
+        root.append(victimUUID);
+        root.append('.');
+        root.append("deaths.");
+        root.append(time);
+
+        if (victimUUID != null && !victimUUID.isEmpty()) {
+            killStatConfig.set(root.toString() + ".killerName", playerName);
+            killStatConfig.set(root.toString() + ".killerUUID", uuid);
+            killStatConfig.set(root.toString() + ".victimName", victimName);
+        }
 
         save(killStatConfig, dbKillTable);
     }
@@ -355,6 +377,9 @@ public class FlatFileConnection implements DatabaseConnection {
     public int getStats(String stat, UUID uuid) {
         ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
         ConfigurationSection player = root.getConfigurationSection(uuid.toString());
+        if (player == null) {
+            return 0;
+        }
         return player.getInt(stat, 0);
     }
 

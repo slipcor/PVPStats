@@ -46,6 +46,11 @@ public interface DatabaseConnection {
      */
     void addWorldColumn();
 
+    /**
+     * Add the victim column to the database structure
+     */
+    void addKillVictim();
+
     /*
      * ----------------------
      *  TABLE ENTRY CREATION
@@ -66,12 +71,13 @@ public interface DatabaseConnection {
     /**
      * Add a kill to the player's count
      *
-     * @param playerName the player's name
-     * @param uuid       the player's uuid
-     * @param kill       true if they did kill, false if they were killed
+     * @param playerName the killer's name
+     * @param uuid       the killer's uuid
+     * @param victimName the victim's name
+     * @param victimUUID the victim's uuid
      * @param world      the world name where the kill happened
      */
-    void addKill(String playerName, UUID uuid, boolean kill, String world);
+    void addKill(String playerName, String uuid, String victimName, String victimUUID, String world);
 
     /**
      * Create the kill stat table

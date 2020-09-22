@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.5.6 - repair SQLite never adding any entries, add victim name and UUID to all killstat database logics - adds github issue #28
 - v1.5.5 - Fix Updater throwing an error sometimes
 - v1.5.4 - Prevent NPE when a player damages themselves
 - v1.5.3 - Set specific values asynchronously

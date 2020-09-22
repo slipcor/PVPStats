@@ -54,11 +54,21 @@ public final class DatabaseAPI {
         if (victim == null) {
             DEBUGGER.i("victim is null", attacker);
             incKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
+
+            PVPStats.getInstance().getSQLHandler().addKill(
+                    attacker.getName(), attacker.getUniqueId().toString(),
+                    "", "",
+                    attacker.getWorld().getName());
             return;
         }
         if (attacker == null) {
             DEBUGGER.i("attacker is null", victim);
             incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
+
+            PVPStats.getInstance().getSQLHandler().addKill(
+                    "", "",
+                    victim.getName(), victim.getUniqueId().toString(),
+                    victim.getWorld().getName());
             return;
         }
 
@@ -99,6 +109,10 @@ public final class DatabaseAPI {
             plugin.sendPrefixed(victim, Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
             PlayerStatisticsBuffer.setEloScore(victim.getUniqueId(), newP);
         }
+        PVPStats.getInstance().getSQLHandler().addKill(
+                attacker.getName(), attacker.getUniqueId().toString(),
+                victim.getName(), victim.getUniqueId().toString(),
+                attacker.getWorld().getName());
     }
 
     /**
@@ -790,9 +804,6 @@ public final class DatabaseAPI {
 
             PlayerStatisticsBuffer.setKills(uuid, kills);
             PlayerStatisticsBuffer.setDeaths(uuid, deaths);
-
-            plugin.getSQLHandler().addKill(playerName, uuid, kill, world);
-
             return;
         }
 
@@ -807,8 +818,6 @@ public final class DatabaseAPI {
             plugin.getSQLHandler().increaseDeaths(playerName, uuid, elo);
         }
 
-        DEBUGGER.i("adding Kill: " + kill);
-        plugin.getSQLHandler().addKill(playerName, uuid, kill, world);
         if (kill) {
             PlayerStatisticsBuffer.addKill(uuid);
         } else {

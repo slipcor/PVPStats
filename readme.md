@@ -52,7 +52,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.5.5 - Fix Updater throwing an error sometimes
+- v1.5.6 - repair SQLite never adding any entries, add victim name and UUID to all killstat database logics - adds github issue #28
 - [read more](doc/changelog.md)
 
 ***

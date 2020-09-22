@@ -62,7 +62,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
             ResultSet result = executeQuery(
                     "SELECT `" + column + "` FROM `" + tableName + "` WHERE 1 LIMIT 1", false);
             return result.getString(column).length() >= 0;
-        } catch (SQLException e) {
+        } catch (Exception e) {
         }
         return false;
     }
@@ -81,6 +81,22 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
         try {
             String world = Bukkit.getServer().getWorlds().get(0).getName();
             executeQuery("ALTER TABLE `" + dbKillTable + "` ADD `world` varchar(42) NOT NULL DEFAULT '" + world + "';", true);
+        } catch (SQLException e) {
+        }
+    }
+
+    /**
+     * Add the victim column to the database structure
+     */
+    @Override
+    public void addKillVictim() {
+        try {
+            executeQuery("ALTER TABLE `" + dbKillTable + "` ADD `victim` varchar(42);", true);
+            executeQuery("ALTER TABLE `" + dbKillTable + "` ADD `victimuid` varchar(42);", true);
+
+            if (this instanceof SQLiteConnection) {
+                executeQuery("ALTER TABLE `" + dbKillTable + "` ADD `time` int(16) not null default 0;", true);
+            }
         } catch (SQLException e) {
         }
     }
@@ -115,20 +131,21 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     /**
      * Add a kill to the player's count
      *
-     * @param playerName the player's name
-     * @param uuid       the player's uuid
-     * @param kill       true if they did kill, false if they were killed
+     * @param playerName the killer's name
+     * @param uuid       the killer's uuid
+     * @param victimName the victim's name
+     * @param victimUUID the victim's uuid
      * @param world      the world in which the kill happened
      */
     @Override
-    public void addKill(String playerName, UUID uuid, boolean kill, String world) {
+    public void addKill(String playerName, String uuid, String victimName, String victimUUID, String world) {
         if (!collectPrecise) {
             return;
         }
         long time = System.currentTimeMillis() / 1000;
         try {
-            executeQuery("INSERT INTO " + dbKillTable + " (`name`,`uid`,`kill`,`time`,`world`) VALUES(" +
-                    "'" + playerName + "', '" + uuid + "', '" + (kill ? 1 : 0) + "', " + time + ", '" + world +"')", true);
+            executeQuery("INSERT INTO " + dbKillTable + " (`name`,`uid`,`victim`,`victimuid`,`time`,`world`) VALUES(" +
+                    "'" + playerName + "', '" + uuid + "', '" + victimName + "', '" + victimUUID + "', " + time + ", '" + world +"')", true);
         } catch (SQLException e) {
         }
     }
