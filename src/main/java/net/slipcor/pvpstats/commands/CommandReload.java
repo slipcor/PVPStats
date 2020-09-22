@@ -24,6 +24,7 @@ public class CommandReload extends AbstractCommand {
         PVPStats.getInstance().reloadConfig();
         PVPStats.getInstance().loadConfig();
         PVPStats.getInstance().loadLanguage();
+        PVPStats.getInstance().reloadStreaks();
         PVPStats.getInstance().sendPrefixed(sender, Language.MSG_RELOADED.toString());
 
         DatabaseAPI.refresh();

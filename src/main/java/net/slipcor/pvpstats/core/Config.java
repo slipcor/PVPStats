@@ -97,6 +97,10 @@ public class Config {
                 "# mathematical formula to calculate kill/death ratio"}),
         STATISTICS_RESET_KILLSTREAK_ON_QUIT(Boolean.class, "statistics.resetKillstreakOnQuit", false, new String[]{
                 "# always reset a streak when a player disconnects"}),
+        STATISTICS_STREAK_ANNOUNCEMENTS(Boolean.class, "statistics.streakAnnouncements", false, new String[]{
+                "# announce lines from streak_announcements.yml on specific streak values"}),
+        STATISTICS_STREAK_COMMANDS(Boolean.class, "statistics.streakCommands", false, new String[]{
+                "# issue commands from streak_commands.yml on specific streak values"}),
 
 
         ELO(Null.class, "eloscore", null, new String[]{

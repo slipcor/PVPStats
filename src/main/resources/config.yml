@@ -47,6 +47,10 @@ statistics:
   collectPrecise: true
   # always reset a streak when a player disconnects
   resetKillstreakOnQuit: false
+  # announce lines from streak_announcements.yml on specific streak values
+  streakAnnouncements: false
+  # issue commands from streak_commands.yml on specific streak values
+  streakCommands: false
   # count dying from other sources than players towards death count and resetting of streaks
   countRegularDeaths: false
   # mathematical formula to calculate kill/death ratio

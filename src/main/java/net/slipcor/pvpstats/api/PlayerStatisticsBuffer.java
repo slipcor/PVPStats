@@ -55,6 +55,7 @@ public final class PlayerStatisticsBuffer {
      */
     public static boolean addStreak(UUID uuid) {
         final int streak = streaks.get(uuid) + 1;
+        PVPStats.getInstance().handleStreak(uuid, streak);
         streaks.put(uuid, streak);
         if (hasMaxStreak(uuid)) {
             if (PlayerStatisticsBuffer.maxStreaks.get(uuid) < streak) {

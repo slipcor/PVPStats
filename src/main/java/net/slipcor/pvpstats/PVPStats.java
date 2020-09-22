@@ -18,6 +18,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -25,10 +27,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Main Plugin class
@@ -53,6 +52,9 @@ public class PVPStats extends JavaPlugin {
     private Plugin paHandler = null;
     private Updater updater = null;
     private Config configHandler = null;
+
+    private FileConfiguration announcements = null; // configurable announcements per streak level
+    private FileConfiguration commands = null;      // configurable commands per streak level
 
     // listeners
     private PlayerListener playerListener;
@@ -109,6 +111,41 @@ public class PVPStats extends JavaPlugin {
      */
     public Updater getUpdater() {
         return updater;
+    }
+
+    /**
+     * Handle a player gaining a streak level, maybe issuing commands or announcements
+     *
+     * @param uuid  the player's UUID
+     * @param value the new streak value
+     */
+    public void handleStreak(UUID uuid, int value) {
+        String key = String.valueOf(value);
+        OfflinePlayer player = Bukkit.getPlayer(uuid);
+        try {
+            if (config().getBoolean(Config.Entry.STATISTICS_STREAK_ANNOUNCEMENTS)) {
+                if (announcements == null) {
+                    announcements = new YamlConfiguration();
+                    announcements.load(new File(getDataFolder(), "streak_announcements.yml"));
+                }
+                String message = announcements.getString(key, "");
+                if (!message.isEmpty()) {
+                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message).replace("%player%", player.getName()));
+                }
+            }
+            if (config().getBoolean(Config.Entry.STATISTICS_STREAK_COMMANDS)) {
+                if (commands == null) {
+                    commands = new YamlConfiguration();
+                    commands.load(new File(getDataFolder(), "streak_commands.yml"));
+                }
+                String command = commands.getString(key, "");
+                if (!command.isEmpty()) {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName()));
+                }
+            }
+        } catch (IOException | InvalidConfigurationException exception) {
+            exception.printStackTrace();
+        }
     }
 
     /**
@@ -360,6 +397,12 @@ public class PVPStats extends JavaPlugin {
 
         loadConfig();
         loadCommands();
+        if (!new File(getDataFolder(), "streak_announcements.yml").exists()) {
+            saveResource("streak_announcements.yml", false);
+        }
+        if (!new File(getDataFolder(), "streak_commands.yml").exists()) {
+            saveResource("streak_commands.yml", false);
+        }
 
         playerListener = new PlayerListener(this);
         getServer().getPluginManager().registerEvents(playerListener, this);
@@ -411,6 +454,11 @@ public class PVPStats extends JavaPlugin {
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command cmd, final String alias, final String[] args) {
         return TabComplete.getMatches(sender, commandList, args);
+    }
+
+    public void reloadStreaks() {
+        commands = null;
+        announcements = null;
     }
 
     public void sendPrefixed(final CommandSender sender, final String message) {
