@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.5.8 - remove debug outputs that should not have been included in the release version
 - v1.5.7 - add commands and announcements to be issued when a player hits a certain streak value
 - v1.5.6 - repair SQLite never adding any entries, add victim name and UUID to all killstat database logics - adds github issue #28
 - v1.5.5 - Fix Updater throwing an error sometimes

@@ -9,7 +9,7 @@ public class PlayerDamageHistory {
     private final Map<UUID, Long> damagers = new HashMap<>();
 
     public void commitPlayerDamage(Player damager) {
-        System.out.print("committing player damage. damager: " + damager.getName());
+        //System.out.print("committing player damage. damager: " + damager.getName());
         this.damagers.put(damager.getUniqueId(), System.currentTimeMillis());
     }
 
@@ -25,7 +25,7 @@ public class PlayerDamageHistory {
 
         int pos = 1 ;
         for (UUID u : uuids) {
-            System.out.println("GetLastDamage: " + pos++ + " - " + Bukkit.getPlayer(u).getName());
+            //System.out.println("GetLastDamage: " + pos++ + " - " + Bukkit.getPlayer(u).getName());
         }
 
         return uuids;
