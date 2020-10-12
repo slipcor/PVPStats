@@ -2,7 +2,7 @@
 
 You set up a scoreboard by placing any type of Signs in the following way:
 
-![LeaderBoard](doc/images/pvpstats_leaderboard.jpg) 
+![LeaderBoard](images/pvpstats_leaderboard.jpg) 
 
 * Top left sign needs to contain ```PVPStats``` (case insensitive) in the first line
   * Second line contains configurable text ```sorted by```, see the Language file
