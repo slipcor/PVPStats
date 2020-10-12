@@ -47,12 +47,13 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 - [Commands](doc/commands.md)
 - [Permissions](doc/permissions.md)
 - [Configuration](doc/configuration.md)
+- [LeaderBoards](doc/leaderboards.md)
 
 ***
 
 ## Changelog
 
-- v1.5.8 - remove debug outputs that should not have been included in the release version 
+- v1.6.9 - add scoreboards - needs testing ;) check the docs for info on how to set them up 
 - [read more](doc/changelog.md)
 
 ***

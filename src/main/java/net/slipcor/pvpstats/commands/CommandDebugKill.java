@@ -5,6 +5,7 @@ import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
 import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
+import net.slipcor.pvpstats.display.SignDisplay;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -53,6 +54,8 @@ public class CommandDebugKill extends AbstractCommand {
                     ((Player)sender).getWorld().getName());
 
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, "null"));
+
+            SignDisplay.updateAll();
             return;
         }
         if (attacker.equalsIgnoreCase("null")) {
@@ -64,6 +67,8 @@ public class CommandDebugKill extends AbstractCommand {
                     ((Player)sender).getWorld().getName());
 
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString("null", victim));
+
+            SignDisplay.updateAll();
             return;
         }
 
@@ -79,6 +84,8 @@ public class CommandDebugKill extends AbstractCommand {
                     ((Player)sender).getWorld().getName());
 
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, victim));
+
+            SignDisplay.updateAll();
             return;
         }
 
@@ -112,6 +119,8 @@ public class CommandDebugKill extends AbstractCommand {
                 ((Player)sender).getWorld().getName());
 
         PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, victim));
+
+        SignDisplay.updateAll();
     }
 
     public List<String> completeTab(String[] args) {

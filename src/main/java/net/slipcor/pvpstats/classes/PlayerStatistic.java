@@ -1,5 +1,9 @@
 package net.slipcor.pvpstats.classes;
 
+import net.slipcor.pvpstats.display.SortColumn;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -55,4 +59,17 @@ public class PlayerStatistic {
     }
 
     public UUID getUid() { return uid; }
+
+    public Map<SortColumn, String> toStringMap() {
+        Map<SortColumn, String> result = new HashMap<>();
+
+        result.put(SortColumn.NAME, String.valueOf(name));
+        result.put(SortColumn.DEATHS, String.valueOf(deaths));
+        result.put(SortColumn.KILLS, String.valueOf(kills));
+        result.put(SortColumn.ELO, String.valueOf(elo));
+        result.put(SortColumn.CURRENTSTREAK, String.valueOf(currentstreak));
+        result.put(SortColumn.STREAK, String.valueOf(streak));
+
+        return result;
+    }
 }

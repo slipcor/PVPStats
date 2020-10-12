@@ -6,16 +6,21 @@ import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
 import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.classes.PlayerDamageHistory;
 import net.slipcor.pvpstats.core.Config;
+import net.slipcor.pvpstats.core.Language;
+import net.slipcor.pvpstats.display.SignDisplay;
 import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
@@ -183,5 +188,48 @@ public class PlayerListener implements Listener {
         // here we go, PVP!
         Debugger.i("Counting kill by " + attacker.getName(), event.getEntity());
         DatabaseAPI.AkilledB(attacker, player);
+    }
+
+    /**
+     * Hook into a player interacting
+     *
+     * @param event the PlayerInteractEvent
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void playerInteract(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (block != null) {
+            if (block.getState() instanceof Sign) {
+                SignDisplay display = SignDisplay.byLocation(block.getLocation());
+
+                if (display == null) {
+                    // it does not exist yet, try creating it
+                    display = SignDisplay.init(block.getLocation());
+                    if (display != null) {
+                        if (!display.isValid()) {
+                            // we could not create it!
+                            PVPStats.getInstance().sendPrefixed(event.getPlayer(), Language.ERROR_DISPLAY_INVALID.toString());
+                        } else {
+                            PVPStats.getInstance().sendPrefixed(event.getPlayer(),
+                                    Language.MSG_DISPLAY_CREATED.toString(event.getClickedBlock().getLocation().toString()));
+
+                            SignDisplay.saveAllDisplays();
+                        }
+                    }
+                    return;
+                }
+                event.setCancelled(!event.getPlayer().isOp());
+                if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                    return;
+                }
+
+                display.cycleSortColumn();
+                PVPStats.getInstance().sendPrefixed(
+                        event.getPlayer(),
+                        Language.MSG_DISPLAY_COLUMN.toString(display.getSortColumn().name()));
+            } else if (SignDisplay.needsProtection(event.getPlayer().getLocation())) {
+                event.setCancelled(!event.getPlayer().isOp());
+            }
+        }
     }
 }

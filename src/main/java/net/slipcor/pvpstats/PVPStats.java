@@ -7,6 +7,7 @@ import net.slipcor.pvpstats.classes.PlaceholderAPIHook;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.commands.*;
 import net.slipcor.pvpstats.core.*;
+import net.slipcor.pvpstats.display.SignDisplay;
 import net.slipcor.pvpstats.impl.FlatFileConnection;
 import net.slipcor.pvpstats.impl.MySQLConnection;
 import net.slipcor.pvpstats.impl.SQLiteConnection;
@@ -431,22 +432,14 @@ public class PVPStats extends JavaPlugin {
             getServer().getScheduler().runTaskTimer(this, new Tracker(this), 0L, 72000L);
         }
 
-        if (config().getBoolean(Config.Entry.STATISTICS_CLEAR_ON_START)) {
-
-            Bukkit.getScheduler().runTaskLater(this, new Runnable() { //run the task within its own runnable no need for an imbedded class
-                @Override
-                public void run() {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "pvpstats cleanup");
-                }
-            }, 5000L);
-        }
-
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             getLogger().info("PVPStats - PlaceholderAPI found.");
             new PlaceholderAPIHook().register();
         }
 
         Debugger.load(this, Bukkit.getConsoleSender());
+
+        SignDisplay.loadAllDisplays();
 
         getLogger().info("enabled. (version " + pdfFile.getVersion() + ")");
     }

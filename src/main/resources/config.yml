@@ -64,6 +64,8 @@ other:
 # world names where not to count statistics
 ignoreworlds:
   - doNotTrack
+# locations of leaderboards
+leaderboards: []
 # === [ ELO Score Settings ] ===
 eloscore:
   active: false

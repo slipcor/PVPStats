@@ -5,6 +5,8 @@ import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
+import net.slipcor.pvpstats.display.SignDisplay;
+import net.slipcor.pvpstats.display.SortColumn;
 import net.slipcor.pvpstats.impl.FlatFileConnection;
 import net.slipcor.pvpstats.impl.MySQLConnection;
 import net.slipcor.pvpstats.impl.SQLiteConnection;
@@ -59,6 +61,8 @@ public final class DatabaseAPI {
                     attacker.getName(), attacker.getUniqueId().toString(),
                     "", "",
                     attacker.getWorld().getName());
+
+            SignDisplay.updateAll();
             return;
         }
         if (attacker == null) {
@@ -69,6 +73,8 @@ public final class DatabaseAPI {
                     "", "",
                     victim.getName(), victim.getUniqueId().toString(),
                     victim.getWorld().getName());
+
+            SignDisplay.updateAll();
             return;
         }
 
@@ -81,6 +87,8 @@ public final class DatabaseAPI {
             DEBUGGER.i("no elo", victim);
             incKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
             incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
+
+            SignDisplay.updateAll();
             return;
         }
 
@@ -113,6 +121,8 @@ public final class DatabaseAPI {
                 attacker.getName(), attacker.getUniqueId().toString(),
                 victim.getName(), victim.getUniqueId().toString(),
                 attacker.getWorld().getName());
+
+        SignDisplay.updateAll();
     }
 
     /**
@@ -653,6 +663,33 @@ public final class DatabaseAPI {
         }
 
         return sortParse(results, count);
+    }
+
+    public static List<Map<SortColumn, String>> detailedTop(int max, SortColumn column) {
+        List<Map<SortColumn, String>> result = new ArrayList<>();
+
+        try {
+            String sort = "";
+            // `name`,`kills`,`deaths`,`streak`,`currentstreak`,`elo`,`time`,`uid`
+            switch (column) {
+                case NAME:
+                case DEATHS:
+                case KILLS:
+                case ELO:
+                case CURRENTSTREAK:
+                case STREAK:
+                    sort = column.name().toLowerCase();
+                    break;
+            }
+            List<PlayerStatistic> stats = plugin.getSQLHandler().getTopSorted(max, sort, column == SortColumn.DEATHS);
+
+            for (PlayerStatistic stat : stats) {
+                result.add(stat.toStringMap());
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return result;
     }
 
     /**

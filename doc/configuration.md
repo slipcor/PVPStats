@@ -86,6 +86,8 @@ This is the default configuation file.
         - '&cRatio: &7%r'
         - '&cStreak: &7%s'
         - '&cMax Streak: &7%m'
+    # locations of leaderboards
+    leaderboards: []
     # === [ Updater Settings ] ===
     update:
       # phone home to inform slipcor that you use the plugin

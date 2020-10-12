@@ -4,6 +4,7 @@ import org.apache.commons.lang.ObjectUtils.Null;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -141,7 +142,11 @@ public class Config {
                 "# === [ Integration into other Plugins ] ==="}),
         OTHER_PVPARENA(Boolean.class, "other.PVPArena", false, new String[]{"# count PVP Arena deaths"}),
 
-        IGNORE_WORLDS(List.class, "ignoreworlds", Collections.singletonList("doNotTrack"), new String[]{"# world names where not to count statistics"});
+        IGNORE_WORLDS(List.class, "ignoreworlds", Collections.singletonList("doNotTrack"), new String[]{"# world names where not to count statistics"}),
+
+        DISPLAYS(List.class, "leaderboards", new ArrayList<String>(), new String[]{"# locations of leaderboards"});
+
+
 
 
         final Class type;
@@ -243,7 +248,7 @@ public class Config {
      * Iterate over the config file and add comments, if we didn't do that
      * already.
      */
-    private void appendComments() {
+    public void appendComments() {
 
         final File ymlFile = new File(plugin.getDataFolder(), "config.yml");
 
