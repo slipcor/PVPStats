@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.6.10 - format placeholder information and other list output by using existing language nodes
 - v1.6.9 - add scoreboards - needs testing ;) check the docs for info on how to set them up
 - v1.5.8 - remove debug outputs that should not have been included in the release version
 - v1.5.7 - add commands and announcements to be issued when a player hits a certain streak value

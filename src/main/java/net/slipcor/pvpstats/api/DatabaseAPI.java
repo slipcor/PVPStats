@@ -626,20 +626,26 @@ public final class DatabaseAPI {
         if (result != null) {
             for (PlayerStatistic entry : result) {
                 switch (sort) {
+
                     case "KILLS":
-                        sortedValues.add(ChatColor.RED + entry.getName() + ":" + ChatColor.GRAY + " " + entry.getKills());
+                        sortedValues.add(Language.INFO_FORMAT.toString(
+                                entry.getName(), String.valueOf(entry.getKills())));
                         break;
                     case "DEATHS":
-                        sortedValues.add(ChatColor.RED + entry.getName() + ":" + ChatColor.GRAY + " " + entry.getDeaths());
+                        sortedValues.add(Language.INFO_FORMAT.toString(
+                                entry.getName(),String.valueOf(entry.getDeaths())));
                         break;
                     case "ELO":
-                        sortedValues.add(ChatColor.RED + entry.getName() + ":" + ChatColor.GRAY + " " + entry.getELO());
+                        sortedValues.add(Language.INFO_FORMAT.toString(
+                                entry.getName(),String.valueOf(entry.getELO())));
                         break;
                     case "STREAK":
-                        sortedValues.add(ChatColor.RED + entry.getName() + ":" + ChatColor.GRAY + " " + entry.getMaxStreak());
+                        sortedValues.add(Language.INFO_FORMAT.toString(
+                                entry.getName(),String.valueOf(entry.getMaxStreak())));
                         break;
                     case "CURRENTSTREAK":
-                        sortedValues.add(ChatColor.RED + entry.getName() + ":" + ChatColor.GRAY + " " + entry.getCurrentStreak());
+                        sortedValues.add(Language.INFO_FORMAT.toString(
+                                entry.getName(),String.valueOf(entry.getCurrentStreak())));
                         break;
                     default:
                         results.put(
@@ -948,7 +954,7 @@ public final class DatabaseAPI {
 
         for (String key : results.keySet()) {
             sort[pos] = results.get(key);
-            result[pos] = ChatColor.RED + key + ":" + ChatColor.GRAY + " " + df.format(sort[pos]);
+            result[pos] = Language.INFO_FORMAT.toString(key, df.format(sort[pos]));
             pos++;
         }
 
