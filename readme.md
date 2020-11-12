@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.6.11 - add "flop_*" placeholders to display things like "most killed people" - "flop_deaths_..."
+- v1.6.12 - add config setting to enable the newbie feature. for backwards compatibility this will stay "true" for a while
 - [read more](doc/changelog.md)
 
 ***

@@ -41,6 +41,8 @@ statistics:
   createOnJoin: true
   # prevent players from getting kills from the same victim
   checkAbuse: true
+  # prevent stats for players with the permission 'pvpstats.newbie'
+  checkNewbies: true
   # seconds to wait before allowing to kill the same player again to count (-1 will never reset)
   abuseSeconds: -1
   # save every kill - is never read internally, so only for web stats or alike

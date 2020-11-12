@@ -92,6 +92,8 @@ public class Config {
                 "# count dying from other sources than players towards death count and resetting of streaks"}),
         STATISTICS_CHECK_ABUSE(Boolean.class, "statistics.checkAbuse", true, new String[]{
                 "# prevent players from getting kills from the same victim"}),
+        STATISTICS_CHECK_NEWBIES(Boolean.class, "statistics.checkNewbies", true, new String[]{
+                "# prevent stats for players with the permission 'pvpstats.newbie'"}),
         STATISTICS_ABUSE_SECONDS(Integer.class, "statistics.abuseSeconds", -1, new String[]{
                 "# seconds to wait before allowing to kill the same player again to count (-1 will never reset)"}),
         STATISTICS_KD_CALCULATION(String.class, "statistics.killDeathCalculation", "pvpkillstats", new String[]{
