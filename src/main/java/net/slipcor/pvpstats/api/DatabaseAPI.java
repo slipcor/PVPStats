@@ -671,6 +671,102 @@ public final class DatabaseAPI {
         return sortParse(results, count);
     }
 
+    /**
+     * Get the top statistics sorted by type
+     *
+     * @param count the amount to fetch
+     * @param sort  the type to sort by
+     * @return a sorted array
+     */
+    public static String[] flop(final int count, String sort) {
+        if (!plugin.getSQLHandler().isConnected()) {
+            plugin.getLogger().severe("Database is not connected!");
+            return null;
+        }
+
+        sort = sort.toUpperCase();
+        List<PlayerStatistic> result = null;
+        final Map<String, Double> results = new HashMap<>();
+
+        final List<String> sortedValues = new ArrayList<>();
+
+        String order;
+        try {
+
+            switch (sort) {
+                case "DEATHS":
+                    order = "deaths";
+                    break;
+                case "STREAK":
+                    order = "streak";
+                    break;
+                case "CURRENTSTREAK":
+                    order = "currentstreak";
+                    break;
+                case "ELO":
+                    order = "elo";
+                    break;
+                case "KILLS":
+                case "K-D":
+                default:
+                    order = "kills";
+                    break;
+            }
+
+            int limit = sort.equals("K-D") ? Math.min(count, 50) : count;
+
+            result = plugin.getSQLHandler().getTopSorted(limit, order, !sort.equals("DEATHS"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (result != null) {
+            for (PlayerStatistic entry : result) {
+                switch (sort) {
+
+                    case "KILLS":
+                        sortedValues.add(Language.INFO_FORMAT.toString(
+                                entry.getName(), String.valueOf(entry.getKills())));
+                        break;
+                    case "DEATHS":
+                        sortedValues.add(Language.INFO_FORMAT.toString(
+                                entry.getName(),String.valueOf(entry.getDeaths())));
+                        break;
+                    case "ELO":
+                        sortedValues.add(Language.INFO_FORMAT.toString(
+                                entry.getName(),String.valueOf(entry.getELO())));
+                        break;
+                    case "STREAK":
+                        sortedValues.add(Language.INFO_FORMAT.toString(
+                                entry.getName(),String.valueOf(entry.getMaxStreak())));
+                        break;
+                    case "CURRENTSTREAK":
+                        sortedValues.add(Language.INFO_FORMAT.toString(
+                                entry.getName(),String.valueOf(entry.getCurrentStreak())));
+                        break;
+                    default:
+                        results.put(
+                                entry.getName(),
+                                calculateRatio(entry.getKills(),
+                                        entry.getDeaths(),
+                                        entry.getMaxStreak(), PlayerStatisticsBuffer.getStreak(entry.getUid())));
+                        break;
+                }
+            }
+        }
+        if (sort.equals("KILLS") || sort.equals("DEATHS") || sort.equals("ELO") || sort.equals("STREAK") || sort.equals("CURRENTSTREAK")) {
+            String[] output = new String[sortedValues.size()];
+
+            int pos = 0;
+
+            for (String s : sortedValues) {
+                output[pos++] = s;
+            }
+            return output;
+        }
+
+        return sortParse(results, count);
+    }
+
     public static List<Map<SortColumn, String>> detailedTop(int max, SortColumn column) {
         List<Map<SortColumn, String>> result = new ArrayList<>();
 

@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.6.11 - add "flop_*" placeholders to display things like "most killed people" - "flop_deaths_..."
 - v1.6.10 - format placeholder information and other list output by using existing language nodes
 - v1.6.9 - add scoreboards - needs testing ;) check the docs for info on how to set them up
 - v1.5.8 - remove debug outputs that should not have been included in the release version

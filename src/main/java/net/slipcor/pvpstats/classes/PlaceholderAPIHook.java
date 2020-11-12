@@ -91,6 +91,35 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 }
                 return "";
             }
+        } else if (s.startsWith("flop_")) {
+            try {
+
+                String[] split = s.split("_");
+                int pos = Integer.parseInt(s.split("_")[2]);
+                String name = split[1].toUpperCase();
+
+                if (split.length > 3) {
+                    return Language.HEAD_HEADLINE.toString(
+                            String.valueOf(pos),
+                            Language.valueOf("HEAD_" + name).toString());
+                }
+
+                String[] top = DatabaseAPI.flop(pos, name);
+
+                if (top == null || top.length < pos) {
+                    return ""; // we do not have enough entries, return empty
+                }
+
+                return (pos + ": " + top[pos-1]);
+            } catch (Exception e) {
+                // let's ignore this for now
+                long now = System.currentTimeMillis();
+                if (now > lastError+10000) {
+                    PVPStats.getInstance().getLogger().warning("Placeholder not working, here is more info:");
+                    e.printStackTrace();
+                }
+                return "";
+            }
         }
 
         // slipcorpvpstats_top_kills_10_head
