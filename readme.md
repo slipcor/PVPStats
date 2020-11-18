@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.6.13 - move some database interaction to async thread
+- v1.6.14 - move some database interaction to async thread
 - [read more](doc/changelog.md)
 
 ***
