@@ -40,6 +40,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
      * @throws SQLException if the query had an error or there was not a valid connection.
      */
     protected ResultSet executeQuery(final String query, final boolean modifies) throws SQLException {
+        //System.out.println(query);
         Statement statement = this.databaseConnection.createStatement();
         if (modifies) {
             statement.execute(query);

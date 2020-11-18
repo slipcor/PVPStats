@@ -6,6 +6,7 @@ import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
 import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
 import net.slipcor.pvpstats.display.SignDisplay;
+import net.slipcor.pvpstats.runnables.DatabaseKillAddition;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -48,10 +49,10 @@ public class CommandDebugKill extends AbstractCommand {
         if (victim.equalsIgnoreCase("null")) {
             DatabaseAPI.forceIncKill(offlineAttacker, PlayerStatisticsBuffer.getEloScore(offlineAttacker.getUniqueId()));
 
-            PVPStats.getInstance().getSQLHandler().addKill(
+            Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
                     offlineAttacker.getName(), offlineAttacker.getUniqueId().toString(),
                     "", "",
-                    ((Player)sender).getWorld().getName());
+                    ((Player)sender).getWorld().getName()));
 
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, "null"));
 
@@ -61,10 +62,10 @@ public class CommandDebugKill extends AbstractCommand {
         if (attacker.equalsIgnoreCase("null")) {
             DatabaseAPI.forceIncDeath(offlineVictim, PlayerStatisticsBuffer.getEloScore(offlineVictim.getUniqueId()));
 
-            PVPStats.getInstance().getSQLHandler().addKill(
+            Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
                     "", "",
                     offlineVictim.getName(), offlineVictim.getUniqueId().toString(),
-                    ((Player)sender).getWorld().getName());
+                    ((Player)sender).getWorld().getName()));
 
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString("null", victim));
 
@@ -78,10 +79,10 @@ public class CommandDebugKill extends AbstractCommand {
             DatabaseAPI.forceIncKill(offlineAttacker, PlayerStatisticsBuffer.getEloScore(offlineAttacker.getUniqueId()));
             DatabaseAPI.forceIncDeath(offlineVictim, PlayerStatisticsBuffer.getEloScore(offlineVictim.getUniqueId()));
 
-            PVPStats.getInstance().getSQLHandler().addKill(
+            Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
                     offlineAttacker.getName(), offlineAttacker.getUniqueId().toString(),
                     offlineVictim.getName(), offlineVictim.getUniqueId().toString(),
-                    ((Player)sender).getWorld().getName());
+                    ((Player)sender).getWorld().getName()));
 
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, victim));
 
@@ -113,10 +114,10 @@ public class CommandDebugKill extends AbstractCommand {
             PlayerStatisticsBuffer.setEloScore(offlineVictim.getUniqueId(), newP);
         }
 
-        PVPStats.getInstance().getSQLHandler().addKill(
+        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
                 offlineAttacker.getName(), offlineAttacker.getUniqueId().toString(),
                 offlineVictim.getName(), offlineVictim.getUniqueId().toString(),
-                ((Player)sender).getWorld().getName());
+                ((Player)sender).getWorld().getName()));
 
         PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, victim));
 

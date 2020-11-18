@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.6.13 - move some database interaction to async thread
 - v1.6.12 - add config setting to enable the newbie feature. for backwards compatibility this will stay "true" for a while
 - v1.6.11 - add "flop_*" placeholders to display things like "most killed people" - "flop_deaths_..."
 - v1.6.10 - format placeholder information and other list output by using existing language nodes

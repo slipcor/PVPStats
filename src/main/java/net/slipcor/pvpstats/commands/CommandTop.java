@@ -3,6 +3,7 @@ package net.slipcor.pvpstats.commands;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.core.Language;
+import net.slipcor.pvpstats.runnables.SendPlayerTop;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -54,41 +55,14 @@ public class CommandTop extends AbstractCommand {
                         amount = 10;
                     }
 
-                    class RunLater implements Runnable {
-                        final String name;
-                        final int amount;
-
-                        RunLater(String name, int amount) {
-                            this.name = name;
-                            this.amount = amount;
-                        }
-
-                        @Override
-                        public void run() {
-                            String[] top = DatabaseAPI.top(amount, name);
-                            sender.sendMessage(Language.HEAD_LINE.toString());
-                            sender.sendMessage(Language.HEAD_HEADLINE.toString(
-                                    String.valueOf(amount),
-                                    Language.valueOf("HEAD_" + name).toString()));
-                            sender.sendMessage(Language.HEAD_LINE.toString());
-
-
-                            int pos = 1;
-                            for (String stat : top) {
-                                sender.sendMessage(pos++ + ": " + stat);
-                            }
-                        }
-
-                    }
-
                     if (args[1].equals("kills")) {
-                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new RunLater("KILLS", amount));
+                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "KILLS", amount));
                     } else if (args[1].equals("deaths")) {
-                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new RunLater("DEATHS", amount));
+                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "DEATHS", amount));
                     } else if (args[1].equals("streak")) {
-                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new RunLater("STREAK", amount));
+                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "STREAK", amount));
                     } else if (args[1].equalsIgnoreCase("elo")) {
-                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new RunLater("ELO", amount));
+                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "ELO", amount));
                     } else {
                         return;
                     }
@@ -109,29 +83,7 @@ public class CommandTop extends AbstractCommand {
                 if (legacyTop == 0) {
                     args[0] = String.valueOf(count);
                 }
-                class RunLater implements Runnable {
-                    final int count;
-
-                    RunLater(int i) {
-                        count = i;
-                    }
-
-                    @Override
-                    public void run() {
-                        final String[] top = DatabaseAPI.top(count, "K-D");
-                        sender.sendMessage(Language.HEAD_LINE.toString());
-                        sender.sendMessage(Language.HEAD_HEADLINE.toString(
-                                args[0],
-                                Language.HEAD_RATIO.toString()));
-                        sender.sendMessage(Language.HEAD_LINE.toString());
-                        int pos = 1;
-                        for (String stat : top) {
-                            sender.sendMessage(pos++ + ": " + stat);
-                        }
-                    }
-
-                }
-                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new RunLater(count));
+                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "K-D", count, args[0]));
             } catch (Exception e) {
                 e.printStackTrace();
             }
