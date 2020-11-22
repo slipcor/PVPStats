@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.6.15 - change the newbie permission to "pvpstats.nonewbie" to actually work like a permission, defaulting to "true"
 - v1.6.14 - add async runnables
 - v1.6.13 - move some database interaction to async thread
 - v1.6.12 - add config setting to enable the newbie feature. for backwards compatibility this will stay "true" for a while

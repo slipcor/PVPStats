@@ -34,9 +34,9 @@ permissions:
   pvpstats.count:
     description: Permission to be counted
     default: true
-  pvpstats.newbie:
-    description: Permission to block being killed to be counted
-    default: false
+  pvpstats.nonewbie:
+    description: Permission to be out of newbie status
+    default: true
   pvpstats.top:
     description: Permission to get global stats
     default: true

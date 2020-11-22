@@ -79,7 +79,10 @@ public final class DatabaseAPI {
             return;
         }
 
-        if (attacker.hasPermission("pvpstats.newbie") || victim.hasPermission("pvpstats.newbie")) {
+        if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_NEWBIES) &&
+                (!(attacker.hasPermission("pvpstats.nonewbie") && victim.hasPermission("pvpstats.nonewbie"))) ||
+                (attacker.hasPermission("pvpstats.newbie") || victim.hasPermission("pvpstats.newbie")) // backwards compatibility
+                ) {
             DEBUGGER.i("either one has newbie status", victim);
             return;
         }
