@@ -58,10 +58,17 @@ public final class DatabaseAPI {
             DEBUGGER.i("victim is null", attacker);
             incKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
 
-            Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
-                    attacker.getName(), attacker.getUniqueId().toString(),
-                    "", "",
-                    attacker.getWorld().getName()));
+            if (plugin.getSQLHandler().allowsAsync()) {
+                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
+                        attacker.getName(), attacker.getUniqueId().toString(),
+                        "", "",
+                        attacker.getWorld().getName()));
+            } else {
+                Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
+                        attacker.getName(), attacker.getUniqueId().toString(),
+                        "", "",
+                        attacker.getWorld().getName()));
+            }
 
             SignDisplay.updateAll();
             return;
@@ -70,10 +77,17 @@ public final class DatabaseAPI {
             DEBUGGER.i("attacker is null", victim);
             incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
 
-            Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
-                    "", "",
-                    victim.getName(), victim.getUniqueId().toString(),
-                    victim.getWorld().getName()));
+            if (plugin.getSQLHandler().allowsAsync()) {
+                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
+                        "", "",
+                        victim.getName(), victim.getUniqueId().toString(),
+                        victim.getWorld().getName()));
+            } else {
+                Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
+                        "", "",
+                        victim.getName(), victim.getUniqueId().toString(),
+                        victim.getWorld().getName()));
+            }
 
             SignDisplay.updateAll();
             return;
@@ -121,10 +135,17 @@ public final class DatabaseAPI {
             plugin.sendPrefixed(victim, Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
             PlayerStatisticsBuffer.setEloScore(victim.getUniqueId(), newP);
         }
-        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
-                attacker.getName(), attacker.getUniqueId().toString(),
-                victim.getName(), victim.getUniqueId().toString(),
-                attacker.getWorld().getName()));
+        if (plugin.getSQLHandler().allowsAsync()) {
+            Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
+                    attacker.getName(), attacker.getUniqueId().toString(),
+                    victim.getName(), victim.getUniqueId().toString(),
+                    attacker.getWorld().getName()));
+        } else {
+            Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
+                    attacker.getName(), attacker.getUniqueId().toString(),
+                    victim.getName(), victim.getUniqueId().toString(),
+                    attacker.getWorld().getName()));
+        }
 
         SignDisplay.updateAll();
     }
@@ -338,7 +359,11 @@ public final class DatabaseAPI {
                 e.printStackTrace();
             }
         } else if (plugin.config().getBoolean(Config.Entry.STATISTICS_CREATE_ON_JOIN)) {
-            Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseFirstEntry(player));
+            if (plugin.getSQLHandler().allowsAsync()) {
+                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseFirstEntry(player));
+            } else {
+                Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseFirstEntry(player));
+            }
         }
 
         // read all the data from database
@@ -560,8 +585,11 @@ public final class DatabaseAPI {
                 !entry.equals("currentstreak")) {
             throw new IllegalArgumentException("entry can not be '" + entry + "'. Valid values: elo, kills, deaths, streak, currentstreak");
         }
-        Bukkit.getScheduler().runTaskAsynchronously(plugin,
-                new DatabaseSetSpecific(player.getUniqueId(), entry, value));
+        if (PVPStats.getInstance().getSQLHandler().allowsAsync()) {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new DatabaseSetSpecific(player.getUniqueId(), entry, value));
+        } else {
+            Bukkit.getScheduler().runTask(plugin, new DatabaseSetSpecific(player.getUniqueId(), entry, value));
+        }
 
     }
 
@@ -938,16 +966,31 @@ public final class DatabaseAPI {
 
         if (addMaxStreak && kill) {
             DEBUGGER.i("increasing kills and max streak");
-            Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(),
-                    new DatabaseIncreaseKillsStreak(playerName, uuid, elo));
+            if (plugin.getSQLHandler().allowsAsync()) {
+                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(),
+                        new DatabaseIncreaseKillsStreak(playerName, uuid, elo));
+            } else {
+                Bukkit.getScheduler().runTask(PVPStats.getInstance(),
+                        new DatabaseIncreaseKillsStreak(playerName, uuid, elo));
+            }
         } else if (kill) {
             DEBUGGER.i("increasing kills and current streak");
-            Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(),
-                    new DatabaseIncreaseKills(playerName, uuid, elo));
+            if (plugin.getSQLHandler().allowsAsync()) {
+                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(),
+                        new DatabaseIncreaseKills(playerName, uuid, elo));
+            } else {
+                Bukkit.getScheduler().runTask(PVPStats.getInstance(),
+                        new DatabaseIncreaseKills(playerName, uuid, elo));
+            }
         } else {
             DEBUGGER.i("increasing deaths");
-            Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(),
-                    new DatabaseIncreaseDeaths(playerName, uuid, elo));
+            if (plugin.getSQLHandler().allowsAsync()) {
+                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(),
+                        new DatabaseIncreaseDeaths(playerName, uuid, elo));
+            } else {
+                Bukkit.getScheduler().runTask(PVPStats.getInstance(),
+                        new DatabaseIncreaseDeaths(playerName, uuid, elo));
+            }
         }
 
         if (kill) {

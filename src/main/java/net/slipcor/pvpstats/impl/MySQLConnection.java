@@ -26,6 +26,10 @@ public class MySQLConnection extends AbstractSQLConnection {
         Class.forName("com.mysql.jdbc.Driver").newInstance();
     }
 
+    public boolean allowsAsync() {
+        return true;
+    }
+
     /**
      * Try to connect to the database
      *

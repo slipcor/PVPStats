@@ -15,6 +15,8 @@ import java.util.UUID;
  */
 public interface DatabaseConnection {
 
+    boolean allowsAsync();
+
     /**
      * Try to connect to the database
      *

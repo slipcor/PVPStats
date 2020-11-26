@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.6.15 - change the newbie permission to "pvpstats.nonewbie" to actually work like a permission, defaulting to "true"
+- v1.6.16 - only write asynchronously to mySQL
 - [read more](doc/changelog.md)
 
 ***

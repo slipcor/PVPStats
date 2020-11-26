@@ -19,6 +19,10 @@ public class SQLiteConnection extends AbstractSQLConnection {
         this.dbDatabase = dbDatabase;
     }
 
+    public boolean allowsAsync() {
+        return false;
+    }
+
     /**
      * Try to connect to the database
      *

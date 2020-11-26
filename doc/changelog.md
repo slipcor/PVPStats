@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.6.16 - only write asynchronously to mySQL
 - v1.6.15 - change the newbie permission to "pvpstats.nonewbie" to actually work like a permission, defaulting to "true"
 - v1.6.14 - add async runnables
 - v1.6.13 - move some database interaction to async thread

@@ -28,6 +28,10 @@ public class FlatFileConnection implements DatabaseConnection {
     // The connection object
     private FileConfiguration statConfig, killStatConfig;
 
+    public boolean allowsAsync() {
+        return false;
+    }
+
     /**
      * Try to connect to the database
      *
