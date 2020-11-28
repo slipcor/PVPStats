@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.6.17 - add "deathsDescending" config node to allow for default mathematical sorting of deaths, round ratios in all places!
 - v1.6.16 - only write asynchronously to mySQL
 - v1.6.15 - change the newbie permission to "pvpstats.nonewbie" to actually work like a permission, defaulting to "true"
 - v1.6.14 - add async runnables

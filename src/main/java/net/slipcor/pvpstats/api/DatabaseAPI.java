@@ -285,6 +285,7 @@ public final class DatabaseAPI {
         int streak = result.getCurrentStreak();
         int maxStreak = result.getMaxStreak();
         Double ratio = calculateRatio(kills, deaths, maxStreak, streak);
+        DecimalFormat df = new DecimalFormat("#.##");
 
         if (plugin.config().getBoolean(Config.Entry.MESSAGES_OVERRIDES)) {
             List<String> lines = plugin.config().getList(Config.Entry.MESSAGES_OVERRIDE_LIST);
@@ -297,7 +298,7 @@ public final class DatabaseAPI {
                 line = line.replace("%k", String.valueOf(kills));
                 line = line.replace("%m", String.valueOf(maxStreak));
                 line = line.replace("%n", name);
-                line = line.replace("%r", String.valueOf(ratio));
+                line = line.replace("%r", df.format(ratio));
                 line = line.replace("%s", String.valueOf(streak));
                 line = line.replace("%e", String.valueOf(elo));
 
@@ -321,7 +322,7 @@ public final class DatabaseAPI {
                 String.valueOf(deaths));
         output[3] = Language.INFO_FORMAT.toString(
                 Language.INFO_RATIO.toString(),
-                String.valueOf(ratio));
+                df.format(ratio));
         output[4] = Language.INFO_FORMAT.toString(
                 Language.INFO_STREAK.toString(),
                 String.valueOf(streak));
@@ -637,7 +638,9 @@ public final class DatabaseAPI {
 
             int limit = sort.equals("K-D") ? Math.min(count, 50) : count;
 
-            result = plugin.getSQLHandler().getTopSorted(limit, order, sort.equals("DEATHS"));
+            result = plugin.getSQLHandler().getTopSorted(limit, order,
+                    sort.equals("DEATHS") &&
+                            !PVPStats.getInstance().config().getBoolean(Config.Entry.STATISTICS_DEATHS_DESCENDING));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -733,7 +736,8 @@ public final class DatabaseAPI {
 
             int limit = sort.equals("K-D") ? Math.min(count, 50) : count;
 
-            result = plugin.getSQLHandler().getTopSorted(limit, order, !sort.equals("DEATHS"));
+            result = plugin.getSQLHandler().getTopSorted(limit, order, !sort.equals("DEATHS") ||
+                    !PVPStats.getInstance().config().getBoolean(Config.Entry.STATISTICS_DEATHS_DESCENDING));
         } catch (SQLException e) {
             e.printStackTrace();
         }

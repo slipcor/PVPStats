@@ -43,6 +43,8 @@ statistics:
   checkAbuse: true
   # prevent stats for players without the permission 'pvpstats.nonewbie'
   checkNewbies: true
+  # order deaths descending by default (rather than TOP deaths being LESS deaths)
+  deathsDescending: false
   # seconds to wait before allowing to kill the same player again to count (-1 will never reset)
   abuseSeconds: -1
   # save every kill - is never read internally, so only for web stats or alike

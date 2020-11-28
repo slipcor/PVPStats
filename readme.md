@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.6.16 - only write asynchronously to mySQL
+- v1.6.17 - add "deathsDescending" config node to allow for default mathematical sorting of deaths, round ratios in all places!
 - [read more](doc/changelog.md)
 
 ***
