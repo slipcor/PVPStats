@@ -832,6 +832,7 @@ public final class DatabaseAPI {
         PlayerStatisticsBuffer.clear(uuid);
     }
 
+    private static ScriptEngine scriptEngine;
 
     /**
      * Calculate the kill / death ratio as defined in the config
@@ -844,6 +845,12 @@ public final class DatabaseAPI {
      */
     public static Double calculateRatio(final int kills, final int deaths, final int streak,
                                         final int maxstreak) {
+        if (plugin.config().getBoolean(Config.Entry.STATISTICS_KD_SIMPLE)) {
+            if (deaths < 1) {
+                return 0d;
+            }
+            return ((double) kills) / deaths;
+        }
 
         String string = plugin.config().get(Config.Entry.STATISTICS_KD_CALCULATION);
 
@@ -852,15 +859,18 @@ public final class DatabaseAPI {
         string = string.replaceAll("&s", "(" + streak + ")");
         string = string.replaceAll("&m", "(" + maxstreak + ")");
 
-        ScriptEngineManager mgr = new ScriptEngineManager();
-        ScriptEngine engine = mgr.getEngineByName("JavaScript");
-        StringBuilder saneString = new StringBuilder();
+        if (scriptEngine == null) {
+            ScriptEngineManager mgr = new ScriptEngineManager();
+            scriptEngine = mgr.getEngineByName("JavaScript");
 
-        // Java 8 compatibility
-        if (engine == null) {
-            mgr = new ScriptEngineManager(null);
-            engine = mgr.getEngineByName("nashorn");
+            // Java 8 compatibility
+            if (scriptEngine == null) {
+                mgr = new ScriptEngineManager(null);
+                scriptEngine = mgr.getEngineByName("nashorn");
+            }
         }
+
+        StringBuilder saneString = new StringBuilder();
 
         for (char c : string.toCharArray()) {
             switch (c) {
@@ -892,7 +902,7 @@ public final class DatabaseAPI {
         }
 
         try {
-            Object value = engine.eval(saneString.toString());
+            Object value = scriptEngine.eval(saneString.toString());
 
             if (value instanceof Double) {
                 return (Double) value;

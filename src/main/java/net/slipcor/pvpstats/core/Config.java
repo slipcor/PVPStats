@@ -98,8 +98,10 @@ public class Config {
                 "# seconds to wait before allowing to kill the same player again to count (-1 will never reset)"}),
         STATISTICS_DEATHS_DESCENDING(Boolean.class, "statistics.deathsDescending", false, new String[]{
                 "# order deaths descending by default (rather than TOP deaths being LESS deaths)"}),
-        STATISTICS_KD_CALCULATION(String.class, "statistics.killDeathCalculation", "pvpkillstats", new String[]{
+        STATISTICS_KD_CALCULATION(String.class, "statistics.killDeathCalculation", "&k/(&d+1)", new String[]{
                 "# mathematical formula to calculate kill/death ratio"}),
+        STATISTICS_KD_SIMPLE(String.class, "statistics.killDeathSimple", false, new String[]{
+                "# simplify kill/death ratio calculation to just kills per deaths"}),
         STATISTICS_RESET_KILLSTREAK_ON_QUIT(Boolean.class, "statistics.resetKillstreakOnQuit", false, new String[]{
                 "# always reset a streak when a player disconnects"}),
         STATISTICS_STREAK_ANNOUNCEMENTS(Boolean.class, "statistics.streakAnnouncements", false, new String[]{

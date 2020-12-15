@@ -3,6 +3,7 @@ package net.slipcor.pvpstats.commands;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
+import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
 import net.slipcor.pvpstats.display.SignDisplay;
@@ -21,8 +22,11 @@ public class CommandDebugKill extends AbstractCommand {
         super(new String[]{"pvpstats.debugkill"});
     }
 
+    static Debugger debugger = new Debugger(13);
+
     @Override
     public void commit(CommandSender sender, String[] args) {
+        debugger.i("debug kill!");
         if (!hasPerms(sender)) {
             sender.sendMessage(Language.MSG_NOPERMDEBUG.toString());
             return;
@@ -34,6 +38,7 @@ public class CommandDebugKill extends AbstractCommand {
             PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_NOT_A_PLAYER.toString());
             return;
         }
+        debugger.i("let's go!");
 
         String attacker = args[1];
         String victim = args[2];
@@ -90,8 +95,12 @@ public class CommandDebugKill extends AbstractCommand {
         Config config = PVPStats.getInstance().config();
 
         if (!config.getBoolean(Config.Entry.ELO_ACTIVE)) {
+            debugger.i("no ELO");
+
             DatabaseAPI.forceIncKill(offlineAttacker, PlayerStatisticsBuffer.getEloScore(offlineAttacker.getUniqueId()));
             DatabaseAPI.forceIncDeath(offlineVictim, PlayerStatisticsBuffer.getEloScore(offlineVictim.getUniqueId()));
+
+            debugger.i("sending kill addition");
 
             if (PVPStats.getInstance().getSQLHandler().allowsAsync()) {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
@@ -105,11 +114,15 @@ public class CommandDebugKill extends AbstractCommand {
                         ((Player)sender).getWorld().getName()));
             }
 
+
             PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, victim));
 
             SignDisplay.updateAll();
+            debugger.i("debug kill out!");
             return;
         }
+
+        debugger.i("ELO!");
 
         final int min = config.getInt(Config.Entry.ELO_MINIMUM);
         final int max = config.getInt(Config.Entry.ELO_MAXIMUM);
@@ -135,6 +148,8 @@ public class CommandDebugKill extends AbstractCommand {
             PlayerStatisticsBuffer.setEloScore(offlineVictim.getUniqueId(), newP);
         }
 
+        debugger.i("sending kill addition!");
+
         if (PVPStats.getInstance().getSQLHandler().allowsAsync()) {
             Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
                     offlineAttacker.getName(), offlineAttacker.getUniqueId().toString(),
@@ -150,6 +165,8 @@ public class CommandDebugKill extends AbstractCommand {
         PVPStats.getInstance().sendPrefixed(sender, Language.INFO_AKILLEDB.toString(attacker, victim));
 
         SignDisplay.updateAll();
+
+        debugger.i("debug kill ou!");
     }
 
     public List<String> completeTab(String[] args) {
