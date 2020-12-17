@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.6.18 - add "killDeathSimple" config node to use simple kills/deaths instead of a complicated mathematical function 
+- v1.6.19 - reduce database connections in generally, especially by caching UUIDs and legacy player names 
 - [read more](doc/changelog.md)
 
 ***

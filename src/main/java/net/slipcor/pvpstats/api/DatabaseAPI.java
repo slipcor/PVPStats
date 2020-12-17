@@ -150,6 +150,8 @@ public final class DatabaseAPI {
         SignDisplay.updateAll();
     }
 
+    private static List<UUID> allUUIDs;
+
     /**
      * @return a list of all UUIDs of players that have statistic entries
      */
@@ -158,16 +160,40 @@ public final class DatabaseAPI {
             plugin.getLogger().severe("Database is not connected!");
             return null;
         }
-        List<UUID> output = new ArrayList<>();
+
+        if (allUUIDs == null) {
+            List<UUID> output = new ArrayList<>();
+            try {
+                List<UUID> result = plugin.getSQLHandler().getStatsUUIDs();
+                output.addAll(result);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            allUUIDs = output;
+        }
+
+        return allUUIDs;
+    }
+
+    private static List<String> allPlayerNames;
+
+    /**
+     * Return a player's statistic
+     * @param player the player to find
+     * @return the player's statistic
+     */
+    public static PlayerStatistic getAllStats(Player player) {
+        if (!plugin.getSQLHandler().isConnected()) {
+            plugin.getLogger().severe("Database is not connected!");
+            return null;
+        }
 
         try {
-            List<UUID> result = plugin.getSQLHandler().getStatsUUIDs();
-            output.addAll(result);
+            return plugin.getSQLHandler().getStats(player);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return output;
+        return new PlayerStatistic(player.getName(), 0, 0, 0, 0, 0, 0, player.getUniqueId());
     }
 
     /**
@@ -178,16 +204,18 @@ public final class DatabaseAPI {
             plugin.getLogger().severe("Database is not connected!");
             return null;
         }
-        List<String> output = new ArrayList<>();
+        if (allPlayerNames == null) {
+            List<String> output = new ArrayList<>();
 
-        try {
-            List<String> result = plugin.getSQLHandler().getNamesWithoutUUIDs();
-            output.addAll(result);
-        } catch (SQLException e) {
-            e.printStackTrace();
+            try {
+                List<String> result = plugin.getSQLHandler().getNamesWithoutUUIDs();
+                output.addAll(result);
+                allPlayerNames = output;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-
-        return output;
+        return allPlayerNames;
     }
 
     /**
@@ -359,20 +387,21 @@ public final class DatabaseAPI {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            allUUIDs.add(player.getUniqueId());
+            allPlayerNames.remove(player.getName());
         } else if (plugin.config().getBoolean(Config.Entry.STATISTICS_CREATE_ON_JOIN)) {
             if (plugin.getSQLHandler().allowsAsync()) {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseFirstEntry(player));
             } else {
                 Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseFirstEntry(player));
             }
+            allUUIDs.add(player.getUniqueId());
+        } else {
+            allUUIDs.add(player.getUniqueId());
         }
 
         // read all the data from database
-        PlayerStatisticsBuffer.getStreak(player.getUniqueId());
-        PlayerStatisticsBuffer.getDeaths(player.getUniqueId());
-        PlayerStatisticsBuffer.getEloScore(player.getUniqueId());
-        PlayerStatisticsBuffer.getKills(player.getUniqueId());
-        PlayerStatisticsBuffer.getMaxStreak(player.getUniqueId());
+        PlayerStatisticsBuffer.getAll(player);
     }
 
     private static DatabaseConnection connectToOther(String method, CommandSender sender) {

@@ -1,9 +1,11 @@
 package net.slipcor.pvpstats.api;
 
 import net.slipcor.pvpstats.PVPStats;
+import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.core.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 
@@ -137,6 +139,21 @@ public final class PlayerStatisticsBuffer {
      */
     public static void clearEloScore(UUID uuid) {
         eloScore.remove(uuid);
+    }
+
+    public static void getAll(Player player) {
+        UUID uuid = player.getUniqueId();
+        if (deaths.containsKey(uuid) && kills.containsKey(uuid)) {
+            return; // we already did it
+        }
+
+        PlayerStatistic statistic = DatabaseAPI.getAllStats(player);
+
+        deaths.put(uuid, statistic.getDeaths());
+        kills.put(uuid, statistic.getKills());
+        eloScore.put(uuid, statistic.getELO());
+        streaks.put(uuid, statistic.getCurrentStreak());
+        maxStreaks.put(uuid, statistic.getMaxStreak());
     }
 
     /**

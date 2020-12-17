@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.6.19 - reduce database connections in generally, especially by caching UUIDs and legacy player names
 - v1.6.18 - add "killDeathSimple" config node to use simple kills/deaths instead of a complicated mathematical function
 - v1.6.17 - add "deathsDescending" config node to allow for default mathematical sorting of deaths, round ratios in all places!
 - v1.6.16 - only write asynchronously to mySQL
