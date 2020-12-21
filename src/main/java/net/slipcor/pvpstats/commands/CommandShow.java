@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +39,7 @@ public class CommandShow extends AbstractCommand {
 
             // /pvpstats [player] - show player's pvp stats
 
-            final OfflinePlayer player =  PlayerNameHandler.findPlayer(args[1]);
+            final OfflinePlayer player = PlayerNameHandler.findPlayer(args[1]);
 
             if (player == null) {
                 sender.sendMessage("Player not found: " + args[1]);
@@ -49,13 +50,24 @@ public class CommandShow extends AbstractCommand {
         }
     }
 
+    private boolean isVanished(Player p) {
+        for (MetadataValue meta : p.getMetadata("vanished")) {
+            if (!meta.asBoolean()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<String> completeTab(String[] args) {
         List<String> results = new ArrayList<>();
 
         if (args.length < 2 || args[1].equals("")) {
             // list first argument possibilities
             for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                results.add(p.getName());
+                if (!isVanished(p)) {
+                    results.add(p.getName());
+                }
             }
             return results;
         }
@@ -66,7 +78,9 @@ public class CommandShow extends AbstractCommand {
 
         // we started typing!
         for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-            addIfMatches(results, p.getName(), p.getName());
+            if (!isVanished(p)) {
+                addIfMatches(results, p.getName(), p.getName());
+            }
         }
         return results;
     }
