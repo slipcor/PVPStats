@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.6.23 - fix npe on first launch
 - v1.6.21 - vanished check actually reversing the logic
 - v1.6.20 - hide vanished players in command tab completion
 - v1.6.19 - reduce database connections in generally, especially by caching UUIDs and legacy player names
