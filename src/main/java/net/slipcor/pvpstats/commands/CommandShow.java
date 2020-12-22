@@ -52,7 +52,7 @@ public class CommandShow extends AbstractCommand {
 
     private boolean isVanished(Player p) {
         for (MetadataValue meta : p.getMetadata("vanished")) {
-            if (!meta.asBoolean()) {
+            if (meta.asBoolean()) {
                 return true;
             }
         }

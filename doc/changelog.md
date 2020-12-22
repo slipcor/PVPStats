@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.6.21 - vanished check actually reversing the logic
 - v1.6.20 - hide vanished players in command tab completion
 - v1.6.19 - reduce database connections in generally, especially by caching UUIDs and legacy player names
 - v1.6.18 - add "killDeathSimple" config node to use simple kills/deaths instead of a complicated mathematical function

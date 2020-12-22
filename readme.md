@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.6.20 - hide vanished players in command tab completion 
+- v1.6.21 - vanished check actually reversing the logic 
 - [read more](doc/changelog.md)
 
 ***
