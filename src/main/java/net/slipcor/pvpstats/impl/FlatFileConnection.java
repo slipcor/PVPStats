@@ -397,6 +397,10 @@ public class FlatFileConnection implements DatabaseConnection {
     public PlayerStatistic getStats(OfflinePlayer offlinePlayer) {
         ConfigurationSection player = statConfig.getConfigurationSection(offlinePlayer.getUniqueId().toString());
 
+        if (player == null) {
+            return new PlayerStatistic(offlinePlayer.getName(), 0, 0, 0, 0, 0, 0, offlinePlayer.getUniqueId());
+        }
+
         return new PlayerStatistic(player.getString("name", ""),
                 player.getInt("kills", 0),
                 player.getInt("deaths", 0),
