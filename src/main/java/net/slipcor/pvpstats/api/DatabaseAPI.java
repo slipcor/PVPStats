@@ -94,7 +94,7 @@ public final class DatabaseAPI {
         }
 
         if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_NEWBIES) &&
-                noNewbie(attacker) && noNewbie(victim)) {
+                (isNewbie(attacker) || isNewbie(victim))) {
 
             DEBUGGER.i("either one has newbie status", victim);
             return;
@@ -549,21 +549,30 @@ public final class DatabaseAPI {
         return 0;
     }
 
-    private static boolean noNewbie(Player player) {
-        boolean senior = player.hasPermission("pvpstats.nonewbie");
-
+    private static boolean isNewbie(Player player) {
         // backwards compatibility
-        if (player.hasPermission("pvpstats.newbie")) {
+        boolean newbie = player.hasPermission("pvpstats.newbie");
+
+        if (player.hasPermission("pvpstats.null")) {
             /*
-             * if a player does have the following permission, we can assume that the permission
-             * plugin blindly does always reply with TRUE, which means they probably should not be
-             * considered a newbie, right? This is breaking plugin functionality for new players
-             * right now, issue pending. This could actually be the proper solution in the long run
+             * If a player does have the previous permission, we can assume that the permission
+             * plugin either does always reply with TRUE or has ALL PERMS set to true, which means
+             * they probably want to consider getting all access.
+             *
+             * This is a solution until a warning system is in place to ask admins to set it up
+             * properly.
              */
-            senior = player.hasPermission("pvpstats.null");
+            return false;
         }
 
-        return senior;
+
+        if (newbie) {
+            // backwards compatibility until we have a warning system in place to ask admins to change to
+            // proper permission logic
+            return true;
+        }
+
+        return !player.hasPermission("pvpstats.nonewbie");
     }
 
     /**
