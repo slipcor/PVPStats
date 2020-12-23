@@ -94,9 +94,8 @@ public final class DatabaseAPI {
         }
 
         if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_NEWBIES) &&
-                (!(attacker.hasPermission("pvpstats.nonewbie") && victim.hasPermission("pvpstats.nonewbie"))) ||
-                (attacker.hasPermission("pvpstats.newbie") || victim.hasPermission("pvpstats.newbie")) // backwards compatibility
-                ) {
+                noNewbie(attacker) && noNewbie(victim)) {
+
             DEBUGGER.i("either one has newbie status", victim);
             return;
         }
@@ -548,6 +547,23 @@ public final class DatabaseAPI {
         }
 
         return 0;
+    }
+
+    private static boolean noNewbie(Player player) {
+        boolean senior = player.hasPermission("pvpstats.nonewbie");
+
+        // backwards compatibility
+        if (player.hasPermission("pvpstats.newbie")) {
+            /*
+             * if a player does have the following permission, we can assume that the permission
+             * plugin blindly does always reply with TRUE, which means they probably should not be
+             * considered a newbie, right? This is breaking plugin functionality for new players
+             * right now, issue pending. This could actually be the proper solution in the long run
+             */
+            senior = player.hasPermission("pvpstats.null");
+        }
+
+        return senior;
     }
 
     /**
