@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.6.24 - hack-fix too greedy permissions 
+- v1.6.25 - prepare plugin.yml for proper warnings in the future 
 - [read more](doc/changelog.md)
 
 ***

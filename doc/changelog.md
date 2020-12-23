@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.6.25 - prepare plugin.yml for proper warnings in the future
 - v1.6.24 - hack-fix too greedy permissions
 - v1.6.23 - fix npe on first launch
 - v1.6.21 - vanished check actually reversing the logic

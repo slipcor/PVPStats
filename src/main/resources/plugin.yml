@@ -37,6 +37,12 @@ permissions:
   pvpstats.nonewbie:
     description: Permission to be out of newbie status
     default: true
+  pvpstats.newbie:
+    description: Permission to be not out of newbie status
+    default: false
   pvpstats.top:
     description: Permission to get global stats
     default: true
+  pvpstats.null:
+    description: Permission that you should not give to anyone.
+    default: false
