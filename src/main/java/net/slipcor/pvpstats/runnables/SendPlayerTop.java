@@ -30,9 +30,8 @@ public class SendPlayerTop implements Runnable {
         sender.sendMessage(Language.HEAD_LINE.toString());
         sender.sendMessage(Language.HEAD_HEADLINE.toString(
                 displayAmount,
-                Language.valueOf("HEAD_" + name).toString()));
+                Language.valueOf("HEAD_" + (name.equals("K-D") ? "RATIO" : name)).toString()));
         sender.sendMessage(Language.HEAD_LINE.toString());
-
 
         int pos = 1;
         for (String stat : top) {
