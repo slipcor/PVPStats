@@ -116,7 +116,6 @@ public class ConfigMigration {
         cfg.set(Config.Entry.OTHER_PVPARENA.getNode(), booleans.get("PVPArena"));
 
         cfg.set(Config.Entry.STATISTICS_CHECK_ABUSE.getNode(), booleans.get("checkabuse"));
-        cfg.set(Config.Entry.UPDATE_TRACKER.getNode(), booleans.get("tracker"));
         cfg.set(Config.Entry.STATISTICS_COLLECT_PRECISE.getNode(), booleans.get("collectprecise"));
         cfg.set(Config.Entry.STATISTICS_CLEAR_ON_START.getNode(), booleans.get("clearonstart"));
         cfg.set(Config.Entry.STATISTICS_RESET_KILLSTREAK_ON_QUIT.getNode(), booleans.get("resetkillstreakonquit"));

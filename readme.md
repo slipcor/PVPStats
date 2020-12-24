@@ -53,15 +53,18 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.6.26 - properly implement newbie check - I swear this time it works like intended
+- v1.6.27 - move usage tracking to bStats, defaulting to give some more information about which features are being used
 - [read more](doc/changelog.md)
 
 ***
 
 ## Phoning home
 
-By default, the server contacts my private server for information purposes. It sends your port, IP (for proper server counting), and the plugin version.
-That's it! If you want to disable that, set "tracker" to false in the config!
+By default, the server contacts www.bstats.org to notify that you are using my plugin.
+
+Please refer to their website to learn about what they collect and how they handle the data.
+
+If you want to disable the tracker, set "bStats.enabled" to false in the __config.yml__ !
 
 ***
 

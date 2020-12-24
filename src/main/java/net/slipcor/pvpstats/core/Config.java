@@ -141,12 +141,17 @@ public class Config {
                 "# what to do? Valid values: off, announce, download, both"}),
         UPDATE_TYPE(String.class, "update.type", "beta", new String[]{
                 "# which type of branch to get updates? Valid values: dev, alpha, beta, release"}),
-        UPDATE_TRACKER(Boolean.class, "update.tracker", true, new String[]{
-                "# phone home to inform slipcor that you use the plugin"}),
 
         OTHER(Null.class, "other", null, new String[]{
                 "# === [ Integration into other Plugins ] ==="}),
         OTHER_PVPARENA(Boolean.class, "other.PVPArena", false, new String[]{"# count PVP Arena deaths"}),
+
+        BSTATS(Null.class, "bStats", null, new String[]{
+                "# === [ bStats Metrics Settings ] ==="}),
+        BSTATS_ENABLED(Boolean.class, "bStats.enabled", true, new String[]{
+                "# Should we send stats at all? Please keep this in so we have an overview of spread of versions <3"}),
+        BSTATS_FULL(Boolean.class, "bStats.full", true, new String[]{
+                "# This setting sends a bit more detailed information about which features are used at all. Thank you for supporting me!"}),
 
         IGNORE_WORLDS(List.class, "ignoreworlds", Collections.singletonList("doNotTrack"), new String[]{"# world names where not to count statistics"}),
 

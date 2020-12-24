@@ -14,6 +14,8 @@ import net.slipcor.pvpstats.impl.SQLiteConnection;
 import net.slipcor.pvpstats.listeners.PVPArenaListener;
 import net.slipcor.pvpstats.listeners.PlayerListener;
 import net.slipcor.pvpstats.listeners.PluginListener;
+import net.slipcor.pvpstats.metrics.MetricsLite;
+import net.slipcor.pvpstats.metrics.MetricsMain;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -428,8 +430,12 @@ public class PVPStats extends JavaPlugin {
 
         loadLanguage();
 
-        if (config().getBoolean(Config.Entry.UPDATE_TRACKER)) { //only call the task if true
-            getServer().getScheduler().runTaskTimer(this, new Tracker(this), 0L, 72000L);
+        if (config().getBoolean(Config.Entry.BSTATS_ENABLED)) {
+            if (config().getBoolean(Config.Entry.BSTATS_FULL)) {
+                MetricsMain mainMetrics = new MetricsMain(this);
+            } else {
+                MetricsLite liteMetrics = new MetricsLite(this);
+            }
         }
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {

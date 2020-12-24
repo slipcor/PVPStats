@@ -100,9 +100,13 @@ msg:
     - '&cMax Streak: &7%m'
 # === [ Updater Settings ] ===
 update:
-  # phone home to inform slipcor that you use the plugin
-  tracker: true
   # what to do? Valid values: off, announce, download, both
   mode: both
   # which type of branch to get updates? Valid values: dev, alpha, beta, release
   type: beta
+# === [ bStats Metrics Settings ] ===
+bStats:
+  # Should we send stats at all? Please keep this in so we have an overview of spread of versions <3
+  enabled: true
+  # This setting sends a bit more detailed information about which features are used at all. Thank you for supporting me!
+  full: true
