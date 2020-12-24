@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.6.27 - move usage tracking to bStats, defaulting to give some more information about which features are being used
+- v1.6.28 - move usage tracking to bStats, defaulting to give some more information about which features are being used
 - [read more](doc/changelog.md)
 
 ***

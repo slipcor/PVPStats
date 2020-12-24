@@ -99,7 +99,6 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent event) {
         if (event.getPlayer().isOp() && plugin.getUpdater() != null) {
             plugin.getUpdater().message(event.getPlayer());
-
         }
         DatabaseAPI.initiatePlayer(event.getPlayer());
     }
