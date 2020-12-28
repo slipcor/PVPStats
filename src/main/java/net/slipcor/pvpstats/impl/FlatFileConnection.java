@@ -8,7 +8,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -624,7 +623,7 @@ public class FlatFileConnection implements DatabaseConnection {
      * @param player the player to find and update
      */
     @Override
-    public void setStatUIDByPlayer(Player player) {
+    public void setStatUIDByPlayer(OfflinePlayer player) {
         // can not happen in this implementation
     }
 }

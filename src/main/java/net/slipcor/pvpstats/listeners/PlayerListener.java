@@ -25,10 +25,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Player Event Listener class
@@ -125,6 +122,7 @@ public class PlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerDeath(final PlayerDeathEvent event) {
         if (plugin.ignoresWorld(event.getEntity().getWorld().getName())) {
+            plugin.sendPrefixedOP(Collections.singletonList(event.getEntity()), "Your death was not counted as the world you died in is in the ignored list.");
             return;
         }
 
@@ -158,6 +156,7 @@ public class PlayerListener implements Listener {
         if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_ABUSE)) {
             Debugger.i("- checking abuse", event.getEntity());
             if (lastKill.containsKey(attacker.getName()) && lastKill.get(attacker.getName()).equals(player.getName())) {
+                plugin.sendPrefixedOP(Arrays.asList(attacker.getPlayer(), event.getEntity()), "Your death was not counted as it triggered the 'anti-abuse' system.");
                 Debugger.i("> OUT!", event.getEntity());
                 return; // no logging!
             }

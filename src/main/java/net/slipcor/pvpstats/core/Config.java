@@ -1,5 +1,6 @@
 package net.slipcor.pvpstats.core;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.lang.ObjectUtils.Null;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -145,6 +146,7 @@ public class Config {
         OTHER(Null.class, "other", null, new String[]{
                 "# === [ Integration into other Plugins ] ==="}),
         OTHER_PVPARENA(Boolean.class, "other.PVPArena", false, new String[]{"# count PVP Arena deaths"}),
+        OTHER_OP_MESSAGES(Boolean.class, "other.OPMessages", true, new String[]{"# provide helpful debug messages for new installations"}),
 
         BSTATS(Null.class, "bStats", null, new String[]{
                 "# === [ bStats Metrics Settings ] ==="}),

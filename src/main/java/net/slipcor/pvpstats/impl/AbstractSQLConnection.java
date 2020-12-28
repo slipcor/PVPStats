@@ -4,7 +4,6 @@ import net.slipcor.pvpstats.api.DatabaseConnection;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -490,7 +489,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
      * @throws SQLException
      */
     @Override
-    public void setStatUIDByPlayer(Player player) throws SQLException {
+    public void setStatUIDByPlayer(OfflinePlayer player) throws SQLException {
         executeQuery("UPDATE `" + dbTable + "` SET `uid` = '" + player.getUniqueId() + "' WHERE `uid` = '" + player.getUniqueId() + "';", true);
     }
 }

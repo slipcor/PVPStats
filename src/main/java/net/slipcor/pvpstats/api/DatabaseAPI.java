@@ -47,46 +47,46 @@ public final class DatabaseAPI {
      * @param attacker the killing player
      * @param victim   the killed player
      */
-    public static void AkilledB(Player attacker, Player victim) {
-        DEBUGGER.i("AkilledB, A is " + attacker, victim);
-        if (attacker == null && victim == null) {
+    public static void AkilledB(OfflinePlayer attacker, OfflinePlayer victim) {
+        DEBUGGER.i("AkilledB, A is " + attacker.getName(), victim.getName());
+        if (attacker.getPlayer() == null && victim.getPlayer() == null) {
             DEBUGGER.i("attacker and victim are null");
             return;
         }
 
-        if (victim == null) {
-            DEBUGGER.i("victim is null", attacker);
-            incKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
+        if (victim.getPlayer() == null) {
+            DEBUGGER.i("victim is null", attacker.getName());
+            incKill(attacker.getPlayer(), PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
 
             if (plugin.getSQLHandler().allowsAsync()) {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
                         attacker.getName(), attacker.getUniqueId().toString(),
                         "", "",
-                        attacker.getWorld().getName()));
+                        attacker.getPlayer().getWorld().getName()));
             } else {
                 Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
                         attacker.getName(), attacker.getUniqueId().toString(),
                         "", "",
-                        attacker.getWorld().getName()));
+                        attacker.getPlayer().getWorld().getName()));
             }
 
             SignDisplay.updateAll();
             return;
         }
-        if (attacker == null) {
-            DEBUGGER.i("attacker is null", victim);
-            incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
+        if (attacker.getPlayer() == null) {
+            DEBUGGER.i("attacker is null", victim.getName());
+            incDeath(victim.getPlayer(), PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
 
             if (plugin.getSQLHandler().allowsAsync()) {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
                         "", "",
                         victim.getName(), victim.getUniqueId().toString(),
-                        victim.getWorld().getName()));
+                        victim.getPlayer().getWorld().getName()));
             } else {
                 Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
                         "", "",
                         victim.getName(), victim.getUniqueId().toString(),
-                        victim.getWorld().getName()));
+                        victim.getPlayer().getWorld().getName()));
             }
 
             SignDisplay.updateAll();
@@ -96,14 +96,15 @@ public final class DatabaseAPI {
         if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_NEWBIES) &&
                 (isNewbie(attacker) || isNewbie(victim))) {
 
-            DEBUGGER.i("either one has newbie status", victim);
+            DEBUGGER.i("either one has newbie status", victim.getName());
+            plugin.sendPrefixedOP(Arrays.asList(attacker.getPlayer(), victim.getPlayer()),"Kill was not recorded as one or both players have 'newbie' status.");
             return;
         }
 
         if (!plugin.config().getBoolean(Config.Entry.ELO_ACTIVE)) {
-            DEBUGGER.i("no elo", victim);
-            incKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
-            incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
+            DEBUGGER.i("no elo", victim.getName());
+            incKill(attacker.getPlayer(), PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
+            incDeath(victim.getPlayer(), PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
 
             SignDisplay.updateAll();
             return;
@@ -124,26 +125,26 @@ public final class DatabaseAPI {
         final int newA = calcElo(oldA, oldP, kA, true, min, max);
         final int newP = calcElo(oldP, oldA, kP, false, min, max);
 
-        if (incKill(attacker, newA)) {
-            DEBUGGER.i("increasing kill", attacker);
-            plugin.sendPrefixed(attacker, Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
+        if (incKill(attacker.getPlayer(), newA)) {
+            DEBUGGER.i("increasing kill", attacker.getPlayer());
+            plugin.sendPrefixed(attacker.getPlayer(), Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
             PlayerStatisticsBuffer.setEloScore(attacker.getUniqueId(), newA);
         }
-        if (incDeath(victim, newP)) {
-            DEBUGGER.i("increasing death", victim);
-            plugin.sendPrefixed(victim, Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
+        if (incDeath(victim.getPlayer(), newP)) {
+            DEBUGGER.i("increasing death", victim.getPlayer());
+            plugin.sendPrefixed(victim.getPlayer(), Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
             PlayerStatisticsBuffer.setEloScore(victim.getUniqueId(), newP);
         }
         if (plugin.getSQLHandler().allowsAsync()) {
             Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
                     attacker.getName(), attacker.getUniqueId().toString(),
                     victim.getName(), victim.getUniqueId().toString(),
-                    attacker.getWorld().getName()));
+                    attacker.getPlayer().getWorld().getName()));
         } else {
             Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
                     attacker.getName(), attacker.getUniqueId().toString(),
                     victim.getName(), victim.getUniqueId().toString(),
-                    attacker.getWorld().getName()));
+                    attacker.getPlayer().getWorld().getName()));
         }
 
         SignDisplay.updateAll();
@@ -157,6 +158,7 @@ public final class DatabaseAPI {
     public static List<UUID> getAllUUIDs() {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
+            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
             return null;
         }
 
@@ -181,9 +183,10 @@ public final class DatabaseAPI {
      * @param player the player to find
      * @return the player's statistic
      */
-    public static PlayerStatistic getAllStats(Player player) {
+    public static PlayerStatistic getAllStats(OfflinePlayer player) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
+            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
             return null;
         }
 
@@ -201,6 +204,7 @@ public final class DatabaseAPI {
     public static List<String> getAllPlayers() {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
+            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
             return null;
         }
         if (allPlayerNames == null) {
@@ -239,6 +243,7 @@ public final class DatabaseAPI {
 
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
+            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
             return null;
         }
         int result = -1;
@@ -280,6 +285,7 @@ public final class DatabaseAPI {
     public static String[] info(final OfflinePlayer player) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
+            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
             return null;
         }
 
@@ -376,7 +382,7 @@ public final class DatabaseAPI {
      *
      * @param player the player to initiate
      */
-    public static void initiatePlayer(Player player) {
+    public static void initiatePlayer(OfflinePlayer player) {
         if (getAllUUIDs().contains(player.getUniqueId())) {
             // an entry exists!
         } else if (getAllPlayers().contains(player.getName())) {
@@ -549,11 +555,21 @@ public final class DatabaseAPI {
         return 0;
     }
 
-    private static boolean isNewbie(Player player) {
-        // backwards compatibility
-        boolean newbie = player.hasPermission("pvpstats.newbie");
+    private static boolean isNewbie(OfflinePlayer player) {
+        // get the player object, or null if they are offline
+        Player p = player.getPlayer();
 
-        if (player.hasPermission("pvpstats.null")) {
+        // if the player is offline, we assume they are not newbies (and log)
+        if (p == null) {
+            DEBUGGER.i("Player is offline, we assume they are not newbie...");
+            return false;
+        }
+
+        // otherwise continue with our permission checks:
+        // backwards compatibility
+        boolean newbie = p.hasPermission("pvpstats.newbie");
+
+        if (p.hasPermission("pvpstats.null")) {
             /*
              * If a player does have the previous permission, we can assume that the permission
              * plugin either does always reply with TRUE or has ALL PERMS set to true, which means
@@ -572,7 +588,7 @@ public final class DatabaseAPI {
             return true;
         }
 
-        return !player.hasPermission("pvpstats.nonewbie");
+        return !p.hasPermission("pvpstats.nonewbie");
     }
 
     /**
@@ -584,6 +600,7 @@ public final class DatabaseAPI {
     public static int purgeKillStats(int days) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
+            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
             return 0;
         }
 
@@ -609,6 +626,7 @@ public final class DatabaseAPI {
     public static int purgeStats(int days) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
+            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
             return 0;
         }
         int count = 0;
@@ -658,6 +676,7 @@ public final class DatabaseAPI {
     public static String[] top(final int count, String sort) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
+            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
             return null;
         }
 
@@ -756,6 +775,7 @@ public final class DatabaseAPI {
     public static String[] flop(final int count, String sort) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
+            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
             return null;
         }
 

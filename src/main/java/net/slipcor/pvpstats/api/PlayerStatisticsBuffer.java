@@ -141,7 +141,7 @@ public final class PlayerStatisticsBuffer {
         eloScore.remove(uuid);
     }
 
-    public static void getAll(Player player) {
+    public static void getAll(OfflinePlayer player) {
         UUID uuid = player.getUniqueId();
         if (deaths.containsKey(uuid) && kills.containsKey(uuid)) {
             return; // we already did it

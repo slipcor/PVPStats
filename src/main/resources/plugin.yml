@@ -49,3 +49,6 @@ permissions:
   pvpstats.null:
     description: Permission that you should not give to anyone.
     default: false
+  pvpstats.opmessages:
+    description: Permission to notify when the plugin errors
+    default: op

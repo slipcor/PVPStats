@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.6.30 - Update debugkill, migrate DatabaseAPI to use OfflinePlayer instead of Player
 - v1.6.29 - add "configset" command to set a config setting
 - v1.6.28 - move usage tracking to bStats, defaulting to give some more information about which features are being used
 - v1.6.27 - fix /pvpstats top (showing K/D)
