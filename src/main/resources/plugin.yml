@@ -16,6 +16,9 @@ permissions:
   pvpstats.cleanup:
     description: Ability to cleanup
     default: op
+  pvpstats.configset:
+    description: Ability to set a config value
+    default: op
   pvpstats.migrate:
     description: Ability to migrate
     default: op

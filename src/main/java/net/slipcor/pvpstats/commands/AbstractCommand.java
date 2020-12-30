@@ -18,7 +18,7 @@ public abstract class AbstractCommand {
     }
 
     protected void addIfMatches(List<String> list, String word, String check) {
-        if (check.equals("") || word.startsWith(check)) {
+        if (check.equals("") || word.toLowerCase().startsWith(check.toLowerCase())) {
             list.add(word);
         }
     }

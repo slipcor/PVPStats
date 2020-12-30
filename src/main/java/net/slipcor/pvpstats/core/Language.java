@@ -25,6 +25,11 @@ public enum Language {
     ERROR_NOT_A_PLAYER("error.not_a_player", "&cYou are not a player. Please execute as player!"),
     ERROR_NULL_KILLS("error.null_kills", "&cBoth players are null!"),
 
+    ERROR_CONFIGSET_GROUP("error.configset_group", "Cannot set value to group node: &e%0%&r!"),
+    ERROR_CONFIGSET_LIST("error.configset_list", "Cannot set value to list node: &e%0%&r!"),
+    ERROR_CONFIGSET_TYPE_UNKNOWN("error.configset_typeunknown", "Unknown node type: &e%0%&r!"),
+    ERROR_CONFIGSET_UNKNOWN("error.configset_unknown", "Unknown node: &e%0%&r!"),
+
     INFO_FORMAT("info.format", "&c%0%: &7%1%"),
     INFO_NAME("info.name", "Name"),
     INFO_KILLS("info.kills", "Kills"),
@@ -41,6 +46,7 @@ public enum Language {
     LOG_UPDATE_ENABLED("log.updateenabled", "Checking for updates..."),
 
     MSG_CLEANED("msg.cleaned", "Statistics successfully cleaned up! %0% entries removed!"),
+    MSG_CONFIGSET("msg.configset", "&a%0%&r set to &e%1%&r!"),
     MSG_DISPLAY_CREATED("msg.display_created", "PVP Leaderboard created at %0%!"),
     MSG_DISPLAY_COLUMN("msg.display_column", "Leaderboard is now sorted by %0%!"),
     MSG_DISPLAY_SORTEDBY("msg.display_sortedby", "sorted by"),
@@ -51,6 +57,7 @@ public enum Language {
     MSG_ELO_ADDED("msg.elo.added", "You got %0% ELO points! Your score is now: %1%"),
     MSG_ELO_SUBBED("msg.elo.subbed", "You lost %0% ELO points! Your score is now: %1%"),
     MSG_NOPERMRELOAD("msg.nopermreload", "No permission to reload!"),
+    MSG_NOPERMCONFIGSET("msg.nopermconfigset", "No permission to set config setting!"),
     MSG_NOPERMDEBUG("msg.nopermdebug", "No permission to debug!"),
     MSG_NOPERMMIGRATE("msg.nopermmigrate", "No permission to migrate!"),
     MSG_NOPERMPURGE("msg.nopermpurge", "No permission to purge!"),

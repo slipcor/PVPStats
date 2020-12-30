@@ -178,13 +178,20 @@ public class Config {
          * @param node the node to search for
          * @return the entry or null if not found
          */
-        private static Entry getByNode(final String node) {
+        public static Entry getByNode(final String node) {
             for (Entry c : values()) {
                 if (c.getNode().equals(node)) {
                     return c;
                 }
             }
             return null;
+        }
+
+        /**
+         * @return the Class type
+         */
+        public Class getType() {
+            return type;
         }
 
         /**
@@ -408,6 +415,15 @@ public class Config {
         }
     }
 
+    public void save() {
+        try {
+            plugin.getConfig().save(new File(plugin.getDataFolder(), "config.yml"));
+            appendComments();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Workaround to the config not updating defaults.
      */
@@ -418,5 +434,14 @@ public class Config {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Set a value in our config - does not write to the config file!
+     * @param entry the entry to update
+     * @param value the value to set
+     */
+    public void setValue(Entry entry, Object value) {
+        plugin.getConfig().set(entry.node, value);
     }
 }
