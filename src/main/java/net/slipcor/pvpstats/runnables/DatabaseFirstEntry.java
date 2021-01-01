@@ -2,11 +2,12 @@ package net.slipcor.pvpstats.runnables;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.core.Config;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public class DatabaseFirstEntry implements Runnable {
-    private final Player player;
-    public DatabaseFirstEntry(Player player) {
+    private final OfflinePlayer player;
+    public DatabaseFirstEntry(OfflinePlayer player) {
         this.player = player;
     }
     @Override

@@ -467,6 +467,36 @@ public class PVPStats extends JavaPlugin {
         }
     }
 
+    public void sendPrefixedOP(List<CommandSender> senders, final String message) {
+        // if the admin has a config node set to false, noop
+        if (!config().getBoolean(Config.Entry.OTHER_OP_MESSAGES)) {
+            debugger.i("Would opmsg but config is false");
+            return;
+        }
+
+        // if we list no senders then send to all users with permission (who are online)
+        if (senders.size() == 0) {
+            senders.addAll(Bukkit.getServer().getOnlinePlayers());
+        } else {
+            // deduplicate
+            senders = new ArrayList<>(new HashSet<>(senders));
+        }
+
+        for (CommandSender sender : senders) {
+            // if the user does not have permission for debug messages, noop
+            if (!sender.hasPermission("pvpstats.opmessages")) {
+                debugger.i("Would opmsg but permission is false");
+                return;
+            }
+
+            // otherwise send the message
+            if (!"".equals(message)) {
+                sender.sendMessage(Language.MSG_PREFIX + message);
+                sender.sendMessage(ChatColor.GRAY + "You can disable these messages by setting " + Config.Entry.OTHER_OP_MESSAGES.getNode() + " to false or running command /pvpstats configset " + Config.Entry.OTHER_OP_MESSAGES.getNode() + " false");
+            }
+        }
+    }
+
     /**
      * Set our PVP Arena handler when the plugin has been enabled
      *

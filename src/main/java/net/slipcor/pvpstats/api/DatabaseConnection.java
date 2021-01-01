@@ -2,7 +2,6 @@ package net.slipcor.pvpstats.api;
 
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -259,5 +258,5 @@ public interface DatabaseConnection {
      * @param player the player to find and update
      * @throws SQLException
      */
-    void setStatUIDByPlayer(Player player) throws SQLException;
+    void setStatUIDByPlayer(OfflinePlayer player) throws SQLException;
 }

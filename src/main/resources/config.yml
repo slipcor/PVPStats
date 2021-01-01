@@ -67,6 +67,7 @@ statistics:
 other:
   # count PVP Arena deaths
   PVPArena: false
+  OPMessages: true
 # world names where not to count statistics
 ignoreworlds:
   - doNotTrack

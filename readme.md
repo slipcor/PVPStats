@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.6.29 - add "configset" command to set a config setting
+- v1.6.30 - Update debugkill, migrate DatabaseAPI to use OfflinePlayer instead of Player
 - [read more](doc/changelog.md)
 
 ***
