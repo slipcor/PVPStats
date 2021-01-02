@@ -122,7 +122,9 @@ public class PlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerDeath(final PlayerDeathEvent event) {
         if (plugin.ignoresWorld(event.getEntity().getWorld().getName())) {
-            plugin.sendPrefixedOP(Collections.singletonList(event.getEntity()), "Your death was not counted as the world you died in is in the ignored list.");
+            plugin.sendPrefixedOP(Collections.singletonList(event.getEntity()),
+                    "Your death was not counted as the world you died in is in the ignored list. " +
+                            "Edit the config node " + Config.Entry.IGNORE_WORLDS + " to adjust this.");
             return;
         }
 
@@ -156,7 +158,11 @@ public class PlayerListener implements Listener {
         if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_ABUSE)) {
             Debugger.i("- checking abuse", event.getEntity());
             if (lastKill.containsKey(attacker.getName()) && lastKill.get(attacker.getName()).equals(player.getName())) {
-                plugin.sendPrefixedOP(Arrays.asList(attacker.getPlayer(), event.getEntity()), "Your death was not counted as it triggered the 'anti-abuse' system.");
+                plugin.sendPrefixedOP(Arrays.asList(attacker.getPlayer(), event.getEntity()),
+                        "Your death was not counted as it triggered the 'anti-abuse' system. You can configure " +
+                                "the anti-abuse system with config nodes " +
+                                Config.Entry.STATISTICS_CHECK_ABUSE.getNode() + " & " +
+                                Config.Entry.STATISTICS_ABUSE_SECONDS.getNode());
                 Debugger.i("> OUT!", event.getEntity());
                 return; // no logging!
             }
