@@ -97,7 +97,9 @@ public final class DatabaseAPI {
                 (isNewbie(attacker) || isNewbie(victim))) {
 
             DEBUGGER.i("either one has newbie status", victim.getName());
-            plugin.sendPrefixedOP(Arrays.asList(attacker.getPlayer(), victim.getPlayer()),"Kill was not recorded as one or both players have 'newbie' status.");
+            plugin.sendPrefixedOP(Arrays.asList(attacker.getPlayer(), victim.getPlayer()),
+                    "Kill was not recorded as one or both players have 'newbie' status. Add permission node " +
+                            "'pvpstats.nonewbie' to both players to fix this.");
             return;
         }
 
