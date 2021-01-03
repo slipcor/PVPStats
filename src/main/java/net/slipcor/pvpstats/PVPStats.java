@@ -168,7 +168,7 @@ public class PVPStats extends JavaPlugin {
      * Instantiate command
      */
     private void loadCommands() {
-        new CommandConfigSet().load(commandList, commandMap);
+        new CommandConfig().load(commandList, commandMap);
         new CommandDebug().load(commandList, commandMap);
         new CommandDebugKill().load(commandList, commandMap);
         new CommandMigrate().load(commandList, commandMap);

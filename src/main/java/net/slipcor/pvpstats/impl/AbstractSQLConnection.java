@@ -314,7 +314,9 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
                     result.getInt("time"),
                     UUID.fromString(result.getString("uid")));
         }
-        return null;
+        return new PlayerStatistic(
+                offlinePlayer.getName(), 0, 0, 0, 0, 0, 0,
+                offlinePlayer.getUniqueId());
     }
 
     /**
