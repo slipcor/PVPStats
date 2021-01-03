@@ -189,7 +189,7 @@ public final class DatabaseAPI {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
             plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
-            return null;
+            return new PlayerStatistic(player.getName(), 0, 0, 0, 0, 0, 0, player.getUniqueId());
         }
 
         try {
