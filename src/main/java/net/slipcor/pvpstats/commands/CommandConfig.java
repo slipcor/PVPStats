@@ -128,6 +128,10 @@ public class CommandConfig extends AbstractCommand {
             PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_CONFIG_UNKNOWN.toString(node));
             return;
         }
+        if (entry.secret) {
+            PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_CONFIG_SECRET.toString(node));
+            return;
+        }
         final Class type = entry.getType();
 
         Config config = PVPStats.getInstance().config();

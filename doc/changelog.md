@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.6.32 - Make some entries write-only for safety reasons (only mysql connection data for now)
 - v1.6.31 - Rework config command, adjust op messages to provide more information, fix NPE for empty player entry
 - v1.6.30 - Update debugkill, migrate DatabaseAPI to use OfflinePlayer instead of Player
 - v1.6.29 - add "configset" command to set a config setting

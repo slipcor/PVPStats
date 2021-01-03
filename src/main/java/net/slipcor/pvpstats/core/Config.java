@@ -160,12 +160,19 @@ public class Config {
         DISPLAYS(List.class, "leaderboards", new ArrayList<String>(), new String[]{"# locations of leaderboards"});
 
 
-
+        static {
+            MYSQL_USERNAME.secret = true;
+            MYSQL_PASSWORD.secret = true;
+            MYSQL_PORT.secret = true;
+            MYSQL_DATABASE.secret = true;
+            MYSQL_HOST.secret = true;
+        }
 
         final Class type;
         final String node;
         final Object value;
         final String[] comments;
+        public boolean secret;
 
         Entry(final Class oClass, final String node, final Object def, final String[] comments) {
             type = oClass;

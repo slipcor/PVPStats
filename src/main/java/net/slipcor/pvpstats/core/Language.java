@@ -33,6 +33,7 @@ public enum Language {
     ERROR_CONFIG_SET_LIST("error.configset_list", "Cannot set value to list node: &e%0%&r! Use add / remove!"),
     ERROR_CONFIG_TYPE_UNKNOWN("error.configset_typeunknown", "Unknown node type: &e%0%&r!"),
     ERROR_CONFIG_UNKNOWN("error.config_unknown", "Unknown node: &e%0%&r!"),
+    ERROR_CONFIG_SECRET("error.config_secret", "Cannot show node: &e%0%&r!"),
 
     INFO_FORMAT("info.format", "&c%0%: &7%1%"),
     INFO_NAME("info.name", "Name"),

@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.6.31 - Rework config command, adjust op messages to provide more information, fix NPE for empty player entry
+- v1.6.32 - Make some entries write-only for safety reasons (only mysql connection data for now)
 - [read more](doc/changelog.md)
 
 ***
