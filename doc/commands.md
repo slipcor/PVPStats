@@ -40,3 +40,15 @@ Command | Shorthand | Definition
 [/pvpstats wipe](commands/wipe.md) {player} | /stats !w {player} | wipe a player's or all statistics
 
 ***
+
+## Config management commands
+_use with caution_
+
+Command | Shorthand | Definition
+------------- | ------------- | -------------
+[/pvpstats config](commands/config.md) get [node] | /stats !c get ignoreworlds | get the value of a config node
+[/pvpstats config](commands/config.md) set [node] [value] | /stats !c set OPMessages false | set the value of a config node
+[/pvpstats config](commands/config.md) add [node] [value] | /stats !c add ignoreworlds Spawn | add an entry to a config list
+[/pvpstats config](commands/config.md) remove [node] [value] | /stats !c remove ignoreworlds pvparena | remove an entry from a config list
+
+***
