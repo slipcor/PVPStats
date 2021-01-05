@@ -11,11 +11,14 @@ import net.slipcor.pvpstats.impl.FlatFileConnection;
 import net.slipcor.pvpstats.impl.MySQLConnection;
 import net.slipcor.pvpstats.impl.SQLiteConnection;
 import net.slipcor.pvpstats.runnables.*;
+import net.slipcor.pvpstats.text.TextComponent;
+import net.slipcor.pvpstats.text.TextFormatter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -39,6 +42,11 @@ public final class DatabaseAPI {
 
     private static final Debugger DEBUGGER = new Debugger(4);
 
+    private static final Map<String, String> lastKill = new HashMap<>();
+    private static final Map<String, BukkitTask> killTask = new HashMap<>();
+
+    private static final TextComponent DATABASE_CONNECTED = new TextComponent("Warning: Database is not connected! Kills will not be recorded.");
+
     /**
      * Player A killed player B - use this to generally emulate a player kill.
      * <p>
@@ -52,6 +60,37 @@ public final class DatabaseAPI {
         if (attacker.getPlayer() == null && victim.getPlayer() == null) {
             DEBUGGER.i("attacker and victim are null");
             return;
+        }
+
+        if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_ABUSE)) {
+            DEBUGGER.i("- checking abuse");
+            if (lastKill.containsKey(attacker.getName()) && lastKill.get(attacker.getName()).equals(victim.getName())) {
+                TextFormatter.explainAbusePrevention(attacker, victim);
+                DEBUGGER.i("> OUT: " + victim.getName());
+                return; // no logging!
+            }
+
+            lastKill.put(attacker.getName(), victim.getName());
+            int abusesec = plugin.config().getInt(Config.Entry.STATISTICS_ABUSE_SECONDS);
+            if (abusesec > 0) {
+                final String finalAttacker = attacker.getPlayer().getName();
+                class RemoveLater implements Runnable {
+
+                    @Override
+                    public void run() {
+                        lastKill.remove(finalAttacker);
+                        killTask.remove(finalAttacker);
+                    }
+
+                }
+                BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, new RemoveLater(), abusesec * 20L);
+
+                if (killTask.containsKey(attacker.getName())) {
+                    killTask.get(attacker.getName()).cancel();
+                }
+
+                killTask.put(attacker.getName(), task);
+            }
         }
 
         if (victim.getPlayer() == null) {
@@ -97,11 +136,11 @@ public final class DatabaseAPI {
                 (isNewbie(attacker) || isNewbie(victim))) {
 
             DEBUGGER.i("either one has newbie status", victim.getName());
-            plugin.sendPrefixedOP(Arrays.asList(attacker.getPlayer(), victim.getPlayer()),
-                    "Kill was not recorded as one or both players have 'newbie' status. Add permission node " +
-                            "'pvpstats.nonewbie' to both players to fix this.");
+            TextFormatter.explainNewbieStatus(attacker, victim);
             return;
         }
+        // here we go, PVP!
+        DEBUGGER.i("Counting kill by " + attacker.getName(), victim.getPlayer());
 
         if (!plugin.config().getBoolean(Config.Entry.ELO_ACTIVE)) {
             DEBUGGER.i("no elo", victim.getName());
@@ -160,7 +199,7 @@ public final class DatabaseAPI {
     public static List<UUID> getAllUUIDs() {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
-            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
+            plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
             return null;
         }
 
@@ -188,7 +227,7 @@ public final class DatabaseAPI {
     public static PlayerStatistic getAllStats(OfflinePlayer player) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
-            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
+            plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
             return new PlayerStatistic(player.getName(), 0, 0, 0, 0, 0, 0, player.getUniqueId());
         }
 
@@ -206,7 +245,7 @@ public final class DatabaseAPI {
     public static List<String> getAllPlayers() {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
-            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
+            plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
             return null;
         }
         if (allPlayerNames == null) {
@@ -245,7 +284,7 @@ public final class DatabaseAPI {
 
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
-            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
+            plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
             return null;
         }
         int result = -1;
@@ -287,7 +326,7 @@ public final class DatabaseAPI {
     public static String[] info(final OfflinePlayer player) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
-            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
+            plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
             return null;
         }
 
@@ -572,6 +611,7 @@ public final class DatabaseAPI {
         boolean newbie = p.hasPermission("pvpstats.newbie");
 
         if (p.hasPermission("pvpstats.null")) {
+            DEBUGGER.i("Player has ALL permissions, we assume they are not newbie...");
             /*
              * If a player does have the previous permission, we can assume that the permission
              * plugin either does always reply with TRUE or has ALL PERMS set to true, which means
@@ -585,6 +625,7 @@ public final class DatabaseAPI {
 
 
         if (newbie) {
+            DEBUGGER.i("Player has 'newbie'...");
             // backwards compatibility until we have a warning system in place to ask admins to change to
             // proper permission logic
             return true;
@@ -602,7 +643,7 @@ public final class DatabaseAPI {
     public static int purgeKillStats(int days) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
-            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
+            plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
             return 0;
         }
 
@@ -628,7 +669,7 @@ public final class DatabaseAPI {
     public static int purgeStats(int days) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
-            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
+            plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
             return 0;
         }
         int count = 0;
@@ -678,7 +719,7 @@ public final class DatabaseAPI {
     public static String[] top(final int count, String sort) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
-            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
+            plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
             return null;
         }
 
@@ -777,7 +818,7 @@ public final class DatabaseAPI {
     public static String[] flop(final int count, String sort) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
-            plugin.sendPrefixedOP(new ArrayList<>(), "Warning: Database is not connected! Kills will not be recorded.");
+            plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
             return null;
         }
 

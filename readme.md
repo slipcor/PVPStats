@@ -74,3 +74,12 @@ If you want to disable the tracker, set "bStats.enabled" to false in the __confi
 
 
 ***
+
+## Todos
+
+- Only autocorrect config nodes [when setting or getting] when there is exactly one match.
+  If there is more than one, offer these for proper usage. (Clickable text?)
+- Move language nodes into proper block logic
+- Make as many messages as possible clickable
+
+***
