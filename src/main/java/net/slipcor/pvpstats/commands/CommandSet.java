@@ -9,7 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -86,10 +85,9 @@ public class CommandSet extends AbstractCommand {
         }
 
         if (args.length < 3) {
-
             // first argument!
             for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                results.add(p.getName());
+                addIfMatches(results, p.getName(), args[1].toLowerCase());
             }
         } else {
 

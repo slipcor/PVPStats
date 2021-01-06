@@ -60,7 +60,7 @@ public class CommandWipe extends AbstractCommand {
 
         // we started typing!
         for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-            addIfMatches(results, p.getName(), p.getName());
+            addIfMatches(results, p.getName(), args[1]);
         }
         return results;
     }

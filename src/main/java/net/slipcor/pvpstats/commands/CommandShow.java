@@ -1,7 +1,6 @@
 package net.slipcor.pvpstats.commands;
 
 import net.slipcor.pvpstats.PVPStats;
-import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.runnables.SendPlayerStats;
 import org.bukkit.Bukkit;
@@ -79,7 +78,7 @@ public class CommandShow extends AbstractCommand {
         // we started typing!
         for (Player p : Bukkit.getServer().getOnlinePlayers()) {
             if (!isVanished(p)) {
-                addIfMatches(results, p.getName(), p.getName());
+                addIfMatches(results, p.getName(), args[1]);
             }
         }
         return results;

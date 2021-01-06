@@ -139,15 +139,14 @@ public class Debugger {
 
         loggers.clear();
 
-        if ("off".equals(debugs)) {
+        if ("off".equalsIgnoreCase(debugs) || "none".equalsIgnoreCase(debugs) || "false".equalsIgnoreCase(debugs)) {
             if (isPlayer) {
                 sender.sendMessage("debugging: off");
             } else {
                 PVPStats.getInstance().getLogger().info("debugging: off");
             }
-
         } else {
-            if ("on".equalsIgnoreCase(debugs) || "full".equalsIgnoreCase(debugs)) {
+            if ("on".equalsIgnoreCase(debugs) || "full".equalsIgnoreCase(debugs) || "true".equalsIgnoreCase(debugs)) {
                 Debugger.check.add(666);
                 override = true;
                 if (isPlayer) {
@@ -183,6 +182,7 @@ public class Debugger {
             final Handler[] handlers = log.getHandlers().clone();
             for (final Handler hand : handlers) {
                 log.removeHandler(hand);
+                hand.close();
             }
         }
         Debugger.loggers.clear();

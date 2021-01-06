@@ -2,12 +2,9 @@ package net.slipcor.pvpstats.commands;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
-import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
 import net.slipcor.pvpstats.classes.Debugger;
-import net.slipcor.pvpstats.core.Config;
+import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.core.Language;
-import net.slipcor.pvpstats.display.SignDisplay;
-import net.slipcor.pvpstats.runnables.DatabaseKillAddition;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -66,7 +63,7 @@ public class CommandDebugKill extends AbstractCommand {
 
         // we started typing!
         for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-            addIfMatches(results, p.getName(), p.getName());
+            addIfMatches(results, p.getName(), args[1]);
         }
         return results;
     }
