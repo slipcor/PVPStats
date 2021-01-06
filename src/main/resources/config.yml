@@ -65,6 +65,8 @@ statistics:
   assistSeconds: 60
 # === [ Integration into other Plugins ] ===
 other:
+  # use players' display names
+  displayNames: false
   # count PVP Arena deaths
   PVPArena: false
   OPMessages: true

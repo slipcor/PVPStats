@@ -73,14 +73,35 @@ public class CommandConfig extends AbstractCommand {
         PVPStats.getInstance().sendPrefixed(sender, getShortInfo());
     }
 
-    private void add(final CommandSender sender, final String node, final String value) {
+    private Config.Entry getFullNode(String part) {
+
+        boolean foundEntry = false;
+        Config.Entry completedEntry = null;
 
         for (Config.Entry entry : Config.Entry.values()) {
-            if (entry.getNode().toLowerCase().endsWith('.' + node.toLowerCase())) {
-                // get the actual full proper node
-                add(sender, entry.getNode(), value);
-                return;
+            if (entry.getNode().toLowerCase().contains(part.toLowerCase()) && entry.getNode().length() != part.length()) {
+                if (foundEntry) {
+                    // found a second match, let us not autocomplete this!
+                    foundEntry = false;
+                    completedEntry = null;
+                    break;
+                }
+                foundEntry = true;
+                completedEntry = entry;
             }
+        }
+
+        return completedEntry;
+    }
+
+    private void add(final CommandSender sender, final String node, final String value) {
+
+        Config.Entry completedEntry = getFullNode(node);
+
+        if (completedEntry != null) {
+            // get the actual full proper node
+            add(sender, completedEntry.getNode(), value);
+            return;
         }
 
         final Config.Entry entry = Config.Entry.getByNode(node);
@@ -114,12 +135,12 @@ public class CommandConfig extends AbstractCommand {
 
     private void get(final CommandSender sender, final String node) {
 
-        for (Config.Entry entry : Config.Entry.values()) {
-            if (entry.getNode().toLowerCase().endsWith('.' + node.toLowerCase())) {
-                // get the actual full proper node
-                get(sender, entry.getNode());
-                return;
-            }
+        Config.Entry completedEntry = getFullNode(node);
+
+        if (completedEntry != null) {
+            // get the actual full proper node
+            get(sender, completedEntry.getNode());
+            return;
         }
 
         final Config.Entry entry = Config.Entry.getByNode(node);
@@ -163,12 +184,12 @@ public class CommandConfig extends AbstractCommand {
 
     private void remove(final CommandSender sender, final String node, final String value) {
 
-        for (Config.Entry entry : Config.Entry.values()) {
-            if (entry.getNode().toLowerCase().endsWith('.' + node.toLowerCase())) {
-                // get the actual full proper node
-                remove(sender, entry.getNode(), value);
-                return;
-            }
+        Config.Entry completedEntry = getFullNode(node);
+
+        if (completedEntry != null) {
+            // get the actual full proper node
+            remove(sender, completedEntry.getNode(), value);
+            return;
         }
 
         final Config.Entry entry = Config.Entry.getByNode(node);
@@ -202,12 +223,12 @@ public class CommandConfig extends AbstractCommand {
 
     private void set(final CommandSender sender, final String node, final String value) {
 
-        for (Config.Entry entry : Config.Entry.values()) {
-            if (entry.getNode().toLowerCase().endsWith('.' + node.toLowerCase())) {
-                // get the actual full proper node
-                set(sender, entry.getNode(), value);
-                return;
-            }
+        Config.Entry completedEntry = getFullNode(node);
+
+        if (completedEntry != null) {
+            // get the actual full proper node
+            set(sender, completedEntry.getNode(), value);
+            return;
         }
 
         final Config.Entry entry = Config.Entry.getByNode(node);

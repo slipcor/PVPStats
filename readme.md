@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.6.32 - Make some entries write-only for safety reasons (only mysql connection data for now)
+- v1.7.33 - Revamp messaging system and provide means to colorize messages, adding hover and command support, more info in changelog!
 - [read more](doc/changelog.md)
 
 ***
@@ -72,5 +72,11 @@ If you want to disable the tracker, set "bStats.enabled" to false in the __confi
 
 - pandapipino for the idea
 
+
+***
+
+## Todos
+
+- Move language nodes into proper block logic
 
 ***

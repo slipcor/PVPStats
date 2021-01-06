@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Based on MySQLConnection by Jesika(Kaitlyn) Tremaine aka JesiKat

@@ -2,6 +2,7 @@ package net.slipcor.pvpstats.impl;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseConnection;
+import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -397,7 +398,8 @@ public class FlatFileConnection implements DatabaseConnection {
         ConfigurationSection player = statConfig.getConfigurationSection(offlinePlayer.getUniqueId().toString());
 
         if (player == null) {
-            return new PlayerStatistic(offlinePlayer.getName(), 0, 0, 0, 0, 0, 0, offlinePlayer.getUniqueId());
+            return new PlayerStatistic(PlayerNameHandler.getPlayerName(offlinePlayer),
+                    0, 0, 0, 0, 0, 0, offlinePlayer.getUniqueId());
         }
 
         return new PlayerStatistic(player.getString("name", ""),

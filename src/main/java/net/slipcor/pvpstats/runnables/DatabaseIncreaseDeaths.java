@@ -2,8 +2,6 @@ package net.slipcor.pvpstats.runnables;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.classes.Debugger;
-import net.slipcor.pvpstats.core.Config;
-import org.bukkit.entity.Player;
 
 import java.util.UUID;
 

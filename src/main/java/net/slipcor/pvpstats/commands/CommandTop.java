@@ -1,7 +1,6 @@
 package net.slipcor.pvpstats.commands;
 
 import net.slipcor.pvpstats.PVPStats;
-import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.core.Language;
 import net.slipcor.pvpstats.runnables.SendPlayerTop;
 import org.bukkit.Bukkit;

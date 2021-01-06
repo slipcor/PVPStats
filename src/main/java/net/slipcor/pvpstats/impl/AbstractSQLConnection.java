@@ -1,6 +1,7 @@
 package net.slipcor.pvpstats.impl;
 
 import net.slipcor.pvpstats.api.DatabaseConnection;
+import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -9,7 +10,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * A partial implementation of methods that are handled the same by all SQL implementations
@@ -315,7 +318,8 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
                     UUID.fromString(result.getString("uid")));
         }
         return new PlayerStatistic(
-                offlinePlayer.getName(), 0, 0, 0, 0, 0, 0,
+                PlayerNameHandler.getPlayerName(offlinePlayer),
+                0, 0, 0, 0, 0, 0,
                 offlinePlayer.getUniqueId());
     }
 

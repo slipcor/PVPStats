@@ -16,6 +16,8 @@ import net.slipcor.pvpstats.listeners.PlayerListener;
 import net.slipcor.pvpstats.listeners.PluginListener;
 import net.slipcor.pvpstats.metrics.MetricsLite;
 import net.slipcor.pvpstats.metrics.MetricsMain;
+import net.slipcor.pvpstats.text.TextComponent;
+import net.slipcor.pvpstats.text.TextFormatter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -133,7 +135,8 @@ public class PVPStats extends JavaPlugin {
                 }
                 String message = announcements.getString(key, "");
                 if (!message.isEmpty()) {
-                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message).replace("%player%", player.getName()));
+                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message)
+                            .replace("%player%", PlayerNameHandler.getPlayerName(player)));
                 }
             }
             if (config().getBoolean(Config.Entry.STATISTICS_STREAK_COMMANDS)) {
@@ -143,7 +146,8 @@ public class PVPStats extends JavaPlugin {
                 }
                 String command = commands.getString(key, "");
                 if (!command.isEmpty()) {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName()));
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+                            command.replace("%player%", PlayerNameHandler.getPlayerName(player)));
                 }
             }
         } catch (IOException | InvalidConfigurationException exception) {
@@ -467,7 +471,7 @@ public class PVPStats extends JavaPlugin {
         }
     }
 
-    public void sendPrefixedOP(List<CommandSender> senders, final String message) {
+    public void sendPrefixedOP(List<CommandSender> senders, final TextComponent... message) {
         // if the admin has a config node set to false, noop
         if (!config().getBoolean(Config.Entry.OTHER_OP_MESSAGES)) {
             debugger.i("Would opmsg but config is false");
@@ -480,6 +484,7 @@ public class PVPStats extends JavaPlugin {
         } else {
             // deduplicate
             senders = new ArrayList<>(new HashSet<>(senders));
+            senders.remove(null);
         }
 
         for (CommandSender sender : senders) {
@@ -490,9 +495,9 @@ public class PVPStats extends JavaPlugin {
             }
 
             // otherwise send the message
-            if (!"".equals(message)) {
-                sender.sendMessage(Language.MSG_PREFIX + message);
-                sender.sendMessage(ChatColor.GRAY + "You can disable these messages by setting " + Config.Entry.OTHER_OP_MESSAGES.getNode() + " to false or running command /pvpstats configset " + Config.Entry.OTHER_OP_MESSAGES.getNode() + " false");
+            if (TextFormatter.hasContent(message)) {
+                TextFormatter.send(sender, TextFormatter.addPrefix(message));
+                TextFormatter.explainDisableOPMessages(sender);
             }
         }
     }

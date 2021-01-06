@@ -4,13 +4,13 @@
 
     <groupId>net.slipcor</groupId>
     <artifactId>pvpstats</artifactId>
-    <version>1.6</version>
+    <version>1.7</version>
     <name>PVP Stats</name>
 
     <repositories>
         <repository>
             <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
             <id>slipcor-repo</id>
@@ -24,11 +24,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.14-R0.1-SNAPSHOT</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
             <type>jar</type>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.slipcor</groupId>
@@ -40,7 +39,7 @@
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
             <version>2.10.2</version>
-            <scope>provided</scope>
+            <type>jar</type>
         </dependency>
     </dependencies>
 
