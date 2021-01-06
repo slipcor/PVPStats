@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.7.33 - Revamp messaging system and provide means to colorize messages, adding hover and command support, more info in changelog!
+- v1.7.34 - Create SQL tables properly with new victim logic
 - [read more](doc/changelog.md)
 
 ***

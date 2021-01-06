@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.7.34 - Create SQL tables properly with new victim logic
 - v1.7.33 - various updates as follows
   - **FIX**: debugger not closing debug files properly
   - **FIX**: NPEs related to no-pvp-deaths and more

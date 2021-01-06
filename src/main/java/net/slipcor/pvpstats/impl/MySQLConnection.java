@@ -82,7 +82,7 @@ public class MySQLConnection extends AbstractSQLConnection {
                 "`id` int(16) NOT NULL AUTO_INCREMENT, " +
                 "`name` varchar(42) NOT NULL, " +
                 "`uid` varchar(42), " +
-                "`victimname` varchar(42), " +
+                "`victim` varchar(42), " +
                 "`victimuid` varchar(42), " +
                 "`kill` int(1) not null default 0, " +
                 "`time` int(16) not null default 0, " +
