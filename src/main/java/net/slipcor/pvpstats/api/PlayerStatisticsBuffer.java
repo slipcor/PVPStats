@@ -56,7 +56,17 @@ public final class PlayerStatisticsBuffer {
      */
     public static boolean addStreak(UUID uuid) {
         final int streak = streaks.get(uuid) + 1;
-        PVPStats.getInstance().handleStreak(uuid, streak);
+
+        Bukkit.getScheduler().runTaskLaterAsynchronously(
+                PVPStats.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        // issue streak commands AFTER the death message has gone through
+                        PVPStats.getInstance().handleStreak(uuid, streak);
+                    }
+                }, 1L
+        );
+
         streaks.put(uuid, streak);
         if (hasMaxStreak(uuid)) {
             if (PlayerStatisticsBuffer.maxStreaks.get(uuid) < streak) {

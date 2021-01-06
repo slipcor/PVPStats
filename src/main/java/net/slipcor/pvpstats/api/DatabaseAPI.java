@@ -57,13 +57,13 @@ public final class DatabaseAPI {
      * @param victim   the killed player
      */
     public static void AkilledB(OfflinePlayer attacker, OfflinePlayer victim) {
-        DEBUGGER.i("AkilledB, A is " + attacker.getName(), victim.getName());
-        if (attacker.getPlayer() == null && victim.getPlayer() == null) {
+        if ((attacker == null || attacker.getPlayer() == null) &&
+                (victim == null || victim.getPlayer() == null)) {
             DEBUGGER.i("attacker and victim are null");
             return;
         }
 
-        if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_ABUSE)) {
+        if (attacker != null && victim != null && plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_ABUSE)) {
             DEBUGGER.i("- checking abuse");
             if (lastKill.containsKey(attacker.getName()) && lastKill.get(attacker.getName()).equals(victim.getName())) {
                 TextFormatter.explainAbusePrevention(attacker, victim);
@@ -94,7 +94,7 @@ public final class DatabaseAPI {
             }
         }
 
-        if (victim.getPlayer() == null) {
+        if (victim == null || victim.getPlayer() == null) {
             DEBUGGER.i("victim is null", attacker.getName());
             incKill(attacker.getPlayer(), PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
 
@@ -113,7 +113,8 @@ public final class DatabaseAPI {
             SignDisplay.updateAll();
             return;
         }
-        if (attacker.getPlayer() == null) {
+
+        if (attacker == null || attacker.getPlayer() == null) {
             DEBUGGER.i("attacker is null", victim.getName());
             incDeath(victim.getPlayer(), PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
 
@@ -169,12 +170,32 @@ public final class DatabaseAPI {
 
         if (incKill(attacker.getPlayer(), newA)) {
             DEBUGGER.i("increasing kill", attacker.getPlayer());
-            plugin.sendPrefixed(attacker.getPlayer(), Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
+
+            Bukkit.getScheduler().runTaskLaterAsynchronously(
+                    PVPStats.getInstance(), new Runnable() {
+                        @Override
+                        public void run() {
+                            plugin.sendPrefixed(attacker.getPlayer(),
+                                    Language.MSG_ELO_ADDED.toString(String.valueOf(newA - oldA), String.valueOf(newA)));
+                        }
+                    }, 1L
+            );
+
             PlayerStatisticsBuffer.setEloScore(attacker.getUniqueId(), newA);
         }
         if (incDeath(victim.getPlayer(), newP)) {
             DEBUGGER.i("increasing death", victim.getPlayer());
-            plugin.sendPrefixed(victim.getPlayer(), Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
+
+            Bukkit.getScheduler().runTaskLaterAsynchronously(
+                    PVPStats.getInstance(), new Runnable() {
+                        @Override
+                        public void run() {
+                            plugin.sendPrefixed(victim.getPlayer(),
+                                    Language.MSG_ELO_SUBBED.toString(String.valueOf(oldP - newP), String.valueOf(newP)));
+                        }
+                    }, 1L
+            );
+
             PlayerStatisticsBuffer.setEloScore(victim.getUniqueId(), newP);
         }
         if (plugin.getSQLHandler().allowsAsync()) {
