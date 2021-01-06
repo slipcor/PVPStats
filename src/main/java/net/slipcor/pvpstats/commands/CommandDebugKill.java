@@ -52,7 +52,7 @@ public class CommandDebugKill extends AbstractCommand {
         if (args.length < 2 || args[1].equals("")) {
             // list first argument possibilities
             for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                results.add(p.getName());
+                results.add(PlayerNameHandler.getRawPlayerName(p));
             }
             return results;
         }

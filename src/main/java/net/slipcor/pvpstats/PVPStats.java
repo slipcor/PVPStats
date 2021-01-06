@@ -135,7 +135,8 @@ public class PVPStats extends JavaPlugin {
                 }
                 String message = announcements.getString(key, "");
                 if (!message.isEmpty()) {
-                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message).replace("%player%", player.getName()));
+                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message)
+                            .replace("%player%", PlayerNameHandler.getPlayerName(player)));
                 }
             }
             if (config().getBoolean(Config.Entry.STATISTICS_STREAK_COMMANDS)) {
@@ -145,7 +146,8 @@ public class PVPStats extends JavaPlugin {
                 }
                 String command = commands.getString(key, "");
                 if (!command.isEmpty()) {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command.replace("%player%", player.getName()));
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+                            command.replace("%player%", PlayerNameHandler.getPlayerName(player)));
                 }
             }
         } catch (IOException | InvalidConfigurationException exception) {

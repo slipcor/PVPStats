@@ -1,6 +1,7 @@
 package net.slipcor.pvpstats.text;
 
 import net.slipcor.pvpstats.PVPStats;
+import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.Bukkit;
@@ -156,9 +157,9 @@ public class TextFormatter {
 
         String abuseNode = Config.Entry.STATISTICS_CHECK_ABUSE.getNode();
 
-        message.add(new TextComponent(attacker.getName()).setColor(ChatColor.YELLOW));
+        message.add(new TextComponent(PlayerNameHandler.getPlayerName(attacker)).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" killing "));
-        message.add(new TextComponent(victim.getName()).setColor(ChatColor.YELLOW));
+        message.add(new TextComponent(PlayerNameHandler.getPlayerName(victim)).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" was not counted as it triggered the 'anti-abuse' system. You can configure " +
                 "the anti-abuse system with config nodes "));
         message.add(new TextComponent(abuseNode).setColor(ChatColor.AQUA).setUnderlined(true)
@@ -175,9 +176,9 @@ public class TextFormatter {
     public static void explainNewbieStatus(OfflinePlayer attacker, OfflinePlayer victim) {
         List<TextComponent> message = new ArrayList<>();
 
-        message.add(new TextComponent(attacker.getName()).setColor(ChatColor.YELLOW));
+        message.add(new TextComponent(PlayerNameHandler.getPlayerName(attacker)).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" killing "));
-        message.add(new TextComponent(victim.getName()).setColor(ChatColor.YELLOW));
+        message.add(new TextComponent(PlayerNameHandler.getPlayerName(victim)).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" was not recorded as one or both players have 'newbie' status. Add permission node '"));
         message.add(new TextComponent("pvpstats.nonewbie").setColor(ChatColor.YELLOW));
         message.add(new TextComponent("' to both players to fix this."));
@@ -192,7 +193,7 @@ public class TextFormatter {
         String world = player.getWorld().getName();
 
         message.add(new TextComponent("The death of "));
-        message.add(new TextComponent(player.getName()).setColor(ChatColor.YELLOW));
+        message.add(new TextComponent(PlayerNameHandler.getPlayerName(player)).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" was not counted because the world '"));
         message.add(new TextComponent(world).setColor(ChatColor.YELLOW));
         message.add(new TextComponent("' in is in the ignored list. Edit the config node "));

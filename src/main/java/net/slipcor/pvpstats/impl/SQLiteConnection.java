@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 public class SQLiteConnection extends AbstractSQLConnection {
     // SQL connection details

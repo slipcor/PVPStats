@@ -2,6 +2,7 @@ package net.slipcor.pvpstats.api;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.classes.Debugger;
+import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
@@ -99,12 +100,12 @@ public final class DatabaseAPI {
 
             if (plugin.getSQLHandler().allowsAsync()) {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
-                        attacker.getName(), attacker.getUniqueId().toString(),
+                        PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
                         "", "",
                         attacker.getPlayer().getWorld().getName()));
             } else {
                 Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
-                        attacker.getName(), attacker.getUniqueId().toString(),
+                        PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
                         "", "",
                         attacker.getPlayer().getWorld().getName()));
             }
@@ -119,12 +120,12 @@ public final class DatabaseAPI {
             if (plugin.getSQLHandler().allowsAsync()) {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
                         "", "",
-                        victim.getName(), victim.getUniqueId().toString(),
+                        PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
                         victim.getPlayer().getWorld().getName()));
             } else {
                 Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
                         "", "",
-                        victim.getName(), victim.getUniqueId().toString(),
+                        PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
                         victim.getPlayer().getWorld().getName()));
             }
 
@@ -178,13 +179,13 @@ public final class DatabaseAPI {
         }
         if (plugin.getSQLHandler().allowsAsync()) {
             Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
-                    attacker.getName(), attacker.getUniqueId().toString(),
-                    victim.getName(), victim.getUniqueId().toString(),
+                    PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
+                    PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
                     attacker.getPlayer().getWorld().getName()));
         } else {
             Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
-                    attacker.getName(), attacker.getUniqueId().toString(),
-                    victim.getName(), victim.getUniqueId().toString(),
+                    PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
+                    PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
                     attacker.getPlayer().getWorld().getName()));
         }
 
@@ -228,7 +229,8 @@ public final class DatabaseAPI {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
             plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
-            return new PlayerStatistic(player.getName(), 0, 0, 0, 0, 0, 0, player.getUniqueId());
+            return new PlayerStatistic(PlayerNameHandler.getPlayerName(player),
+                    0, 0, 0, 0, 0, 0, player.getUniqueId());
         }
 
         try {
@@ -236,7 +238,8 @@ public final class DatabaseAPI {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new PlayerStatistic(player.getName(), 0, 0, 0, 0, 0, 0, player.getUniqueId());
+        return new PlayerStatistic(PlayerNameHandler.getPlayerName(player),
+                0, 0, 0, 0, 0, 0, player.getUniqueId());
     }
 
     /**
@@ -336,7 +339,7 @@ public final class DatabaseAPI {
             result = plugin.getSQLHandler().getStats(player);
             if (result == null) {
                 String[] output = new String[1];
-                output[0] = Language.INFO_PLAYERNOTFOUND.toString(player.getName());
+                output[0] = Language.INFO_PLAYERNOTFOUND.toString(PlayerNameHandler.getPlayerName(player));
                 return output;
             }
         } catch (SQLException e) {
@@ -345,7 +348,7 @@ public final class DatabaseAPI {
 
         if (result == null) {
             String[] output = new String[1];
-            output[0] = Language.INFO_PLAYERNOTFOUND.toString(player.getName());
+            output[0] = Language.INFO_PLAYERNOTFOUND.toString(PlayerNameHandler.getPlayerName(player));
             output[1] = Language.INFO_PLAYERNOTFOUND2.toString();
             return output;
         }
@@ -426,7 +429,7 @@ public final class DatabaseAPI {
     public static void initiatePlayer(OfflinePlayer player) {
         if (getAllUUIDs().contains(player.getUniqueId())) {
             // an entry exists!
-        } else if (getAllPlayers().contains(player.getName())) {
+        } else if (getAllPlayers().contains(PlayerNameHandler.getPlayerName(player))) {
             // an entry without UUID exists!
             try {
                  plugin.getSQLHandler().setStatUIDByPlayer(player);
@@ -434,7 +437,7 @@ public final class DatabaseAPI {
                 e.printStackTrace();
             }
             allUUIDs.add(player.getUniqueId());
-            allPlayerNames.remove(player.getName());
+            allPlayerNames.remove(PlayerNameHandler.getPlayerName(player));
         } else if (plugin.config().getBoolean(Config.Entry.STATISTICS_CREATE_ON_JOIN)) {
             if (plugin.getSQLHandler().allowsAsync()) {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseFirstEntry(player));
@@ -1134,7 +1137,8 @@ public final class DatabaseAPI {
     private static boolean incDeath(final Player player, int elo) {
         if (player.hasPermission("pvpstats.count")) {
             PlayerStatisticsBuffer.setStreak(player.getUniqueId(), 0);
-            checkAndDo(player.getName(), player.getUniqueId(), false, false, elo, player.getWorld().getName());
+            checkAndDo(PlayerNameHandler.getPlayerName(player), player.getUniqueId(),
+                    false, false, elo, player.getWorld().getName());
             return true;
         }
         return false;
@@ -1149,7 +1153,8 @@ public final class DatabaseAPI {
      */
     public static boolean forceIncDeath(final OfflinePlayer player, int elo) {
         PlayerStatisticsBuffer.setStreak(player.getUniqueId(), 0);
-        checkAndDo(player.getName(), player.getUniqueId(), false, false, elo, "world");
+        checkAndDo(PlayerNameHandler.getPlayerName(player), player.getUniqueId(),
+                false, false, elo, "world");
         return true;
     }
 
@@ -1171,7 +1176,8 @@ public final class DatabaseAPI {
                 }
 
             }
-            checkAndDo(player.getName(), player.getUniqueId(), true, incMaxStreak, elo, player.getWorld().getName());
+            checkAndDo(PlayerNameHandler.getPlayerName(player), player.getUniqueId(),
+                    true, incMaxStreak, elo, player.getWorld().getName());
             return true;
         }
         return false;
@@ -1202,7 +1208,8 @@ public final class DatabaseAPI {
             }
 
         }
-        checkAndDo(player.getName(), player.getUniqueId(), true, incMaxStreak, elo, "world");
+        checkAndDo(PlayerNameHandler.getPlayerName(player), player.getUniqueId(),
+                true, incMaxStreak, elo, "world");
         return true;
     }
 

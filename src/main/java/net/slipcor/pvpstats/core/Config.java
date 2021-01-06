@@ -1,6 +1,5 @@
 package net.slipcor.pvpstats.core;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.lang.ObjectUtils.Null;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -144,7 +143,8 @@ public class Config {
                 "# which type of branch to get updates? Valid values: dev, alpha, beta, release"}),
 
         OTHER(Null.class, "other", null, new String[]{
-                "# === [ Integration into other Plugins ] ==="}),
+                "# === [ Other Features ] ==="}),
+        OTHER_DISPLAYNAMES(Boolean.class, "other.displayNames", false, new String[]{"# use players' display names"}),
         OTHER_PVPARENA(Boolean.class, "other.PVPArena", false, new String[]{"# count PVP Arena deaths"}),
         OTHER_OP_MESSAGES(Boolean.class, "other.OPMessages", true, new String[]{"# provide helpful debug messages for new installations"}),
 

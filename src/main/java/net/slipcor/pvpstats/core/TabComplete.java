@@ -4,7 +4,9 @@ package net.slipcor.pvpstats.core;
 import net.slipcor.pvpstats.commands.AbstractCommand;
 import org.bukkit.command.CommandSender;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public final  class TabComplete {
     private TabComplete() {}
