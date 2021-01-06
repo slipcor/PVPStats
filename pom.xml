@@ -4,7 +4,7 @@
 
     <groupId>net.slipcor</groupId>
     <artifactId>pvpstats</artifactId>
-    <version>1.6</version>
+    <version>1.7</version>
     <name>PVP Stats</name>
 
     <repositories>

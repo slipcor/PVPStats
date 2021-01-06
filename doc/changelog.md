@@ -1,5 +1,12 @@
 # v1.X Changelog
-
+- v1.7.33 - various updates as follows
+  - **FIX**: debugger not closing debug files properly
+  - **FIX**: NPEs related to no-pvp-deaths and more
+  - **FIX**: non-unique config nodes being offered as autocomplete and config set argument
+  - **FIX**: delay kill streak and ELO messages until after the death message has been sent
+  - **FEAT**: player display name feature - uses player names formatted by other plugins
+  - **FEAT**: revamp autocomplete system to allow for partial matches, not only beginning-word-matches
+  - **FEAT**: TextFormatter API that allows for more distinct highlights and information messages, allow information in hover-over, and issuing commands on clicks 
 - v1.6.32 - Make some entries write-only for safety reasons (only mysql connection data for now)
 - v1.6.31 - Rework config command, adjust op messages to provide more information, fix NPE for empty player entry
 - v1.6.30 - Update debugkill, migrate DatabaseAPI to use OfflinePlayer instead of Player
