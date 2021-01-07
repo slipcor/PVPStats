@@ -9,8 +9,6 @@
     import org.bukkit.World;
     import org.bukkit.block.Block;
     import org.bukkit.block.BlockFace;
-    import org.bukkit.block.Sign;
-    import org.bukkit.block.data.Directional;
     import org.bukkit.configuration.ConfigurationSection;
     import org.bukkit.configuration.file.FileConfiguration;
 
@@ -57,14 +55,14 @@
          */
         public static SignDisplay init(Location location) {
             SignDisplay display = null;
-            if (location.getBlock().getState() instanceof Sign) {
-                String line = ((Sign) location.getBlock().getState()).getLine(0);
+            if (location.getBlock().getState() instanceof org.bukkit.block.Sign) {
+                String line = ((org.bukkit.block.Sign) location.getBlock().getState()).getLine(0);
                 if (line == null || !line.toLowerCase().contains("pvpstats")) {
                     debugger.i("Does not contain PVP Stats: " + line);
                     return null;
                 }
 
-                BlockFace face = getPerpendicular(((Directional) location.getBlock().getBlockData()).getFacing());
+                BlockFace face = getPerpendicular(((org.bukkit.material.Sign) location.getBlock().getState().getData()).getFacing());
                 if (face != null) {
                     display = new SignDisplay(location, face);
                     if (display.isValid()) {
@@ -242,14 +240,14 @@
 
             this.signCount = 0;
 
-            while (checkBlock.getRelative(direction, offsetSide).getState() instanceof Sign ||
-                    checkBlock.getRelative(direction, offsetSide+1).getState() instanceof Sign) {
+            while (checkBlock.getRelative(direction, offsetSide).getState() instanceof org.bukkit.block.Sign ||
+                    checkBlock.getRelative(direction, offsetSide+1).getState() instanceof org.bukkit.block.Sign) {
 
                 debugger.i("we found a sign");
 
                 List<Location> signs = new ArrayList<>();
 
-                if (!(checkBlock.getRelative(direction, offsetSide).getState() instanceof Sign)) {
+                if (!(checkBlock.getRelative(direction, offsetSide).getState() instanceof org.bukkit.block.Sign)) {
                     offsetSide++;
                 }
 
@@ -274,7 +272,7 @@
 
                 offsetDown++;
 
-                while (checkBlock.getRelative(BlockFace.DOWN, offsetDown).getRelative(direction, offsetSide).getState() instanceof Sign) {
+                while (checkBlock.getRelative(BlockFace.DOWN, offsetDown).getRelative(direction, offsetSide).getState() instanceof org.bukkit.block.Sign) {
                     debugger.i("discovering " + offsetSide + " - " + offsetDown);
                     signs.add(checkBlock.getRelative(BlockFace.DOWN, offsetDown).getRelative(direction, offsetSide).getLocation());
                     offsetDown++;
@@ -290,7 +288,7 @@
             }
         }
 
-        private SortColumn getSortColumn(Sign sign) {
+        private SortColumn getSortColumn(org.bukkit.block.Sign sign) {
             for (String s : sign.getLines()) {
                 if (s != null) {
                     for (SortColumn c : SortColumn.values()) {
