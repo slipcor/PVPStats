@@ -1,6 +1,7 @@
 package net.slipcor.pvpstats.impl;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -46,6 +47,18 @@ public class MySQLConnection extends AbstractSQLConnection {
             if (printError) e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Remove duplicate UUIDs from the database
+     *
+     * @param sender the sender trying to run the cleanup
+     *
+     * @return how many entries have been removed
+     */
+    @Override
+    public int cleanup(CommandSender sender) {
+        return super.cleanup(sender, "id");
     }
 
     /**

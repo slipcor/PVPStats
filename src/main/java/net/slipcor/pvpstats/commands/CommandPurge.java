@@ -38,13 +38,13 @@ public class CommandPurge extends AbstractCommand {
         if (args.length > 1) {
             if (args[1].equalsIgnoreCase("specific")) {
                 final int count = DatabaseAPI.purgeKillStats(days);
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG_PURGED.toString(String.valueOf(count)));
             } else if (args[1].equalsIgnoreCase("standard")) {
                 final int count = DatabaseAPI.purgeStats(days);
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG_PURGED.toString(String.valueOf(count)));
             } else if (args[1].equalsIgnoreCase("both")) {
                 final int count = DatabaseAPI.purgeKillStats(days) + DatabaseAPI.purgeStats(days);
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG_CLEANED.toString(String.valueOf(count)));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG_PURGED.toString(String.valueOf(count)));
             } else {
                 PVPStats.getInstance().sendPrefixed(sender, "/pvpstats purge [specific | standard | both] [days]");
             }

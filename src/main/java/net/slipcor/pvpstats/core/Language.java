@@ -50,7 +50,9 @@ public enum Language {
     LOG_UPDATE_DISABLED("log.updatedisabled", "Updates deactivated. Please check spigotmc.org for updates"),
     LOG_UPDATE_ENABLED("log.updateenabled", "Checking for updates..."),
 
-    MSG_CLEANED("msg.cleaned", "Statistics successfully cleaned up! %0% entries removed!"),
+    MSG_PURGED("msg.cleaned", "Statistics successfully cleaned up! %0% entries removed!"), //TODO when migrating, rename node!
+    MSG_CLEANED("msg.cleanedup", "Player list is clear! %0% entries removed!"),
+    MSG_NOTCLEANED("msg.notcleanedup", "Player list had no duplicates!"),
     MSG_CONFIGGET("msg.configget", "Value of node &a%0%&r is: &e%1%&r"),
     MSG_CONFIGSET("msg.configset", "&a%0%&r set to &e%1%&r!"),
     MSG_CONFIGADDED("msg.configadded", "Added &e%1%&r to &a%0%&r!"),
@@ -66,6 +68,7 @@ public enum Language {
     MSG_ELO_SUBBED("msg.elo.subbed", "You lost %0% ELO points! Your score is now: %1%"),
     MSG_NOPERMRELOAD("msg.nopermreload", "No permission to reload!"),
     MSG_NOPERMCONFIGSET("msg.nopermconfigset", "No permission to set config setting!"),
+    MSG_NOPERMCLEANUP("msg.nopermcleanup", "No permission to clean up!"),
     MSG_NOPERMDEBUG("msg.nopermdebug", "No permission to debug!"),
     MSG_NOPERMMIGRATE("msg.nopermmigrate", "No permission to migrate!"),
     MSG_NOPERMPURGE("msg.nopermpurge", "No permission to purge!"),

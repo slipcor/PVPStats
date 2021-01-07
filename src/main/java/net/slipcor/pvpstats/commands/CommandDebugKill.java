@@ -31,10 +31,6 @@ public class CommandDebugKill extends AbstractCommand {
         if (!argCountValid(sender, args, new Integer[]{3})) {
             return;
         }
-        if (!(sender instanceof Player)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_NOT_A_PLAYER.toString());
-            return;
-        }
         debugger.i("let's go!");
 
         String attacker = args[1];

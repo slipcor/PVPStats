@@ -32,6 +32,7 @@ _Heavy maintenance_
 
 Command | Shorthand | Definition
 ------------- | ------------- | -------------
+[/pvpstats cleanup](commands/cleanup.md) | /stats !clean | clean up
 [/pvpstats debug](commands/debug.md) [on/off] | /stats !d [on/off] | activate or deactivate debugging
 [/pvpstats debugkill](commands/debugkill.md) {killer} {victim} | /stats !dk {killer} {victim} | manually add a kill for debugging
 [/pvpstats migrate](commands/migrate.md) [from/to] [yml/sqlite/mysql] | migrate from / to other database method

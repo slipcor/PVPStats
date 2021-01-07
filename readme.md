@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.7.34 - Create SQL tables properly with new victim logic
+- v1.7.35 - Reintroduce **/pvpstats cleanup** to remove duplicates
 - [read more](doc/changelog.md)
 
 ***

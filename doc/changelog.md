@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.7.35 - Reintroduce **/pvpstats cleanup** to remove duplicates
 - v1.7.34 - Create SQL tables properly with new victim logic
 - v1.7.33 - various updates as follows
   - **FIX**: debugger not closing debug files properly

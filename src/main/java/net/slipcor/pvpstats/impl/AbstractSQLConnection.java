@@ -1,18 +1,20 @@
 package net.slipcor.pvpstats.impl;
 
+import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseConnection;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A partial implementation of methods that are handled the same by all SQL implementations
@@ -151,6 +153,55 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
                     "'" + playerName + "', '" + uuid + "', '" + victimName + "', '" + victimUUID + "', " + time + ", '" + world +"')", true);
         } catch (SQLException e) {
         }
+    }
+
+    /**
+     * Remove duplicate UUIDs from the database
+     *
+     * @param sender the sender trying to run the cleanup
+     * @param rowid  the row identifier
+     *
+     * @return how many entries have been removed
+     */
+    protected int cleanup(CommandSender sender, String rowid) {
+        String query = "SELECT `" + rowid + "`, `uid` FROM " + dbTable + " WHERE 1 ORDER BY `kills` DESC;'";
+        List<Integer> ids = new ArrayList<>();
+        Set<String> uids = new HashSet<>();
+        try {
+            ResultSet result = executeQuery(query, false);
+            while (result != null && result.next()) {
+                String uid = result.getString("uid");
+                if (uids.contains(uid)) {
+                    ids.add(result.getInt(rowid));
+                } else {
+                    uids.add(uid);
+                }
+            }
+
+            if (ids.size() > 0) {
+                StringBuilder buffer = new StringBuilder("DELETE FROM `");
+                buffer.append(dbTable);
+                buffer.append("` WHERE `");
+                buffer.append(rowid);
+                buffer.append("` IN (-1");
+
+                for (Integer i : ids) {
+                    buffer.append(',');
+                    buffer.append(i);
+                }
+
+                buffer.append(");");
+                executeQuery(buffer.toString(), true);
+            }
+            return ids.size();
+        } catch (SQLException e) {
+            System.out.println("Error while cleaning up. Please send this to slipcor:");
+            e.printStackTrace();
+        }
+        if (sender instanceof Player) {
+            PVPStats.getInstance().sendPrefixed(sender, ChatColor.RED + "There was an error trying to clean up. Please see the logfile!");
+        }
+        return -1;
     }
 
     /**

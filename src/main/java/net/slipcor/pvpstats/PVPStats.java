@@ -172,6 +172,7 @@ public class PVPStats extends JavaPlugin {
      * Instantiate command
      */
     private void loadCommands() {
+        new CommandCleanup().load(commandList, commandMap);
         new CommandConfig().load(commandList, commandMap);
         new CommandDebug().load(commandList, commandMap);
         new CommandDebugKill().load(commandList, commandMap);
@@ -449,6 +450,10 @@ public class PVPStats extends JavaPlugin {
         }
 
         Debugger.load(this, Bukkit.getConsoleSender());
+
+        if (config().getBoolean(Config.Entry.STATISTICS_CLEAR_ON_START)) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pvpstats cleanup");
+        }
 
         SignDisplay.loadAllDisplays();
 

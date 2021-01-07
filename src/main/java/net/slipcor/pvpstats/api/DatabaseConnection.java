@@ -2,6 +2,7 @@ package net.slipcor.pvpstats.api;
 
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -259,4 +260,13 @@ public interface DatabaseConnection {
      * @throws SQLException
      */
     void setStatUIDByPlayer(OfflinePlayer player) throws SQLException;
+
+    /**
+     * Remove duplicate entries
+     *
+     * @param sender the CommandSender issuing the cleanup
+     *
+     * @return the amount of entries that have been removed
+     */
+    int cleanup(CommandSender sender);
 }

@@ -5,6 +5,7 @@ import net.slipcor.pvpstats.api.DatabaseConnection;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -30,6 +31,11 @@ public class FlatFileConnection implements DatabaseConnection {
 
     public boolean allowsAsync() {
         return false;
+    }
+
+    @Override
+    public int cleanup(CommandSender sender) {
+        return 0; // based on how YML is saved this can not be a problem
     }
 
     /**

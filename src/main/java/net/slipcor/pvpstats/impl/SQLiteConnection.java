@@ -2,6 +2,7 @@ package net.slipcor.pvpstats.impl;
 
 import net.slipcor.pvpstats.PVPStats;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,18 @@ public class SQLiteConnection extends AbstractSQLConnection {
 
     public boolean allowsAsync() {
         return false;
+    }
+
+    /**
+     * Remove duplicate UUIDs from the database
+     *
+     * @param sender the sender trying to run the cleanup
+     *
+     * @return how many entries have been removed
+     */
+    @Override
+    public int cleanup(CommandSender sender) {
+        return super.cleanup(sender, "rowid");
     }
 
     /**
