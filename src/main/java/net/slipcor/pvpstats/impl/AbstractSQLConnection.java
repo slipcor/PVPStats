@@ -164,7 +164,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
      * @return how many entries have been removed
      */
     protected int cleanup(CommandSender sender, String rowid) {
-        String query = "SELECT `" + rowid + "`, `uid` FROM " + dbTable + " WHERE 1 ORDER BY `kills` DESC;'";
+        String query = "SELECT `" + rowid + "`, `uid` FROM " + dbTable + " WHERE 1 ORDER BY `kills` DESC;";
         List<Integer> ids = new ArrayList<>();
         Set<String> uids = new HashSet<>();
         try {
