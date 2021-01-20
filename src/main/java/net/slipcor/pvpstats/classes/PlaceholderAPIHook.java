@@ -2,7 +2,7 @@ package net.slipcor.pvpstats.classes;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.slipcor.pvpstats.PVPStats;
-import net.slipcor.pvpstats.api.DatabaseAPI;
+import net.slipcor.pvpstats.api.LeaderboardBuffer;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.OfflinePlayer;
@@ -75,9 +75,9 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                             Language.valueOf("HEAD_" + name).toString());
                 }
 
-                String[] top = DatabaseAPI.top(pos, name);
+                String[] top = LeaderboardBuffer.top(pos, name);
 
-                if (top == null || top.length < pos) {
+                if (top.length < pos) {
                     return ""; // we do not have enough entries, return empty
                 }
 
@@ -104,9 +104,9 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                             Language.valueOf("HEAD_" + name).toString());
                 }
 
-                String[] top = DatabaseAPI.flop(pos, name);
+                String[] top = LeaderboardBuffer.flop(pos, name);
 
-                if (top == null || top.length < pos) {
+                if (top.length < pos) {
                     return ""; // we do not have enough entries, return empty
                 }
 

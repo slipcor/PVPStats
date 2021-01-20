@@ -54,11 +54,11 @@ public class CommandTop extends AbstractCommand {
                         amount = 10;
                     }
 
-                    if (args[1].equals("kills")) {
+                    if (args[1].equalsIgnoreCase("kills")) {
                         Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "KILLS", amount));
-                    } else if (args[1].equals("deaths")) {
+                    } else if (args[1].equalsIgnoreCase("deaths")) {
                         Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "DEATHS", amount));
-                    } else if (args[1].equals("streak")) {
+                    } else if (args[1].equalsIgnoreCase("streak")) {
                         Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "STREAK", amount));
                     } else if (args[1].equalsIgnoreCase("elo")) {
                         Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "ELO", amount));

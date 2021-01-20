@@ -104,6 +104,8 @@ public class Config {
                 "# simplify kill/death ratio calculation to just kills per deaths"}),
         STATISTICS_RESET_KILLSTREAK_ON_QUIT(Boolean.class, "statistics.resetKillstreakOnQuit", false, new String[]{
                 "# always reset a streak when a player disconnects"}),
+        STATISTICS_LEADERBOARD_REFRESH(Integer.class, "statistics.leaderboardRefresh", 60, new String[]{
+                "# seconds to wait before the top/flop leaderboard values will query the database again"}),
         STATISTICS_STREAK_ANNOUNCEMENTS(Boolean.class, "statistics.streakAnnouncements", false, new String[]{
                 "# announce lines from streak_announcements.yml on specific streak values"}),
         STATISTICS_STREAK_COMMANDS(Boolean.class, "statistics.streakCommands", false, new String[]{
