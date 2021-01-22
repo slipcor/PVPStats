@@ -41,14 +41,6 @@
             <version>2.10.2</version>
             <type>jar</type>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>be.maximvdw</groupId>
-            <artifactId>MVdWPlaceholderAPI</artifactId>
-            <version>3.1.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        -->
     </dependencies>
 
     <build>

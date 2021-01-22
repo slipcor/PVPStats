@@ -53,7 +53,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.7.37 - buffer top and flop lists
+- v1.7.38 - add an event to hook into and cancel
 - [read more](doc/changelog.md)
 
 ***
