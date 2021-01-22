@@ -145,7 +145,7 @@ public class PlayerListener implements Listener {
             if (attacker == null) {
                 Debugger.i("Killer is still null", player);
                 if (plugin.config().getBoolean(Config.Entry.STATISTICS_COUNT_REGULAR_DEATHS)) {
-                    Debugger.i("Kill will be counted", event.getEntity());
+                    Debugger.i("Kill should be counted", event.getEntity());
                     DatabaseAPI.AkilledB(null, event.getEntity());
                 }
                 return;

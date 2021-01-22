@@ -57,6 +57,16 @@ public final class DatabaseAPI {
      * @param victim   the killed player
      */
     public static void AkilledB(OfflinePlayer attacker, OfflinePlayer victim) {
+
+        PVPStatsPVPEvent event = new PVPStatsPVPEvent(attacker, victim);
+
+        Bukkit.getServer().getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            DEBUGGER.i("Another plugin prevented PVP!");
+            return;
+        }
+
         if ((attacker == null || attacker.getPlayer() == null) &&
                 (victim == null || victim.getPlayer() == null)) {
             DEBUGGER.i("attacker and victim are null");
@@ -471,7 +481,7 @@ public final class DatabaseAPI {
         }
 
         // read all the data from database
-        PlayerStatisticsBuffer.getAll(player);
+        PlayerStatisticsBuffer.loadPlayer(player);
     }
 
     private static DatabaseConnection connectToOther(String method, CommandSender sender) {

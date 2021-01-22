@@ -1,6 +1,6 @@
 package net.slipcor.pvpstats.runnables;
 
-import net.slipcor.pvpstats.api.DatabaseAPI;
+import net.slipcor.pvpstats.api.LeaderboardBuffer;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
@@ -26,7 +26,7 @@ public class SendPlayerTop implements Runnable {
 
     @Override
     public void run() {
-        String[] top = DatabaseAPI.top(amount, name);
+        String[] top = LeaderboardBuffer.top(amount, name);
         sender.sendMessage(Language.HEAD_LINE.toString());
         sender.sendMessage(Language.HEAD_HEADLINE.toString(
                 displayAmount,

@@ -1,4 +1,7 @@
 # v1.X Changelog
+- v1.7.39 - rename API method, add API documentation
+- v1.7.38 - add an event to hook into and cancel
+- v1.7.37 - buffer top and flop lists
 - v1.7.36 - fix mysql error
 - v1.7.35 - Reintroduce **/pvpstats cleanup** to remove duplicates
 - v1.7.34 - Create SQL tables properly with new victim logic

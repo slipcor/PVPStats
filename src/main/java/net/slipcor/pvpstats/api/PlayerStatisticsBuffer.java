@@ -150,21 +150,6 @@ public final class PlayerStatisticsBuffer {
         eloScore.remove(uuid);
     }
 
-    public static void getAll(OfflinePlayer player) {
-        UUID uuid = player.getUniqueId();
-        if (deaths.containsKey(uuid) && kills.containsKey(uuid)) {
-            return; // we already did it
-        }
-
-        PlayerStatistic statistic = DatabaseAPI.getAllStats(player);
-
-        deaths.put(uuid, statistic.getDeaths());
-        kills.put(uuid, statistic.getKills());
-        eloScore.put(uuid, statistic.getELO());
-        streaks.put(uuid, statistic.getCurrentStreak());
-        maxStreaks.put(uuid, statistic.getMaxStreak());
-    }
-
     /**
      * Get a player's death count
      *
@@ -290,6 +275,21 @@ public final class PlayerStatisticsBuffer {
      */
     public static boolean hasEloScore(UUID uuid) {
         return eloScore.containsKey(uuid);
+    }
+
+    public static void loadPlayer(OfflinePlayer player) {
+        UUID uuid = player.getUniqueId();
+        if (deaths.containsKey(uuid) && kills.containsKey(uuid)) {
+            return; // we already did it
+        }
+
+        PlayerStatistic statistic = DatabaseAPI.getAllStats(player);
+
+        deaths.put(uuid, statistic.getDeaths());
+        kills.put(uuid, statistic.getKills());
+        eloScore.put(uuid, statistic.getELO());
+        streaks.put(uuid, statistic.getCurrentStreak());
+        maxStreaks.put(uuid, statistic.getMaxStreak());
     }
 
     /**

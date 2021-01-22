@@ -45,7 +45,7 @@
 
     <build>
         <defaultGoal>clean package</defaultGoal>
-        <finalName>pvpstats</finalName>
+        <finalName>pvpstats-1.8</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

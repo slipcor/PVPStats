@@ -51,6 +51,8 @@ statistics:
   collectPrecise: true
   # always reset a streak when a player disconnects
   resetKillstreakOnQuit: false
+  # seconds to wait before the top/flop leaderboard values will query the database again
+  leaderboardRefresh: 60
   # announce lines from streak_announcements.yml on specific streak values
   streakAnnouncements: false
   # issue commands from streak_commands.yml on specific streak values
