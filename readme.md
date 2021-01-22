@@ -44,6 +44,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Documentation
 
+- [API](doc/api.md)
 - [Commands](doc/commands.md)
 - [Permissions](doc/permissions.md)
 - [Configuration](doc/configuration.md)
@@ -53,7 +54,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.7.38 - add an event to hook into and cancel
+- v1.7.39 - rename API method, add API documentation
 - [read more](doc/changelog.md)
 
 ***

@@ -481,7 +481,7 @@ public final class DatabaseAPI {
         }
 
         // read all the data from database
-        PlayerStatisticsBuffer.getAll(player);
+        PlayerStatisticsBuffer.loadPlayer(player);
     }
 
     private static DatabaseConnection connectToOther(String method, CommandSender sender) {
