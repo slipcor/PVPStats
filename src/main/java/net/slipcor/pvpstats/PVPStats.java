@@ -444,6 +444,11 @@ public class PVPStats extends JavaPlugin {
             }
         }
 
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            getLogger().info("PVPStats - PlaceholderAPI found.");
+            new PlaceholderAPIHook().register();
+        }
+
         Debugger.load(this, Bukkit.getConsoleSender());
 
         if (config().getBoolean(Config.Entry.STATISTICS_CLEAR_ON_START)) {
