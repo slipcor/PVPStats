@@ -41,7 +41,6 @@ public class LeaderboardBuffer {
 
     public static String[] top(int value, String type) {
         type = type.toUpperCase();
-        System.out.println("getting type: " + type);
         long last = LASTCHECKEDTOP.get(type);
         long now = System.currentTimeMillis() / 1000;
         last -= now;
@@ -49,7 +48,6 @@ public class LeaderboardBuffer {
         if (last < 0) {
             last *= -1; // now we know that seconds have passed, are they enough?
             if (last > PVPStats.getInstance().config().getInt(Config.Entry.STATISTICS_LEADERBOARD_REFRESH)) {
-                System.out.println("LOADING DATABASE after " + last);
 
                 String[] array = DatabaseAPI.top(10, type);
                 if (array == null) {
@@ -62,10 +60,6 @@ public class LeaderboardBuffer {
 
         // return saved state
         String[] values = TOP.get(type);
-
-
-
-        System.out.println("found entries: " + values.length);
 
         int length = Math.min(value, values.length); // get a safe value to not overreach
 

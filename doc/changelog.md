@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.7.41 - remove debug outputs to console
 - v1.7.40 - reintroduce PAPI hook
 - v1.7.39 - rename API method, add API documentation
 - v1.7.38 - add an event to hook into and cancel 
