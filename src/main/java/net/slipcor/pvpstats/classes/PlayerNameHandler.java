@@ -11,6 +11,9 @@ public class PlayerNameHandler {
     public static OfflinePlayer findPlayer(String value) {
         OfflinePlayer result = null;
         for (OfflinePlayer off : Bukkit.getOfflinePlayers()) {
+            if (off == null || off.getName() == null) {
+                continue; // 1.8 allowed for null players or null player names?
+            }
             if (off.getName().equalsIgnoreCase(value)) {
                 return off;
             }

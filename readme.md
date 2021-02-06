@@ -54,7 +54,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.7.39 - rename API method, add API documentation
+- v1.7.40 - account for null players / names in the offline player list
 - [read more](doc/changelog.md)
 
 ***
