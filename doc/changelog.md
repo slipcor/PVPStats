@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.8.3 - bump minor version for the new release system. Thanks to Ffaen for all the help :)
 - v1.7.42 - Add github actions file and change pvparena repo url
 - v1.7.41 - remove debug outputs to console
 - v1.7.40 - reintroduce PAPI hook

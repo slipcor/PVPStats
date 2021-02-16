@@ -54,7 +54,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.7.42 - Add github actions file and change pvparena repo url
+- v1.8.3 - bump minor version for the new release system. Thanks to Ffaen for all the help :)
 - [read more](doc/changelog.md)
 
 ***
