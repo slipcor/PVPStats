@@ -3,10 +3,7 @@ package net.slipcor.pvpstats.runnables;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
 import net.slipcor.pvpstats.classes.Debugger;
-import net.slipcor.pvpstats.classes.PlayerNameHandler;
-import net.slipcor.pvpstats.core.Config;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 
 import java.util.UUID;
 
