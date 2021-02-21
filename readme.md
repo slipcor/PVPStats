@@ -54,7 +54,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.8.5 - (ci) separate master and pull request ci jobs
+- v1.8.6 - (ci) fixed discord notification for multiline commit messages
 - [read more](doc/changelog.md)
 
 ***
