@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.8.5 - (ci) separate master and pull request ci jobs
 - v1.8.4 - fix server crash when looking up player info on async compatible systems
 - v1.8.3 - bump minor version for the new release system. Thanks to Ffaen for all the help :)
 - v1.7.42 - Add github actions file and change pvparena repo url
