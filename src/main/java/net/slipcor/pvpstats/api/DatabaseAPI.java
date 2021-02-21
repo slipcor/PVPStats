@@ -1179,7 +1179,6 @@ public final class DatabaseAPI {
      *
      * @param player the player to increase
      * @param elo        the ELO score to set
-     * @param player      the player issuing the command
      * @return whether the setting succeeded
      */
     public static boolean forceIncKill(final OfflinePlayer player, int elo) {
