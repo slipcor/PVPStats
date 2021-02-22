@@ -20,6 +20,6 @@ public class DatabaseIncreaseKillsStreak implements Runnable {
     public void run() {
         PVPStats.getInstance().getSQLHandler().increaseKillsAndMaxStreak(
                 name, uuid, elo);
-        debugger.i("kill addition sent!");
+        debugger.i("kill addition KS sent!");
     }
 }

@@ -54,7 +54,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.8.6 - (ci) fixed discord notification for multiline commit messages
+- v1.8.7 - change default behavior for precise stats to not run with YML. Fix debug "all" 
 - [read more](doc/changelog.md)
 
 ***

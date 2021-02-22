@@ -196,6 +196,7 @@ public class FlatFileConnection implements DatabaseConnection {
     @Override
     public void createKillStatsTable(boolean printError) {
         // needs no setup
+        this.collectPrecise = true;
     }
 
     /**

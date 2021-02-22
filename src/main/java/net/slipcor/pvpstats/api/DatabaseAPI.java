@@ -159,6 +159,18 @@ public final class DatabaseAPI {
             incKill(attacker.getPlayer(), PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
             incDeath(victim.getPlayer(), PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
 
+            if (plugin.getSQLHandler().allowsAsync()) {
+                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
+                        PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
+                        PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
+                        victim.getPlayer().getWorld().getName()));
+            } else {
+                Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
+                        PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
+                        PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
+                        victim.getPlayer().getWorld().getName()));
+            }
+
             SignDisplay.updateAll();
             return;
         }
@@ -506,7 +518,8 @@ public final class DatabaseAPI {
             }
 
             dbTable = config.get(Config.Entry.YML_TABLE);
-            if (config.getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
+            if (config.getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE) &&
+                config.getBoolean(Config.Entry.YML_COLLECT_PRECISE)) {
                 dbKillTable = config.get(Config.Entry.MYSQL_KILLTABLE);
             }
 

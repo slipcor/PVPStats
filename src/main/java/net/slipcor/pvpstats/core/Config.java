@@ -77,6 +77,8 @@ public class Config {
                 "# general statistic file name, plugin will append extension '.yml'"}),
         YML_KILLTABLE(String.class, "YML.killtable", "pvpkillstats", new String[]{
                 "# kill statistic file name, plugin will append extension '.yml'"}),
+        YML_COLLECT_PRECISE(Boolean.class, "YML.collectPreciseOverride", false, new String[]{
+                "# really save every kill? This is not advised for YML!"}),
 
         STATISTICS(Null.class, "statistics", null, new String[]{
                 "# === [ Statistic Settings ] ==="}),
