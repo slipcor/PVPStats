@@ -28,6 +28,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 ## Downloads
 
 - [spigotmc.org](https://www.spigotmc.org/resources/pvp-stats.59124/)
+- [Discord - #pvpstats-builds](https://discord.gg/BNkk46vRKa)
 
 
 ***
