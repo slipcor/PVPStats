@@ -46,16 +46,19 @@ public class CheckAndDo implements Runnable {
 
         if (addMaxStreak && kill) {
             DEBUGGER.i("increasing kills and max streak");
-            Bukkit.getScheduler().runTask(PVPStats.getInstance(),
-                    new DatabaseIncreaseKillsStreak(playerName, uuid, elo));
+//            Bukkit.getScheduler().runTask(PVPStats.getInstance(),
+//                    new DatabaseIncreaseKillsStreak(playerName, uuid, elo));
+            (new DatabaseIncreaseKillsStreak(playerName, uuid, elo)).run();
         } else if (kill) {
             DEBUGGER.i("increasing kills and current streak");
-            Bukkit.getScheduler().runTask(PVPStats.getInstance(),
-                    new DatabaseIncreaseKills(playerName, uuid, elo));
+//            Bukkit.getScheduler().runTask(PVPStats.getInstance(),
+//                    new DatabaseIncreaseKills(playerName, uuid, elo));
+            (new DatabaseIncreaseKills(playerName, uuid, elo)).run();
         } else {
             DEBUGGER.i("increasing deaths");
-            Bukkit.getScheduler().runTask(PVPStats.getInstance(),
-                    new DatabaseIncreaseDeaths(playerName, uuid, elo));
+//            Bukkit.getScheduler().runTask(PVPStats.getInstance(),
+//                    new DatabaseIncreaseDeaths(playerName, uuid, elo));
+            (new DatabaseIncreaseDeaths(playerName, uuid, elo)).run();
         }
 
         if (kill) {
