@@ -1128,10 +1128,14 @@ public final class DatabaseAPI {
      */
     private static void checkAndDo(final String playerName, final UUID uuid, final boolean kill, final boolean addMaxStreak, int elo, String world) {
         if (plugin.getSQLHandler().allowsAsync()) {
+            DEBUGGER.i("checkAndDo will run async...");
+
             Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new CheckAndDo(
                     playerName, uuid, kill, addMaxStreak, elo, world
             ));
         } else {
+            DEBUGGER.i("checkAndDo will run SYNC!");
+
             Bukkit.getScheduler().runTask(PVPStats.getInstance(), new CheckAndDo(
                     playerName, uuid, kill, addMaxStreak, elo, world
             ));
