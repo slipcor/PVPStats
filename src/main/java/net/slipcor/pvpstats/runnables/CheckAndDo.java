@@ -30,6 +30,10 @@ public class CheckAndDo implements Runnable {
 
     @Override
     public void run() {
+
+        DEBUGGER.i("checkAndDo running in thread: " + Thread.currentThread().getName());
+        DEBUGGER.i("checkAndDo isMainThread: " + (Bukkit.isPrimaryThread() ? "YES" : "NO"));
+
         if (!plugin.getSQLHandler().hasEntry(uuid)) {
 
             DEBUGGER.i("player has no entry yet, adding!");

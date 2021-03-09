@@ -55,7 +55,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.8.7 - change default behavior for precise stats to not run with YML. Fix debug "all" 
+- v1.8.9 - add debug logs for async or sync
 - [read more](doc/changelog.md)
 
 ***
