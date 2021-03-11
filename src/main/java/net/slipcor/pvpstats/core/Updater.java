@@ -118,7 +118,7 @@ public class Updater extends Thread {
          */
         private void calculateVersions() {
             final String[] aOnline = vOnline.split("\\.");
-            final String[] aThis = vThis.split("\\.");
+            final String[] aThis = vThis.split("-")[0].split("\\.");
             outdated = false;
 
 

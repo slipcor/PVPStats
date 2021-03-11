@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.8.10 - update version check to work with alpha testing builds
 - v1.8.9 - add debug logs for async or sync
 - v1.8.8 - hotfix: fix crashes for mysql users
 - v1.8.7 - change default behavior for precise stats to not run. there is an override config setting that will be announced instead of a warning that no-one listens to
