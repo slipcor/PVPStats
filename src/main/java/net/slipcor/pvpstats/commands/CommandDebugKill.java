@@ -1,6 +1,5 @@
 package net.slipcor.pvpstats.commands;
 
-import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;

@@ -33,6 +33,8 @@ YML:
   table: pvpstats
   # # kill statistic file name, plugin will append extension '.yml'
   killtable: pvpkillstats
+  # really save every kill? This is not advised for YML!
+  collectPreciseOverride: false
 # === [ Statistic Settings ] ===
 statistics:
   # clear (duplicated) statistics on every start

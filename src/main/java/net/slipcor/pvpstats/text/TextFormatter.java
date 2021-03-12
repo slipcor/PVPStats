@@ -121,7 +121,7 @@ public class TextFormatter {
         } else {
             StringBuffer result = new StringBuffer("");
             for (TextComponent component : components) {
-                result.append(component.getColor() + component.getText());
+                result.append(component.getColor()).append(component.getText());
             }
             PVPStats.getInstance().getLogger().info(result.toString());
         }

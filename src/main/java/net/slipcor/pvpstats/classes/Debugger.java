@@ -146,7 +146,7 @@ public class Debugger {
                 PVPStats.getInstance().getLogger().info("debugging: off");
             }
         } else {
-            if ("on".equalsIgnoreCase(debugs) || "full".equalsIgnoreCase(debugs) || "true".equalsIgnoreCase(debugs)) {
+            if ("on".equalsIgnoreCase(debugs) || "all".equalsIgnoreCase(debugs) || "true".equalsIgnoreCase(debugs)) {
                 Debugger.check.add(666);
                 override = true;
                 if (isPlayer) {

@@ -159,6 +159,18 @@ public final class DatabaseAPI {
             incKill(attacker.getPlayer(), PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
             incDeath(victim.getPlayer(), PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
 
+            if (plugin.getSQLHandler().allowsAsync()) {
+                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
+                        PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
+                        PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
+                        victim.getPlayer().getWorld().getName()));
+            } else {
+                Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
+                        PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
+                        PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
+                        victim.getPlayer().getWorld().getName()));
+            }
+
             SignDisplay.updateAll();
             return;
         }
@@ -506,7 +518,8 @@ public final class DatabaseAPI {
             }
 
             dbTable = config.get(Config.Entry.YML_TABLE);
-            if (config.getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
+            if (config.getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE) &&
+                    config.getBoolean(Config.Entry.YML_COLLECT_PRECISE)) {
                 dbKillTable = config.get(Config.Entry.MYSQL_KILLTABLE);
             }
 
@@ -1114,54 +1127,18 @@ public final class DatabaseAPI {
      * @param world        the world the kill happened in
      */
     private static void checkAndDo(final String playerName, final UUID uuid, final boolean kill, final boolean addMaxStreak, int elo, String world) {
+        if (plugin.getSQLHandler().allowsAsync()) {
+            DEBUGGER.i("checkAndDo will run async...");
 
-        if (!plugin.getSQLHandler().hasEntry(uuid)) {
-
-            DEBUGGER.i("player has no entry yet, adding!");
-
-            final int kills = kill ? 1 : 0;
-            final int deaths = kill ? 0 : 1;
-
-            plugin.getSQLHandler().addFirstStat(playerName, uuid, kills, deaths, elo);
-
-            PlayerStatisticsBuffer.setKills(uuid, kills);
-            PlayerStatisticsBuffer.setDeaths(uuid, deaths);
-            return;
-        }
-
-        if (addMaxStreak && kill) {
-            DEBUGGER.i("increasing kills and max streak");
-            if (plugin.getSQLHandler().allowsAsync()) {
-                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(),
-                        new DatabaseIncreaseKillsStreak(playerName, uuid, elo));
-            } else {
-                Bukkit.getScheduler().runTask(PVPStats.getInstance(),
-                        new DatabaseIncreaseKillsStreak(playerName, uuid, elo));
-            }
-        } else if (kill) {
-            DEBUGGER.i("increasing kills and current streak");
-            if (plugin.getSQLHandler().allowsAsync()) {
-                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(),
-                        new DatabaseIncreaseKills(playerName, uuid, elo));
-            } else {
-                Bukkit.getScheduler().runTask(PVPStats.getInstance(),
-                        new DatabaseIncreaseKills(playerName, uuid, elo));
-            }
+            Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new CheckAndDo(
+                    playerName, uuid, kill, addMaxStreak, elo, world
+            ));
         } else {
-            DEBUGGER.i("increasing deaths");
-            if (plugin.getSQLHandler().allowsAsync()) {
-                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(),
-                        new DatabaseIncreaseDeaths(playerName, uuid, elo));
-            } else {
-                Bukkit.getScheduler().runTask(PVPStats.getInstance(),
-                        new DatabaseIncreaseDeaths(playerName, uuid, elo));
-            }
-        }
+            DEBUGGER.i("checkAndDo will run SYNC!");
 
-        if (kill) {
-            PlayerStatisticsBuffer.addKill(uuid);
-        } else {
-            PlayerStatisticsBuffer.addDeath(uuid);
+            Bukkit.getScheduler().runTask(PVPStats.getInstance(), new CheckAndDo(
+                    playerName, uuid, kill, addMaxStreak, elo, world
+            ));
         }
     }
 
@@ -1219,7 +1196,6 @@ public final class DatabaseAPI {
      *
      * @param player the player to increase
      * @param elo        the ELO score to set
-     * @param player      the player issuing the command
      * @return whether the setting succeeded
      */
     public static boolean forceIncKill(final OfflinePlayer player, int elo) {

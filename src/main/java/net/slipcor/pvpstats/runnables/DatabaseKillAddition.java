@@ -23,6 +23,6 @@ public class DatabaseKillAddition implements Runnable {
     @Override
     public void run() {
         PVPStats.getInstance().getSQLHandler().addKill(attackerName, attackerUUID, victimName, victimUUID, world);
-        debugger.i("kill addition sent!");
+        debugger.i("kill addition KA sent!");
     }
 }

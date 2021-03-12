@@ -1,4 +1,14 @@
 # v1.X Changelog
+- v1.7.41 - sync with master v1.8.10
+  - **FIX**: fix server crash when looking up player info on async compatible systems
+  - **FIX**: IDEA calls this "performance"
+  - **FIX**: fix debug "all"
+  - **FIX**: hotfix: fix crashes for mysql users
+  - **FIX**: update version check to work with alpha testing builds
+  - **FIX**: remove api version in plugin.yml, this was introduced in 1.13
+  - **FEAT**: change default behavior for precise stats to not run. there is an override config setting that will be announced instead of a warning that no-one listens to
+  - add debug logs for async or sync
+  - add discord dev build link
 - v1.7.40 - account for null players / names in the offline player list
 - v1.7.39 - rename API method, add API documentation
 - v1.7.38 - add an event to hook into and cancel

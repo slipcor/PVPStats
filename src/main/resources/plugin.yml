@@ -1,7 +1,6 @@
 name: pvpstats
 main: net.slipcor.pvpstats.PVPStats
-version: 1.7.40
-api-version: 1.13
+version: 1.7.41
 author: slipcor
 softdepend: [pvparena,PlaceholderAPI]
 website: https://www.spigotmc.org/resources/pvp-stats.59124/
