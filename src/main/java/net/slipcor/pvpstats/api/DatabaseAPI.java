@@ -519,7 +519,7 @@ public final class DatabaseAPI {
 
             dbTable = config.get(Config.Entry.YML_TABLE);
             if (config.getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE) &&
-                    config.getBoolean(Config.Entry.YML_COLLECT_PRECISE)) {
+                config.getBoolean(Config.Entry.YML_COLLECT_PRECISE)) {
                 dbKillTable = config.get(Config.Entry.MYSQL_KILLTABLE);
             }
 

@@ -277,6 +277,10 @@ public final class PlayerStatisticsBuffer {
         return eloScore.containsKey(uuid);
     }
 
+    /**
+     * Make sure all statistics are loaded, query the database if necessary
+     * @param player the player whose stats to load
+     */
     public static void loadPlayer(OfflinePlayer player) {
         UUID uuid = player.getUniqueId();
         if (deaths.containsKey(uuid) && kills.containsKey(uuid)) {

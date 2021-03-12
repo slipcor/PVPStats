@@ -223,19 +223,19 @@ public class PVPStats extends JavaPlugin {
             dbDatabase = config().get(Config.Entry.SQLITE_FILENAME);
 
             dbTable = config().get(Config.Entry.SQLITE_TABLE);
-            if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE) &&
-                    config().getBoolean(Config.Entry.YML_COLLECT_PRECISE)) {
+            if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
                 dbKillTable = config().get(Config.Entry.SQLITE_KILLTABLE);
-            } else if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
                 getLogger().warning("Specific stats can be turned off as they are never used, they are intended for SQL and web frontend usage!");
-                getLogger().warning("Please either switch to SQLite or re-enable this by setting '" + Config.Entry.YML_COLLECT_PRECISE.getNode() + "' to true");
+                getLogger().warning("We recommend you set '" + Config.Entry.STATISTICS_COLLECT_PRECISE.getNode() + "' to false");
             }
         } else {
             dbTable = config().get(Config.Entry.YML_TABLE);
-            if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
+            if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE) &&
+                config().getBoolean(Config.Entry.YML_COLLECT_PRECISE)) {
                 dbKillTable = config().get(Config.Entry.MYSQL_KILLTABLE);
+            } else if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
                 getLogger().warning("Specific stats can be turned off as they are never used, they are intended for SQL and web frontend usage!");
-                getLogger().warning("We recommend you set '" + Config.Entry.STATISTICS_COLLECT_PRECISE.getNode() + "' to false");
+                getLogger().warning("Please either switch to SQLite or re-enable this by setting '" + Config.Entry.YML_COLLECT_PRECISE.getNode() + "' to true");
             }
         }
 
