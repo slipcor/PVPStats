@@ -81,7 +81,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                     return ""; // we do not have enough entries, return empty
                 }
 
-                return (pos + ": " + top[pos-1]);
+                return Language.INFO_NUMBERS.toString(String.valueOf(pos), top[pos-1]);
             } catch (Exception e) {
                 // let's ignore this for now
                 long now = System.currentTimeMillis();
@@ -110,7 +110,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                     return ""; // we do not have enough entries, return empty
                 }
 
-                return (pos + ": " + top[pos-1]);
+                return Language.INFO_NUMBERS.toString(String.valueOf(pos), top[pos-1]);
             } catch (Exception e) {
                 // let's ignore this for now
                 long now = System.currentTimeMillis();

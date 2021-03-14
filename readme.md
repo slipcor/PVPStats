@@ -55,7 +55,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.8.10 - update version check to work with alpha testing builds
+- v1.8.11 - add configurability for numbered entries, support player meta tags (NPC) to exclude from statistics
 - [read more](doc/changelog.md)
 
 ***

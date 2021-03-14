@@ -35,7 +35,7 @@ public class SendPlayerTop implements Runnable {
 
         int pos = 1;
         for (String stat : top) {
-            sender.sendMessage(pos++ + ": " + stat);
+            sender.sendMessage(Language.INFO_NUMBERS.toString(String.valueOf(pos++), stat));
         }
     }
 }

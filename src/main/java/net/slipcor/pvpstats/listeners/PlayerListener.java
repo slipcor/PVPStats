@@ -25,10 +25,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Player Event Listener class
@@ -126,9 +123,9 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        final Player player = event.getEntity();
+        final Player player = verifyEntity(event.getEntity());
         Debugger.i("Player killed!", player);
-        Player attacker = event.getEntity().getKiller();
+        Player attacker = verifyEntity(event.getEntity().getKiller());
 
         if (attacker == null) {
             Debugger.i("Killer is null", player);
@@ -137,7 +134,7 @@ public class PlayerListener implements Listener {
                 PlayerDamageHistory history = lastDamage.get(player.getUniqueId());
                 List<UUID> damagers = history.getLastDamage(assistSeconds);
                 if (damagers.size() > 0) {
-                    attacker = Bukkit.getPlayer(damagers.get(0));
+                    attacker = verifyEntity(Bukkit.getPlayer(damagers.get(0)));
                 }
                 lastDamage.remove(player.getUniqueId()); // clear map for next kill
             }
@@ -153,6 +150,22 @@ public class PlayerListener implements Listener {
         }
 
         DatabaseAPI.AkilledB(attacker, player);
+    }
+
+    private Player verifyEntity(Player player) {
+        if (player == null) {
+            return null;
+        }
+
+        List<String> tags = plugin.config().getList(Config.Entry.STATISTICS_PREVENTING_PLAYER_META);
+
+        for (String tag : tags) {
+            if (player.hasMetadata(tag)) {
+                return null;
+            }
+        }
+
+        return player;
     }
 
     /**

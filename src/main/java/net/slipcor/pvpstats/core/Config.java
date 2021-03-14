@@ -104,6 +104,8 @@ public class Config {
                 "# mathematical formula to calculate kill/death ratio"}),
         STATISTICS_KD_SIMPLE(String.class, "statistics.killDeathSimple", false, new String[]{
                 "# simplify kill/death ratio calculation to just kills per deaths"}),
+        STATISTICS_PREVENTING_PLAYER_META(List.class, "statistics.preventingPlayerMeta", Collections.singletonList("NPC"), new String[]{
+                "# player meta that marks players as not counting, for example 'NPC' for most plugins that add them"}),
         STATISTICS_RESET_KILLSTREAK_ON_QUIT(Boolean.class, "statistics.resetKillstreakOnQuit", false, new String[]{
                 "# always reset a streak when a player disconnects"}),
         STATISTICS_LEADERBOARD_REFRESH(Integer.class, "statistics.leaderboardRefresh", 60, new String[]{

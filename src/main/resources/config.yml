@@ -51,6 +51,9 @@ statistics:
   abuseSeconds: -1
   # save every kill - is never read internally, so only for web stats or alike
   collectPrecise: true
+  # player meta that marks players as not counting, for example 'NPC' for most plugins that add them
+  preventingPlayerMeta:
+  - NPC
   # always reset a streak when a player disconnects
   resetKillstreakOnQuit: false
   # seconds to wait before the top/flop leaderboard values will query the database again
