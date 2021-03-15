@@ -10,10 +10,11 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A temporary solution to migrate old config nodes to the new config system
+ * A temporary solution to migrate config from prior to v1.3
  *
- * @author slipcor
+ * @deprecated as it was implemented in 2019 as a one-time measure, it will be removed in the next major version
  */
+@Deprecated
 public class ConfigMigration {
     public static void commit() {
         FileConfiguration cfg = PVPStats.getInstance().getConfig();

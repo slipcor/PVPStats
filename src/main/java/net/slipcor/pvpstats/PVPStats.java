@@ -401,7 +401,7 @@ public class PVPStats extends JavaPlugin {
             return;
         }
 
-        ConfigMigration.commit();
+        ConfigMigration.commit(); //TODO: remove class next major bump or reuse next rewrite
         configHandler = config();
 
         final PluginDescriptionFile pdfFile = getDescription();
