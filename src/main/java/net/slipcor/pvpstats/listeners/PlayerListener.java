@@ -123,9 +123,14 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        final Player player = verifyEntity(event.getEntity());
+        final Player player = event.getEntity();
         Debugger.i("Player killed!", player);
-        Player attacker = verifyEntity(event.getEntity().getKiller());
+
+        if (notCountingEntity(player)) {
+            Debugger.i("not counting this one!");
+            return;
+        }
+        Player attacker = event.getEntity().getKiller();
 
         if (attacker == null) {
             Debugger.i("Killer is null", player);
@@ -134,7 +139,7 @@ public class PlayerListener implements Listener {
                 PlayerDamageHistory history = lastDamage.get(player.getUniqueId());
                 List<UUID> damagers = history.getLastDamage(assistSeconds);
                 if (damagers.size() > 0) {
-                    attacker = verifyEntity(Bukkit.getPlayer(damagers.get(0)));
+                    attacker = Bukkit.getPlayer(damagers.get(0));
                 }
                 lastDamage.remove(player.getUniqueId()); // clear map for next kill
             }
@@ -149,23 +154,30 @@ public class PlayerListener implements Listener {
             }
         }
 
+        if (notCountingEntity(attacker)) {
+            Debugger.i("not counting this one!");
+            return;
+        }
+
         DatabaseAPI.AkilledB(attacker, player);
     }
 
-    private Player verifyEntity(Player player) {
+    private boolean notCountingEntity(Player player) {
         if (player == null) {
-            return null;
+            return false; // we do eventually count this as regular death
         }
 
         List<String> tags = plugin.config().getList(Config.Entry.STATISTICS_PREVENTING_PLAYER_META);
 
         for (String tag : tags) {
             if (player.hasMetadata(tag)) {
-                return null;
+                // we found a tag that should prevent statistics
+                return true;
             }
         }
 
-        return player;
+        // nothing bad found, let us count this!
+        return false;
     }
 
     /**

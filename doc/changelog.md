@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.8.12 - shift the logic around to make meta restrictions work
 - v1.8.11 - add configurability for numbered entries, support player meta tags (NPC) to exclude from statistics
 - v1.8.10 - update version check to work with alpha testing builds
 - v1.8.9 - add debug logs for async or sync
