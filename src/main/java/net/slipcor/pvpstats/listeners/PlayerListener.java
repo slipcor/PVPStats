@@ -30,15 +30,13 @@ import java.util.*;
 /**
  * Player Event Listener class
  *
- * @author slipcor
+ * All the things that happen when a Player is involved
  */
 
 public class PlayerListener implements Listener {
     private final PVPStats plugin;
 
     private final Debugger Debugger = new Debugger(3);
-
-    private boolean lock = false;
 
     private int assistSeconds = 60;
 
@@ -49,6 +47,13 @@ public class PlayerListener implements Listener {
         assistSeconds = this.plugin.config().getInt(Config.Entry.STATISTICS_ASSIST_SECONDS);
     }
 
+    /**
+     * Hook into a Player getting damaged
+     *
+     * If the damager is a Player, remember this damage in case the damagee dies later
+     *
+     * @param event the EntityDamageByEntityEvent
+     */
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
         if (event.getEntityType() != EntityType.PLAYER) {
@@ -82,10 +87,10 @@ public class PlayerListener implements Listener {
     }
 
     /**
-     * Hook into a player joining the server
-     * <p>
-     * - tell OPs that there was an update (if enabled=
-     * - initiate players for stats
+     * Hook into a Player joining the server
+     *
+     * Tell OPs that there was an update (if enabled)
+     * Initiate Players for stats
      *
      * @param event the PlayerJoinEvent
      */
@@ -98,9 +103,9 @@ public class PlayerListener implements Listener {
     }
 
     /**
-     * Hook into a player quitting the server
-     * <p>
-     * - if set, reset the killstreaks of a player
+     * Hook into a Player quitting the server
+     *
+     * If set, reset the kill streak of a Player
      *
      * @param event the PlayerQuitEvent
      */
@@ -112,7 +117,7 @@ public class PlayerListener implements Listener {
     }
 
     /**
-     * Hook into a player death, count deaths and kills, where applicable
+     * Hook into a Player death, count deaths and kills, where applicable
      *
      * @param event the PlayerDeathEvent
      */
@@ -162,6 +167,13 @@ public class PlayerListener implements Listener {
         DatabaseAPI.AkilledB(attacker, player);
     }
 
+    /**
+     * Check whether we should not be counting statistics when this Player is involved
+     *
+     * @param player the Player to check
+     *
+     * @return whether we should skip the current death event because of this Player
+     */
     private boolean notCountingEntity(Player player) {
         if (player == null) {
             return false; // we do eventually count this as regular death
@@ -171,7 +183,7 @@ public class PlayerListener implements Listener {
 
         for (String tag : tags) {
             if (player.hasMetadata(tag)) {
-                // we found a tag that should prevent statistics
+                Debugger.i("Tag found: " + tag);
                 return true;
             }
         }
@@ -181,7 +193,9 @@ public class PlayerListener implements Listener {
     }
 
     /**
-     * Hook into a player interacting
+     * Hook into a Player interacting
+     *
+     * If the Player is interacting with a Sign, try setting up a leaderboard
      *
      * @param event the PlayerInteractEvent
      */

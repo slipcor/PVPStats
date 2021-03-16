@@ -9,6 +9,8 @@ import org.bukkit.event.Listener;
 
 /**
  * PVP Arena Event Listener class
+ *
+ * All the orderly PVP Thrashing
  */
 
 public class PVPArenaListener implements Listener {
@@ -20,7 +22,7 @@ public class PVPArenaListener implements Listener {
     }
 
     /**
-     * Hook into a player killing someone
+     * Hook into a Player killing someone
      *
      * @param event the PAKillEvent
      */
@@ -33,14 +35,13 @@ public class PVPArenaListener implements Listener {
     }
 
     /**
-     * Hook into a player being killed
+     * Hook into a Player being killed
      *
      * @param event the PADeathEvent
      */
     @EventHandler
     public void onArenaDeath(final PADeathEvent event) {
-        if (plugin.ignoresWorld(event.getPlayer().getWorld().getName()) ||
-                !event.isPVP()) {
+        if (plugin.ignoresWorld(event.getPlayer().getWorld().getName()) || !event.isPVP()) {
             return;
         }
         DatabaseAPI.AkilledB(null, event.getPlayer());
