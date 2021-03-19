@@ -55,7 +55,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.8.12 - shift the logic around to make meta restrictions work
+- v1.8.13 - run streak commands synchronously!
 - [read more](doc/changelog.md)
 
 ***

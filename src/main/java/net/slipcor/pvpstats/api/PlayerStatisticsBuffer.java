@@ -57,7 +57,7 @@ public final class PlayerStatisticsBuffer {
     public static boolean addStreak(UUID uuid) {
         final int streak = streaks.get(uuid) + 1;
 
-        Bukkit.getScheduler().runTaskLaterAsynchronously(
+        Bukkit.getScheduler().runTaskLater(
                 PVPStats.getInstance(), new Runnable() {
                     @Override
                     public void run() {
