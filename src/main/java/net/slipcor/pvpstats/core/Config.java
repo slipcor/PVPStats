@@ -91,7 +91,9 @@ public class Config {
         STATISTICS_COLLECT_PRECISE(Boolean.class, "statistics.collectPrecise", true, new String[]{
                 "# save every kill - is never read internally, so only for web stats or alike"}),
         STATISTICS_COUNT_REGULAR_DEATHS(Boolean.class, "statistics.countRegularDeaths", false, new String[]{
-                "# count dying from other sources than players towards death count and resetting of streaks"}),
+                "# count dying from other sources than players (and their tamed pets) towards death count and resetting of streaks"}),
+        STATISTICS_COUNT_PET_DEATHS(Boolean.class, "statistics.countPetDeaths", false, new String[]{
+                "# count dying from other player's tamed pets for death count and resetting of streaks"}),
         STATISTICS_CHECK_ABUSE(Boolean.class, "statistics.checkAbuse", true, new String[]{
                 "# prevent players from getting kills from the same victim"}),
         STATISTICS_CHECK_NEWBIES(Boolean.class, "statistics.checkNewbies", true, new String[]{

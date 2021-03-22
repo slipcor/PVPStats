@@ -176,15 +176,25 @@ public class TextFormatter {
     public static void explainNewbieStatus(OfflinePlayer attacker, OfflinePlayer victim) {
         List<TextComponent> message = new ArrayList<>();
 
-        message.add(new TextComponent(PlayerNameHandler.getPlayerName(attacker)).setColor(ChatColor.YELLOW));
+        String killer = attacker == null ? "something unknown" : PlayerNameHandler.getPlayerName(attacker);
+        String killed = victim == null ? "nothing" : PlayerNameHandler.getPlayerName(victim);
+
+        message.add(new TextComponent(killer).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" killing "));
-        message.add(new TextComponent(PlayerNameHandler.getPlayerName(victim)).setColor(ChatColor.YELLOW));
+        message.add(new TextComponent(killed).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" was not recorded as one or both players have 'newbie' status. Add permission node '"));
         message.add(new TextComponent("pvpstats.nonewbie").setColor(ChatColor.YELLOW));
         message.add(new TextComponent("' to both players to fix this."));
 
-        PVPStats.getInstance().sendPrefixedOP(Arrays.asList(attacker.getPlayer(), victim.getPlayer()),
-                message.toArray(new TextComponent[0]));
+        List<CommandSender> list = new ArrayList<>();
+        if (attacker != null) {
+            list.add(attacker.getPlayer());
+        }
+        if (victim != null) {
+            list.add(victim.getPlayer());
+        }
+
+        PVPStats.getInstance().sendPrefixedOP(list, message.toArray(new TextComponent[0]));
     }
 
     public static void explainIgnoredWorld(Player player) {

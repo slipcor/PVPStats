@@ -106,6 +106,12 @@ public final class DatabaseAPI {
 
         if (victim == null || victim.getPlayer() == null) {
             DEBUGGER.i("victim is null", attacker.getName());
+            if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_NEWBIES) && isNewbie(attacker)) {
+
+                DEBUGGER.i("killer has newbie status", attacker.getName());
+                TextFormatter.explainNewbieStatus(attacker, null);
+                return;
+            }
             incKill(attacker.getPlayer(), PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
 
             if (plugin.getSQLHandler().allowsAsync()) {
@@ -126,6 +132,12 @@ public final class DatabaseAPI {
 
         if (attacker == null || attacker.getPlayer() == null) {
             DEBUGGER.i("attacker is null", victim.getName());
+            if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_NEWBIES) && isNewbie(victim)) {
+
+                DEBUGGER.i("victim has newbie status", victim.getName());
+                TextFormatter.explainNewbieStatus(null, victim);
+                return;
+            }
             incDeath(victim.getPlayer(), PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
 
             if (plugin.getSQLHandler().allowsAsync()) {

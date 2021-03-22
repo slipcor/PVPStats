@@ -62,8 +62,10 @@ statistics:
   streakAnnouncements: false
   # issue commands from streak_commands.yml on specific streak values
   streakCommands: false
-  # count dying from other sources than players towards death count and resetting of streaks
+  # count dying from other sources than players (and their tamed pets) towards death count and resetting of streaks
   countRegularDeaths: false
+  # count dying from other player's tamed pets for death count and resetting of streaks
+  countPetDeaths: false
   # mathematical formula to calculate kill/death ratio
   killDeathCalculation: '&k/(&d+1)'
   # simplify kill/death ratio calculation to just kills per deaths

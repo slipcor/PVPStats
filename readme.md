@@ -55,7 +55,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.8.14 - add ability to run multiple commands on a streak
+- v1.8.15 - allow to count pet kills, fix newbie check for deaths not from PVP
 - [read more](doc/changelog.md)
 
 ***

@@ -12,9 +12,7 @@ import net.slipcor.pvpstats.text.TextFormatter;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -69,6 +67,11 @@ public class PlayerListener implements Listener {
             Projectile projectile = (Projectile) event.getDamager();
             if (projectile.getShooter() instanceof Player && !projectile.getShooter().equals(attacked)) {
                 attacker = (Player) projectile.getShooter();
+            }
+        } else if (event.getDamager() instanceof Tameable && plugin.config().getBoolean(Config.Entry.STATISTICS_COUNT_PET_DEATHS)) {
+            AnimalTamer tamer = ((Tameable) event.getDamager()).getOwner();
+            if (tamer instanceof Player) {
+                attacker = (Player) tamer;
             }
         }
 
