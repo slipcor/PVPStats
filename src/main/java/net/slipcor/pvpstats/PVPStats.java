@@ -144,10 +144,24 @@ public class PVPStats extends JavaPlugin {
                     commands = new YamlConfiguration();
                     commands.load(new File(getDataFolder(), "streak_commands.yml"));
                 }
-                String command = commands.getString(key, "");
-                if (!command.isEmpty()) {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-                            command.replace("%player%", PlayerNameHandler.getPlayerName(player)));
+
+                List<String> cmdList = new ArrayList<>();
+
+                // handle either a string or an array of strings in the file
+                if (commands.isString(key)) {
+                    String cmd = commands.getString(key, "");
+                    if (!cmd.equals("")) {
+                        cmdList.add(commands.getString(key, ""));
+                    }
+                } else if (commands.isList(key)) {
+                    cmdList = commands.getStringList(key);
+                }
+
+                for (String command : cmdList) {
+                    if (!command.isEmpty()) {
+                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+                                command.replace("%player%", PlayerNameHandler.getPlayerName(player)));
+                    }
                 }
             }
         } catch (IOException | InvalidConfigurationException exception) {
@@ -231,7 +245,7 @@ public class PVPStats extends JavaPlugin {
         } else {
             dbTable = config().get(Config.Entry.YML_TABLE);
             if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE) &&
-                config().getBoolean(Config.Entry.YML_COLLECT_PRECISE)) {
+                    config().getBoolean(Config.Entry.YML_COLLECT_PRECISE)) {
                 dbKillTable = config().get(Config.Entry.MYSQL_KILLTABLE);
             } else if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
                 getLogger().warning("Specific stats can be turned off as they are never used, they are intended for SQL and web frontend usage!");

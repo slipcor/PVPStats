@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.8.14 - add ability to run multiple commands on a streak
 - v1.8.13 - run streak commands synchronously!
 - v1.8.12 - shift the logic around to make meta restrictions work
 - v1.8.11 - add configurability for numbered entries, support player meta tags (NPC) to exclude from statistics
