@@ -1,5 +1,14 @@
+# Streak Commands File
+# Format is kills: command
+# OR
+# kills:
+#   - command1
+#   - command2
+
 '5': 'give %player% redstone 1'
 '10': 'give %player% iron_ingot 1'
 '15': 'give %player% diamond 1'
 '20': 'give %player% emerald 2'
-'25': 'give %player% diamond 10'
+'25':
+  - 'give %player% diamond 10'
+  - 'give %player% emerald 2'
