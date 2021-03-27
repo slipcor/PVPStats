@@ -55,7 +55,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.8.15 - allow to count pet kills, fix newbie check for deaths not from PVP
+- v1.8.16 - hide ELO information in outputs if ELO is not activated
 - [read more](doc/changelog.md)
 
 ***

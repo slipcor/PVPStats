@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.8.16 - hide ELO information in outputs if ELO is not activated
 - v1.8.15 - allow to count pet kills, fix newbie check for deaths not from PVP
 - v1.8.14 - add ability to run multiple commands on a streak
 - v1.8.13 - run streak commands synchronously!

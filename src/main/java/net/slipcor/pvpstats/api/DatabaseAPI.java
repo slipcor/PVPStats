@@ -441,7 +441,7 @@ public final class DatabaseAPI {
         }
 
 
-        output = new String[7];
+        output = new String[plugin.config().getBoolean(Config.Entry.ELO_ACTIVE) ? 7 : 6];
 
         output[0] = Language.INFO_FORMAT.toString(
                 Language.INFO_NAME.toString(),
@@ -461,9 +461,12 @@ public final class DatabaseAPI {
         output[5] = Language.INFO_FORMAT.toString(
                 Language.INFO_MAXSTREAK.toString(),
                 String.valueOf(maxStreak));
-        output[6] = Language.INFO_FORMAT.toString(
-                Language.INFO_ELO.toString(),
-                String.valueOf(elo));
+
+        if (plugin.config().getBoolean(Config.Entry.ELO_ACTIVE)) {
+            output[6] = Language.INFO_FORMAT.toString(
+                    Language.INFO_ELO.toString(),
+                    String.valueOf(elo));
+        }
         return output;
     }
 
