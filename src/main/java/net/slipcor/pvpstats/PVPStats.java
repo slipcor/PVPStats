@@ -388,7 +388,7 @@ public class PVPStats extends JavaPlugin {
         final OfflinePlayer player = PlayerNameHandler.findPlayer(args[0]);
 
         if (player == null) {
-            sender.sendMessage("Player not found: " + args[0]);
+            sendPrefixed(sender, "Player not found: " + args[0]);
         }
 
         if (!found && DatabaseAPI.hasEntry(player.getUniqueId())) {

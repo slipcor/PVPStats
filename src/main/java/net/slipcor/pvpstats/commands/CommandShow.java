@@ -30,7 +30,7 @@ public class CommandShow extends AbstractCommand {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(),
                         new SendPlayerStats(sender, (Player) sender));
             } else {
-                sender.sendMessage("You do not have stats!");
+                PVPStats.getInstance().sendPrefixed(sender, "You do not have stats!");
             }
             return;
         }
@@ -41,7 +41,7 @@ public class CommandShow extends AbstractCommand {
             final OfflinePlayer player = PlayerNameHandler.findPlayer(args[1]);
 
             if (player == null) {
-                sender.sendMessage("Player not found: " + args[1]);
+                PVPStats.getInstance().sendPrefixed(sender, "Player not found: " + args[1]);
                 return;
             }
             Bukkit.getScheduler().runTaskAsynchronously(

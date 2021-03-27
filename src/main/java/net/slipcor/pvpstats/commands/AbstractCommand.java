@@ -1,6 +1,7 @@
 package net.slipcor.pvpstats.commands;
 
 
+import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
@@ -40,7 +41,7 @@ public abstract class AbstractCommand {
             }
         }
 
-        sender.sendMessage(Language.ERROR_INVALID_ARGUMENT_COUNT.toString(String.valueOf(args.length), joinArray(validCounts, "|")));
+        PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_INVALID_ARGUMENT_COUNT.toString(String.valueOf(args.length), joinArray(validCounts, "|")));
         return false;
     }
 

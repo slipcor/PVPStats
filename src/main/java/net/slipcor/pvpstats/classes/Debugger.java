@@ -141,25 +141,25 @@ public class Debugger {
 
         if ("off".equalsIgnoreCase(debugs) || "none".equalsIgnoreCase(debugs) || "false".equalsIgnoreCase(debugs)) {
             if (isPlayer) {
-                sender.sendMessage("debugging: off");
+                instance.sendPrefixed(sender, "debugging: off");
             } else {
-                PVPStats.getInstance().getLogger().info("debugging: off");
+                instance.getLogger().info("debugging: off");
             }
         } else {
             if ("on".equalsIgnoreCase(debugs) || "all".equalsIgnoreCase(debugs) || "true".equalsIgnoreCase(debugs)) {
                 Debugger.check.add(666);
                 override = true;
                 if (isPlayer) {
-                    sender.sendMessage("debugging on!");
+                    instance.sendPrefixed(sender, "debugging on!");
                 } else {
-                    PVPStats.getInstance().getLogger().info("debugging on!");
+                    instance.getLogger().info("debugging on!");
                 }
             } else {
                 final String[] sIds = debugs.split(",");
                 if (isPlayer) {
-                    sender.sendMessage("debugging: " + debugs);
+                    instance.sendPrefixed(sender, "debugging: " + debugs);
                 } else {
-                    PVPStats.getInstance().getLogger().info("debugging: " + debugs);
+                    instance.getLogger().info("debugging: " + debugs);
                 }
                 for (final String s : sIds) {
                     try {

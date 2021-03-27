@@ -266,21 +266,21 @@ public class Updater extends Thread {
                 }
 
                 if ((mode != UpdateMode.DOWNLOAD || error) || (!(player instanceof Player))) {
-                    player.sendMessage("You are using " + instance.colorize('v' + instance.vThis)
+                    PVPStats.getInstance().sendPrefixed(player, "You are using " + instance.colorize('v' + instance.vThis)
                             + ", an outdated version! Latest: " + ChatColor.COLOR_CHAR + 'a' + 'v' + instance.vOnline);
                 }
 
                 if (mode == UpdateMode.ANNOUNCE) {
-                    player.sendMessage(instance.url);
+                    PVPStats.getInstance().sendPrefixed(player, instance.url);
                 } else {
                     boolean finalError = error;
                     class RunLater implements Runnable {
                         @Override
                         public void run() {
                             if (finalError) {
-                                player.sendMessage("The plugin could not updated, download the new version here: https://www.spigotmc.org/resources/pvp-stats.59124/");
+                                PVPStats.getInstance().sendPrefixed(player, "The plugin could not updated, download the new version here: https://www.spigotmc.org/resources/pvp-stats.59124/");
                             } else {
-                                player.sendMessage("The plugin has been updated, please restart the server!");
+                                PVPStats.getInstance().sendPrefixed(player, "The plugin has been updated, please restart the server!");
                             }
                         }
                     }
@@ -288,7 +288,7 @@ public class Updater extends Thread {
                 }
             } else {
                 if (mode != UpdateMode.DOWNLOAD || (!(player instanceof Player))) {
-                    player.sendMessage("You are using " + instance.colorize('v' + instance.vThis)
+                    PVPStats.getInstance().sendPrefixed(player, "You are using " + instance.colorize('v' + instance.vThis)
                             + ", an experimental version! Latest stable: " + ChatColor.COLOR_CHAR + 'a' + 'v'
                             + instance.vOnline);
                 }

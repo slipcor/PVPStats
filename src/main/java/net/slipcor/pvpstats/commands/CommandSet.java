@@ -1,5 +1,6 @@
 package net.slipcor.pvpstats.commands;
 
+import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
@@ -21,7 +22,7 @@ public class CommandSet extends AbstractCommand {
     @Override
     public void commit(final CommandSender sender, final String[] args) {
         if (!hasPerms(sender)) {
-            sender.sendMessage(Language.MSG_NOPERMSET.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMSET.toString());
             return;
         }
 
@@ -54,18 +55,18 @@ public class CommandSet extends AbstractCommand {
                     PlayerStatisticsBuffer.setEloScore(player.getUniqueId(), amount);
                     DatabaseAPI.setSpecificStat(player, "elo", amount);
                 } else {
-                    sender.sendMessage(this.getShortInfo());
+                    PVPStats.getInstance().sendPrefixed(sender, this.getShortInfo());
                     return;
                 }
 
-                sender.sendMessage(Language.MSG_SET.toString(args[2], args[1], String.valueOf(amount)));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG_SET.toString(args[2], args[1], String.valueOf(amount)));
 
                 DatabaseAPI.refresh();
             } else {
-                sender.sendMessage(Language.INFO_PLAYERNOTFOUND.toString(args[1]));
+                PVPStats.getInstance().sendPrefixed(sender, Language.INFO_PLAYERNOTFOUND.toString(args[1]));
             }
         } catch (Exception e) {
-            sender.sendMessage(Language.ERROR_INVALID_NUMBER.toString(args[3]));
+            PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_INVALID_NUMBER.toString(args[3]));
         }
     }
 

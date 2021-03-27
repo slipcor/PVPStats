@@ -55,7 +55,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.8.16 - hide ELO information in outputs if ELO is not activated
+- v1.8.17 - use plugin prefix in more places, this should reduce confusion and clarify who is talking
 - [read more](doc/changelog.md)
 
 ***

@@ -20,7 +20,7 @@ public class CommandCleanup extends AbstractCommand {
     public void commit(CommandSender sender, String[] args) {
         debugger.i("cleaning up");
         if (!hasPerms(sender)) {
-            sender.sendMessage(Language.MSG_NOPERMCLEANUP.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMCLEANUP.toString());
             return;
         }
 
