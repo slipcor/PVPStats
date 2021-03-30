@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.8.18 - properly treat the "simple calculation" config node as boolean
 - v1.8.17 - use plugin prefix in more places, this should reduce confusion and clarify who is talking
 - v1.8.16 - hide ELO information in outputs if ELO is not activated
 - v1.8.15 - allow to count pet kills, fix newbie check for deaths not from PVP

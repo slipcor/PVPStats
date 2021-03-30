@@ -104,7 +104,7 @@ public class Config {
                 "# order deaths descending by default (rather than TOP deaths being LESS deaths)"}),
         STATISTICS_KD_CALCULATION(String.class, "statistics.killDeathCalculation", "&k/(&d+1)", new String[]{
                 "# mathematical formula to calculate kill/death ratio"}),
-        STATISTICS_KD_SIMPLE(String.class, "statistics.killDeathSimple", false, new String[]{
+        STATISTICS_KD_SIMPLE(Boolean.class, "statistics.killDeathSimple", false, new String[]{
                 "# simplify kill/death ratio calculation to just kills per deaths"}),
         STATISTICS_PREVENTING_PLAYER_META(List.class, "statistics.preventingPlayerMeta", Collections.singletonList("NPC"), new String[]{
                 "# player meta that marks players as not counting, for example 'NPC' for most plugins that add them"}),

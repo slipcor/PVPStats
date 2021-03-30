@@ -55,7 +55,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.8.17 - use plugin prefix in more places, this should reduce confusion and clarify who is talking
+- v1.8.18 - properly treat the "simple calculation" config node as boolean
 - [read more](doc/changelog.md)
 
 ***
