@@ -27,8 +27,8 @@ public class InfixFormula implements Formula {
             return leftValue * rightValue;
         } else if (symbol.equals("/")) {
             if (rightValue == 0) {
-                // If we would have to divide by 0, we just display 0 as a result. No-one wants to see infinity or N/A.
-                return 0;
+                // If we would have to divide by 0, we just display left value as a result. No-one wants to see infinity or N/A.
+                return leftValue;
             }
             return leftValue / rightValue;
         } else if (symbol.equals("+")) {

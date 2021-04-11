@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.9.2 - teach K/D interpreter to display a number that makes some sense rather than 0, when dividing by 0
 - v1.9.1 - introduce K/D interpreter - it supports powers `x² => (x^2)` - thanks to garbagemule for the inspiration
 - v1.8.18 - properly treat the "simple calculation" config node as boolean
 - v1.8.17 - use plugin prefix in more places, this should reduce confusion and clarify who is talking

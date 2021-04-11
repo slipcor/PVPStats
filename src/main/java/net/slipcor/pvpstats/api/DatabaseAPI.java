@@ -1016,7 +1016,7 @@ public final class DatabaseAPI {
     public static Double calculateRatio(PlayerStatistic statistic) {
         if (plugin.config().getBoolean(Config.Entry.STATISTICS_KD_SIMPLE)) {
             if (statistic.getDeaths() < 1) {
-                return 0d;
+                return ((double) statistic.getKills());
             }
             return ((double) statistic.getKills()) / statistic.getDeaths();
         }

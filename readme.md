@@ -55,7 +55,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.9.1 - introduce K/D interpreter - it supports powers `x² => (x^2)` - thanks to garbagemule for the inspiration
+- v1.9.2 - teach K/D interpreter to display a number that makes some sense rather than 0, when dividing by 0 
 - [read more](doc/changelog.md)
 
 ***
