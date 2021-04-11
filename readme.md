@@ -55,7 +55,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.9.2 - teach K/D interpreter to display a number that makes some sense rather than 0, when dividing by 0 
+- v1.9.3 - take minimum and default ELO into account when creating player statistics 
 - [read more](doc/changelog.md)
 
 ***

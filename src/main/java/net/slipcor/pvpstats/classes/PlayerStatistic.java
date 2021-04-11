@@ -21,13 +21,16 @@ public class PlayerStatistic {
     private final long time;
     private final UUID uid;
 
+    public static int ELO_MINIMUM = 16;
+    public static int ELO_DEFAULT = 1500;
+
     public PlayerStatistic(String name, int kills, int deaths, int streak, int currentstreak, int elo, long time, UUID uid) {
         this.name = name;
         this.kills = kills;
         this.deaths = deaths;
         this.streak = streak;
         this.currentstreak = currentstreak;
-        this.elo = elo;
+        this.elo = elo > ELO_MINIMUM ? elo : ELO_DEFAULT;
         this.time = time;
         this.uid = uid;
     }

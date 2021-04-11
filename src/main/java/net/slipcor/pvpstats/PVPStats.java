@@ -316,7 +316,9 @@ public class PVPStats extends JavaPlugin {
             this.mySQL = false;
             this.SQLite = false;
         }
-    }
+
+        PlayerStatistic.ELO_DEFAULT = config().getInt(Config.Entry.ELO_DEFAULT);
+        PlayerStatistic.ELO_MINIMUM = config().getInt(Config.Entry.ELO_MINIMUM);    }
 
     /**
      * Load the language file

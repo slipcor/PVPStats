@@ -74,7 +74,7 @@ public class TestMath {
         Formula defaultFormula = parser.parse(defaultKD);
 
         // division by 0 results in 0
-        assertEquals(0, defaultFormula.evaluate(killerStatistic));
+        assertEquals(16, defaultFormula.evaluate(killerStatistic));
         // 0 divided by anything results in 0
         assertEquals(0, defaultFormula.evaluate(victimStatistic));
 
