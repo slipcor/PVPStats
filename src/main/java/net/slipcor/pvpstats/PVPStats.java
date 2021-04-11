@@ -5,6 +5,7 @@ import net.slipcor.pvpstats.api.DatabaseConnection;
 import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.classes.PlaceholderAPIHook;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
+import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.commands.*;
 import net.slipcor.pvpstats.core.*;
 import net.slipcor.pvpstats.display.SignDisplay;

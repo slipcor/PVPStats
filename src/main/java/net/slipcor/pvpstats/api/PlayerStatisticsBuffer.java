@@ -10,7 +10,7 @@ import java.util.*;
 
 /**
  * Class for fast temporary access to player statistics
- * <p>
+ *
  * Should never be publicly used to SET variables, only for quick access to existing values
  *
  * @author slipcor
@@ -244,7 +244,12 @@ public final class PlayerStatisticsBuffer {
      * @return the player's current k/d ratio
      */
     public static Double getRatio(UUID uuid) {
-        return DatabaseAPI.calculateRatio(getKills(uuid), getDeaths(uuid), getStreak(uuid), getMaxStreak(uuid));
+        return DatabaseAPI.calculateRatio(
+                new PlayerStatistic(
+                        null, getKills(uuid), getDeaths(uuid), getMaxStreak(uuid), getStreak(uuid), 0, 0,
+                        uuid
+                )
+        );
     }
 
     /**

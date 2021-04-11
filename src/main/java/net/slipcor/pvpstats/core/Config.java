@@ -19,7 +19,7 @@ public class Config {
 
     /**
      * The Config constructor;
-     * <p>
+     *
      * Create the config and append comments
      *
      * @param plugin the JavaPlugin which contains the config
@@ -34,7 +34,7 @@ public class Config {
 
     /**
      * The Config entry class
-     * <p>
+     *
      * Each entry has an explicit class type, a node, optional comments
      * and a default value
      */
@@ -102,7 +102,7 @@ public class Config {
                 "# seconds to wait before allowing to kill the same player again to count (-1 will never reset)"}),
         STATISTICS_DEATHS_DESCENDING(Boolean.class, "statistics.deathsDescending", false, new String[]{
                 "# order deaths descending by default (rather than TOP deaths being LESS deaths)"}),
-        STATISTICS_KD_CALCULATION(String.class, "statistics.killDeathCalculation", "&k/(&d+1)", new String[]{
+        STATISTICS_KD_CALCULATION(String.class, "statistics.killDeathCalculation", "&k/&d", new String[]{
                 "# mathematical formula to calculate kill/death ratio"}),
         STATISTICS_KD_SIMPLE(Boolean.class, "statistics.killDeathSimple", false, new String[]{
                 "# simplify kill/death ratio calculation to just kills per deaths"}),
@@ -279,7 +279,7 @@ public class Config {
 
     /**
      * Append the comments.
-     * <p>
+     *
      * Iterate over the config file and add comments, if we didn't do that
      * already.
      */

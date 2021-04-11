@@ -1,6 +1,6 @@
-package net.slipcor.pvpstats.display;
+package net.slipcor.pvpstats.api;
 
-public enum SortColumn {
+public enum InformationType {
     NAME,
     DEATHS,
     KILLS,

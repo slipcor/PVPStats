@@ -67,7 +67,7 @@ statistics:
   # count dying from other player's tamed pets for death count and resetting of streaks
   countPetDeaths: false
   # mathematical formula to calculate kill/death ratio
-  killDeathCalculation: '&k/(&d+1)'
+  killDeathCalculation: '&k/&d'
   # simplify kill/death ratio calculation to just kills per deaths
   killDeathSimple: false
   # time in seconds to consider a former kill an assist

@@ -7,10 +7,11 @@ import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
 import net.slipcor.pvpstats.display.SignDisplay;
-import net.slipcor.pvpstats.display.SortColumn;
 import net.slipcor.pvpstats.impl.FlatFileConnection;
 import net.slipcor.pvpstats.impl.MySQLConnection;
 import net.slipcor.pvpstats.impl.SQLiteConnection;
+import net.slipcor.pvpstats.math.Formula;
+import net.slipcor.pvpstats.math.MathFormulaManager;
 import net.slipcor.pvpstats.runnables.*;
 import net.slipcor.pvpstats.text.TextComponent;
 import net.slipcor.pvpstats.text.TextFormatter;
@@ -48,9 +49,11 @@ public final class DatabaseAPI {
 
     private static final TextComponent DATABASE_CONNECTED = new TextComponent("Warning: Database is not connected! Kills will not be recorded.");
 
+    private static Formula formula;
+
     /**
      * Player A killed player B - use this to generally emulate a player kill.
-     * <p>
+     *
      * There will be checks for newbie status, whether both players are valid Player objects
      *
      * @param attacker the killing player
@@ -360,7 +363,7 @@ public final class DatabaseAPI {
 
     /**
      * Check whether a player has a statistic entry
-     * <p>
+     *
      * YML will return true always as this is only about deciding between INSERT and UPDATE query
      *
      * @param uuid the player id to find
@@ -416,7 +419,8 @@ public final class DatabaseAPI {
         int deaths = result.getDeaths();
         int streak = result.getCurrentStreak();
         int maxStreak = result.getMaxStreak();
-        Double ratio = calculateRatio(kills, deaths, maxStreak, streak);
+
+        Double ratio = calculateRatio(result);
         DecimalFormat df = new DecimalFormat("#.##");
 
         if (plugin.config().getBoolean(Config.Entry.MESSAGES_OVERRIDES)) {
@@ -847,11 +851,7 @@ public final class DatabaseAPI {
                                 entry.getName(),String.valueOf(entry.getCurrentStreak())));
                         break;
                     default:
-                        results.put(
-                                entry.getName(),
-                                calculateRatio(entry.getKills(),
-                                        entry.getDeaths(),
-                                        entry.getMaxStreak(), PlayerStatisticsBuffer.getStreak(entry.getUid())));
+                        results.put(entry.getName(), calculateRatio(entry));
                         break;
                 }
             }
@@ -945,11 +945,7 @@ public final class DatabaseAPI {
                                 entry.getName(),String.valueOf(entry.getCurrentStreak())));
                         break;
                     default:
-                        results.put(
-                                entry.getName(),
-                                calculateRatio(entry.getKills(),
-                                        entry.getDeaths(),
-                                        entry.getMaxStreak(), PlayerStatisticsBuffer.getStreak(entry.getUid())));
+                        results.put(entry.getName(), calculateRatio(entry));
                         break;
                 }
             }
@@ -968,8 +964,8 @@ public final class DatabaseAPI {
         return sortParse(results, count);
     }
 
-    public static List<Map<SortColumn, String>> detailedTop(int max, SortColumn column) {
-        List<Map<SortColumn, String>> result = new ArrayList<>();
+    public static List<Map<InformationType, String>> detailedTop(int max, InformationType column) {
+        List<Map<InformationType, String>> result = new ArrayList<>();
 
         try {
             String sort = "";
@@ -984,7 +980,7 @@ public final class DatabaseAPI {
                     sort = column.name().toLowerCase();
                     break;
             }
-            List<PlayerStatistic> stats = plugin.getSQLHandler().getTopSorted(max, sort, column == SortColumn.DEATHS);
+            List<PlayerStatistic> stats = plugin.getSQLHandler().getTopSorted(max, sort, column == InformationType.DEATHS);
 
             for (PlayerStatistic stat : stats) {
                 result.add(stat.toStringMap());
@@ -1011,7 +1007,27 @@ public final class DatabaseAPI {
         PlayerStatisticsBuffer.clear(uuid);
     }
 
-    private static ScriptEngine scriptEngine;
+    /**
+     * Calculate the kill / death ratio as defined in the config
+     *
+     * @param statistic the PlayerStatistic to fill in
+     * @return the calculated value
+     */
+    public static Double calculateRatio(PlayerStatistic statistic) {
+        if (plugin.config().getBoolean(Config.Entry.STATISTICS_KD_SIMPLE)) {
+            if (statistic.getDeaths() < 1) {
+                return 0d;
+            }
+            return ((double) statistic.getKills()) / statistic.getDeaths();
+        }
+
+        if (formula == null) {
+            String string = plugin.config().get(Config.Entry.STATISTICS_KD_CALCULATION);
+            formula = MathFormulaManager.getInstance().parse(string);
+        }
+
+        return formula.evaluate(statistic);
+    }
 
     /**
      * Calculate the kill / death ratio as defined in the config
@@ -1021,82 +1037,18 @@ public final class DatabaseAPI {
      * @param streak    to take into account
      * @param maxstreak to take into account
      * @return the calculated value
+     *
+     * @deprecated in favor of much more flexible calculateRatio(PlayerStatistic)
      */
+    @Deprecated
     public static Double calculateRatio(final int kills, final int deaths, final int streak,
                                         final int maxstreak) {
-        if (plugin.config().getBoolean(Config.Entry.STATISTICS_KD_SIMPLE)) {
-            if (deaths < 1) {
-                return 0d;
-            }
-            return ((double) kills) / deaths;
-        }
-
-        String string = plugin.config().get(Config.Entry.STATISTICS_KD_CALCULATION);
-
-        string = string.replaceAll("&k", "(" + kills + ")");
-        string = string.replaceAll("&d", "(" + deaths + ")");
-        string = string.replaceAll("&s", "(" + streak + ")");
-        string = string.replaceAll("&m", "(" + maxstreak + ")");
-
-        if (scriptEngine == null) {
-            ScriptEngineManager mgr = new ScriptEngineManager();
-            scriptEngine = mgr.getEngineByName("JavaScript");
-
-            // Java 8 compatibility
-            if (scriptEngine == null) {
-                mgr = new ScriptEngineManager(null);
-                scriptEngine = mgr.getEngineByName("nashorn");
-            }
-        }
-
-        StringBuilder saneString = new StringBuilder();
-
-        for (char c : string.toCharArray()) {
-            switch (c) {
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                case '-':
-                case '+':
-                case '*':
-                case '/':
-                case '(':
-                case ')':
-                case '<':
-                case '>':
-                case '?':
-                case ':':
-                case '=':
-                    saneString.append(c);
-                    break;
-                default:
-            }
-        }
-
-        try {
-            Object value = scriptEngine.eval(saneString.toString());
-
-            if (value instanceof Double) {
-                return (Double) value;
-            } else if (value instanceof Integer) {
-                int i = (Integer) value;
-                return (double) i;
-            }
-            plugin.getLogger().severe("SaneString: " + value.toString());
-
-            return 0d;
-        } catch (ScriptException e) {
-            plugin.getLogger().severe("SaneString: " + saneString.toString());
-            e.printStackTrace();
-            return 0d;
-        }
+        return calculateRatio(
+                new PlayerStatistic(
+                        "legacy", kills, deaths, maxstreak, streak, 0, 0,
+                        new UUID(0, 0)
+                )
+        );
     }
 
     /**
@@ -1285,5 +1237,6 @@ public final class DatabaseAPI {
      */
     public static void refresh() {
         PlayerStatisticsBuffer.refresh();
+        formula = null;
     }
 }

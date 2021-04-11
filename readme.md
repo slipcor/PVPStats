@@ -55,7 +55,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.8.18 - properly treat the "simple calculation" config node as boolean
+- v1.9.1 - introduce K/D interpreter - it supports powers `x² => (x^2)` - thanks to garbagemule for the inspiration
 - [read more](doc/changelog.md)
 
 ***

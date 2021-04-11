@@ -4,7 +4,7 @@
 
     <groupId>net.slipcor</groupId>
     <artifactId>pvpstats</artifactId>
-    <version>1.8</version>
+    <version>1.9</version>
     <name>PVP Stats</name>
 
     <properties>
@@ -44,6 +44,13 @@
             <artifactId>placeholderapi</artifactId>
             <version>2.10.2</version>
             <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.3.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

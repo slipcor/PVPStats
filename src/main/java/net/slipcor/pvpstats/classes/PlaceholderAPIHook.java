@@ -9,7 +9,7 @@ import org.bukkit.OfflinePlayer;
 
 /**
  * Hook class to hook into the Placeholder API
- * <p>
+ *
  * Created by Yaël on 27/02/2016.
  * Updated with code by extendedclip on 15/05/2019
  */

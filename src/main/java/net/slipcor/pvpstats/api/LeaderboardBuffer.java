@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * Class for fast temporary access to leaderboards
- * <p>
+ *
  * Should never be publicly used to SET variables, only for quick access to existing values
  *
  * @author slipcor
