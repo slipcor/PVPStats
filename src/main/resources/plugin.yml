@@ -28,6 +28,9 @@ permissions:
   pvpstats.wipe:
     description: Ability to wipe
     default: op
+  pvpstats.show:
+    description: Ability to show other players' stats
+    default: op
   pvpstats.debug:
     description: Ability to debug
     default: op

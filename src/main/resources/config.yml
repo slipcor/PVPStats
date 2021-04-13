@@ -122,3 +122,7 @@ bStats:
   enabled: true
   # This setting sends a bit more detailed information about which features are used at all. Thank you for supporting me!
   full: true
+# === [ General Settings] ===
+general:
+  # Allow command shorthands
+  shortHandCommands: true

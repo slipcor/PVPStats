@@ -186,7 +186,9 @@ public class PVPStats extends JavaPlugin {
     /**
      * Instantiate command
      */
-    private void loadCommands() {
+    public void loadCommands() {
+        commandList.clear();
+        commandMap.clear();
         new CommandCleanup().load(commandList, commandMap);
         new CommandConfig().load(commandList, commandMap);
         new CommandDebug().load(commandList, commandMap);
@@ -391,7 +393,7 @@ public class PVPStats extends JavaPlugin {
         final OfflinePlayer player = PlayerNameHandler.findPlayer(args[0]);
 
         if (player == null) {
-            sendPrefixed(sender, "Player not found: " + args[0]);
+            sendPrefixed(sender, Language.INFO_PLAYERNOTFOUND.toString(args[0]));
         }
 
         if (!found && DatabaseAPI.hasEntry(player.getUniqueId())) {

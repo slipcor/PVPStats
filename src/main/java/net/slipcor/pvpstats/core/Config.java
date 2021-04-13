@@ -39,6 +39,12 @@ public class Config {
      * and a default value
      */
     public enum Entry {
+
+        GENERAL(Null.class, "General", null, new String[]{
+                "# === [ General Settings ] ==="}),
+        GENERAL_SHORTHAND_COMMANDS(Boolean.class, "General.shortHandCommands", true, new String[]{
+                "# Allow command shorthands"}),
+
         MYSQL(Null.class, "MySQL", null, new String[]{
                 "# === [ MySQL Settings ] ==="}),
         MYSQL_ACTIVE(Boolean.class, "MySQL.active", false, new String[]{

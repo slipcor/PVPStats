@@ -1,4 +1,8 @@
 # v1.X Changelog
+- v1.9.4 several updates:
+  - **FIX**: Replace hardcoded messages with language messages
+  - **FEAT**: Introduce pvpstats.show to restrict players watching other players' stats
+  - **FEAT**: Add new config setting 'shortHandCommands' to disable exclamation point shorthand functionality
 - v1.9.3 - take minimum and default ELO into account when creating player statistics; fix test logic
 - v1.9.2 - teach K/D interpreter to display a number that makes some sense rather than 0, when dividing by 0
 - v1.9.1 - introduce K/D interpreter - it supports powers `x² => (x^2)` - thanks to garbagemule for the inspiration

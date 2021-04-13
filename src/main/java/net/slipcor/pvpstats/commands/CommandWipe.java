@@ -32,7 +32,7 @@ public class CommandWipe extends AbstractCommand {
             OfflinePlayer player =  PlayerNameHandler.findPlayer(args[1]);
 
             if (player == null) {
-                PVPStats.getInstance().sendPrefixed(sender, "Player not found: " + args[1]);
+                PVPStats.getInstance().sendPrefixed(sender, Language.INFO_PLAYERNOTFOUND.toString(args[1]));
                 return;
             }
 
