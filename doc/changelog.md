@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.9.5 - default the "show" permission to true
 - v1.9.4 several updates:
   - **FIX**: Replace hardcoded messages with language messages
   - **FEAT**: Introduce pvpstats.show to restrict players watching other players' stats

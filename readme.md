@@ -55,10 +55,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.9.4 several updates:
-    - **FIX**: Replace hardcoded messages with language messages
-    - **FEAT**: Introduce pvpstats.show to restrict players watching other players' stats
-    - **FEAT**: Add new config setting 'shortHandCommands' to disable exclamation point shorthand functionality
+- v1.9.5 - default the "show" permission to true 
 - [read more](doc/changelog.md)
 
 ***

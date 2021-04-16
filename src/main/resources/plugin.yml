@@ -30,7 +30,7 @@ permissions:
     default: op
   pvpstats.show:
     description: Ability to show other players' stats
-    default: op
+    default: true
   pvpstats.debug:
     description: Ability to debug
     default: op
