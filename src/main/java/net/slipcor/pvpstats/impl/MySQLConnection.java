@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -69,14 +70,20 @@ public class MySQLConnection extends AbstractSQLConnection {
      * @return true if the table exists, false if there was an error or the database doesn't exist.
      */
     public boolean tableExists(String database, String table) {
-        String format = "SELECT * FROM `information_schema`.`TABLES` WHERE TABLE_SCHEMA = '$DB' && TABLE_NAME = '$TABLE';";
         try {
-            return this.databaseConnection.createStatement().executeQuery(format.replace("$DB", database).replace("$TABLE", table)).first();
+            ResultSet result = databaseConnection.getMetaData().getTables(databaseConnection.getCatalog(), null, table, null);
+            while (result.next()) {
+                if (result.getString("TABLE_NAME").equals(table)) {
+                    return true;
+                }
+            }
+
+            return false;
         } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
-
     /*
      * ----------------------
      *  TABLE ENTRY CREATION
