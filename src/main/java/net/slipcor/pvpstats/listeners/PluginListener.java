@@ -7,6 +7,8 @@ import org.bukkit.event.server.PluginEnableEvent;
 
 /**
  * Plugin Event Listener class
+ *
+ * All the things about other Plugins
  */
 
 public class PluginListener implements Listener {

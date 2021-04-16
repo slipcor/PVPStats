@@ -1,5 +1,6 @@
 package net.slipcor.pvpstats.core;
 
+import net.slipcor.pvpstats.PVPStats;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -36,6 +37,7 @@ public enum Language {
     ERROR_CONFIG_SECRET("error.config_secret", "Cannot show node: &e%0%&r!"),
 
     INFO_FORMAT("info.format", "&c%0%: &7%1%"),
+    INFO_NUMBERS("info.numbers", "%0%: %1%"),
     INFO_NAME("info.name", "Name"),
     INFO_KILLS("info.kills", "Kills"),
     INFO_DEATHS("info.deaths", "Deaths"),
@@ -74,7 +76,9 @@ public enum Language {
     MSG_NOPERMPURGE("msg.nopermpurge", "No permission to purge!"),
     MSG_NOPERMSET("msg.nopermset", "No permission to set!"),
     MSG_NOPERMWIPE("msg.nopermwipe", "No permission to wipe!"),
+    MSG_NOPERMSHOW("msg.nopermshow", "No permission to see stats!"),
     MSG_NOPERMTOP("msg.nopermtop", "No permission to view top players!"),
+    MSG_NOSTATS("msg.nostats", "You do not have stats!"),
     MSG_PREFIX("msg.prefix", "[PVP Stats] "),
     MSG_RELOADED("msg.reloaded", "Configuration reloaded!"),
     MSG_UPDATE("msg.update", "Update available, check spigotmc.org!"),
@@ -130,6 +134,7 @@ public enum Language {
         for (Language lang : Language.values()) {
             if (cfg.get(lang.node) == null) {
                 cfg.set(lang.node, lang.sDefault);
+                PVPStats.getInstance().getLogger().info("New Node: " + lang.node);
                 changed = true;
             } else {
                 lang.override(cfg.getString(lang.node));

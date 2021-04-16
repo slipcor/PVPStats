@@ -12,9 +12,7 @@ import net.slipcor.pvpstats.text.TextFormatter;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,23 +23,18 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Player Event Listener class
  *
- * @author slipcor
+ * All the things that happen when a Player is involved
  */
 
 public class PlayerListener implements Listener {
     private final PVPStats plugin;
 
     private final Debugger Debugger = new Debugger(3);
-
-    private boolean lock = false;
 
     private int assistSeconds = 60;
 
@@ -52,6 +45,13 @@ public class PlayerListener implements Listener {
         assistSeconds = this.plugin.config().getInt(Config.Entry.STATISTICS_ASSIST_SECONDS);
     }
 
+    /**
+     * Hook into a Player getting damaged
+     *
+     * If the damager is a Player, remember this damage in case the damagee dies later
+     *
+     * @param event the EntityDamageByEntityEvent
+     */
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
         if (event.getEntityType() != EntityType.PLAYER) {
@@ -67,6 +67,11 @@ public class PlayerListener implements Listener {
             Projectile projectile = (Projectile) event.getDamager();
             if (projectile.getShooter() instanceof Player && !projectile.getShooter().equals(attacked)) {
                 attacker = (Player) projectile.getShooter();
+            }
+        } else if (event.getDamager() instanceof Tameable && plugin.config().getBoolean(Config.Entry.STATISTICS_COUNT_PET_DEATHS)) {
+            AnimalTamer tamer = ((Tameable) event.getDamager()).getOwner();
+            if (tamer instanceof Player) {
+                attacker = (Player) tamer;
             }
         }
 
@@ -85,10 +90,10 @@ public class PlayerListener implements Listener {
     }
 
     /**
-     * Hook into a player joining the server
-     * <p>
-     * - tell OPs that there was an update (if enabled=
-     * - initiate players for stats
+     * Hook into a Player joining the server
+     *
+     * Tell OPs that there was an update (if enabled)
+     * Initiate Players for stats
      *
      * @param event the PlayerJoinEvent
      */
@@ -101,9 +106,9 @@ public class PlayerListener implements Listener {
     }
 
     /**
-     * Hook into a player quitting the server
-     * <p>
-     * - if set, reset the killstreaks of a player
+     * Hook into a Player quitting the server
+     *
+     * If set, reset the kill streak of a Player
      *
      * @param event the PlayerQuitEvent
      */
@@ -115,7 +120,7 @@ public class PlayerListener implements Listener {
     }
 
     /**
-     * Hook into a player death, count deaths and kills, where applicable
+     * Hook into a Player death, count deaths and kills, where applicable
      *
      * @param event the PlayerDeathEvent
      */
@@ -128,6 +133,11 @@ public class PlayerListener implements Listener {
 
         final Player player = event.getEntity();
         Debugger.i("Player killed!", player);
+
+        if (notCountingEntity(player)) {
+            Debugger.i("not counting this one!");
+            return;
+        }
         Player attacker = event.getEntity().getKiller();
 
         if (attacker == null) {
@@ -152,11 +162,44 @@ public class PlayerListener implements Listener {
             }
         }
 
+        if (notCountingEntity(attacker)) {
+            Debugger.i("not counting this one!");
+            return;
+        }
+
         DatabaseAPI.AkilledB(attacker, player);
     }
 
     /**
      * Hook into a player interacting
+     * Check whether we should not be counting statistics when this Player is involved
+     *
+     * @param player the Player to check
+     *
+     * @return whether we should skip the current death event because of this Player
+     */
+    private boolean notCountingEntity(Player player) {
+        if (player == null) {
+            return false; // we do eventually count this as regular death
+        }
+
+        List<String> tags = plugin.config().getList(Config.Entry.STATISTICS_PREVENTING_PLAYER_META);
+
+        for (String tag : tags) {
+            if (player.hasMetadata(tag)) {
+                Debugger.i("Tag found: " + tag);
+                return true;
+            }
+        }
+
+        // nothing bad found, let us count this!
+        return false;
+    }
+
+    /**
+     * Hook into a Player interacting
+     *
+     * If the Player is interacting with a Sign, try setting up a leaderboard
      *
      * @param event the PlayerInteractEvent
      */

@@ -17,7 +17,7 @@ public class CommandPurge extends AbstractCommand {
     @Override
     public void commit(CommandSender sender, String[] args) {
         if (!hasPerms(sender)) {
-            sender.sendMessage(Language.MSG_NOPERMPURGE.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMPURGE.toString());
             return;
         }
 

@@ -19,7 +19,7 @@ public class Config {
 
     /**
      * The Config constructor;
-     * <p>
+     *
      * Create the config and append comments
      *
      * @param plugin the JavaPlugin which contains the config
@@ -34,11 +34,16 @@ public class Config {
 
     /**
      * The Config entry class
-     * <p>
+     *
      * Each entry has an explicit class type, a node, optional comments
      * and a default value
      */
     public enum Entry {
+        GENERAL(Null.class, "General", null, new String[]{
+                "# === [ General Settings ] ==="}),
+        GENERAL_SHORTHAND_COMMANDS(Boolean.class, "General.shortHandCommands", true, new String[]{
+                "# Allow command shorthands"}),
+
         MYSQL(Null.class, "MySQL", null, new String[]{
                 "# === [ MySQL Settings ] ==="}),
         MYSQL_ACTIVE(Boolean.class, "MySQL.active", false, new String[]{
@@ -91,7 +96,9 @@ public class Config {
         STATISTICS_COLLECT_PRECISE(Boolean.class, "statistics.collectPrecise", true, new String[]{
                 "# save every kill - is never read internally, so only for web stats or alike"}),
         STATISTICS_COUNT_REGULAR_DEATHS(Boolean.class, "statistics.countRegularDeaths", false, new String[]{
-                "# count dying from other sources than players towards death count and resetting of streaks"}),
+                "# count dying from other sources than players (and their tamed pets) towards death count and resetting of streaks"}),
+        STATISTICS_COUNT_PET_DEATHS(Boolean.class, "statistics.countPetDeaths", false, new String[]{
+                "# count dying from other player's tamed pets for death count and resetting of streaks"}),
         STATISTICS_CHECK_ABUSE(Boolean.class, "statistics.checkAbuse", true, new String[]{
                 "# prevent players from getting kills from the same victim"}),
         STATISTICS_CHECK_NEWBIES(Boolean.class, "statistics.checkNewbies", true, new String[]{
@@ -100,10 +107,12 @@ public class Config {
                 "# seconds to wait before allowing to kill the same player again to count (-1 will never reset)"}),
         STATISTICS_DEATHS_DESCENDING(Boolean.class, "statistics.deathsDescending", false, new String[]{
                 "# order deaths descending by default (rather than TOP deaths being LESS deaths)"}),
-        STATISTICS_KD_CALCULATION(String.class, "statistics.killDeathCalculation", "&k/(&d+1)", new String[]{
+        STATISTICS_KD_CALCULATION(String.class, "statistics.killDeathCalculation", "&k/&d", new String[]{
                 "# mathematical formula to calculate kill/death ratio"}),
-        STATISTICS_KD_SIMPLE(String.class, "statistics.killDeathSimple", false, new String[]{
+        STATISTICS_KD_SIMPLE(Boolean.class, "statistics.killDeathSimple", false, new String[]{
                 "# simplify kill/death ratio calculation to just kills per deaths"}),
+        STATISTICS_PREVENTING_PLAYER_META(List.class, "statistics.preventingPlayerMeta", Collections.singletonList("NPC"), new String[]{
+                "# player meta that marks players as not counting, for example 'NPC' for most plugins that add them"}),
         STATISTICS_RESET_KILLSTREAK_ON_QUIT(Boolean.class, "statistics.resetKillstreakOnQuit", false, new String[]{
                 "# always reset a streak when a player disconnects"}),
         STATISTICS_LEADERBOARD_REFRESH(Integer.class, "statistics.leaderboardRefresh", 60, new String[]{
@@ -275,7 +284,7 @@ public class Config {
 
     /**
      * Append the comments.
-     * <p>
+     *
      * Iterate over the config file and add comments, if we didn't do that
      * already.
      */

@@ -18,7 +18,7 @@ public class CommandReload extends AbstractCommand {
     @Override
     public void commit(CommandSender sender, String[] args) {
         if (!hasPerms(sender)) {
-            sender.sendMessage(Language.MSG_NOPERMRELOAD.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMRELOAD.toString());
             return;
         }
 

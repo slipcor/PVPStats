@@ -21,7 +21,7 @@ public class CommandWipe extends AbstractCommand {
     @Override
     public void commit(CommandSender sender, String[] args) {
         if (!hasPerms(sender)) {
-            sender.sendMessage(Language.MSG_NOPERMWIPE.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMWIPE.toString());
             return;
         }
 
@@ -32,7 +32,7 @@ public class CommandWipe extends AbstractCommand {
             OfflinePlayer player =  PlayerNameHandler.findPlayer(args[1]);
 
             if (player == null) {
-                sender.sendMessage("Player not found: " + args[1]);
+                PVPStats.getInstance().sendPrefixed(sender, Language.INFO_PLAYERNOTFOUND.toString(args[1]));
                 return;
             }
 

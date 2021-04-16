@@ -11,8 +11,6 @@ import java.util.Objects;
 
 /**
  * A temporary solution to migrate old config nodes to the new config system
- *
- * @author slipcor
  */
 public class ConfigMigration {
     public static void commit() {

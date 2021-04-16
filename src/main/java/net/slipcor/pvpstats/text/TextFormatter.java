@@ -157,9 +157,12 @@ public class TextFormatter {
 
         String abuseNode = Config.Entry.STATISTICS_CHECK_ABUSE.getNode();
 
-        message.add(new TextComponent(PlayerNameHandler.getPlayerName(attacker)).setColor(ChatColor.YELLOW));
+        String killer = attacker == null ? "something unknown" : PlayerNameHandler.getPlayerName(attacker);
+        String killed = victim == null ? "nothing" : PlayerNameHandler.getPlayerName(victim);
+
+        message.add(new TextComponent(killer).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" killing "));
-        message.add(new TextComponent(PlayerNameHandler.getPlayerName(victim)).setColor(ChatColor.YELLOW));
+        message.add(new TextComponent(killed).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" was not counted as it triggered the 'anti-abuse' system. You can configure " +
                 "the anti-abuse system with config nodes "));
         message.add(new TextComponent(abuseNode).setColor(ChatColor.AQUA).setUnderlined(true)
@@ -169,8 +172,15 @@ public class TextFormatter {
         message.add(new TextComponent(Config.Entry.STATISTICS_ABUSE_SECONDS.getNode()).setColor(ChatColor.YELLOW)
                 .setHoverText(new TextComponent("This is the grace period in seconds for which a kill of the same player does not count.")));
 
-        PVPStats.getInstance().sendPrefixedOP(Arrays.asList(attacker.getPlayer(), victim.getPlayer()),
-                message.toArray(new TextComponent[0]));
+        List<CommandSender> list = new ArrayList<>();
+        if (attacker != null) {
+            list.add(attacker.getPlayer());
+        }
+        if (victim != null) {
+            list.add(victim.getPlayer());
+        }
+
+        PVPStats.getInstance().sendPrefixedOP(list, message.toArray(new TextComponent[0]));
     }
 
     public static void explainNewbieStatus(OfflinePlayer attacker, OfflinePlayer victim) {

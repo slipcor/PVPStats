@@ -5,6 +5,7 @@ import net.slipcor.pvpstats.api.DatabaseConnection;
 import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.classes.PlaceholderAPIHook;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
+import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.commands.*;
 import net.slipcor.pvpstats.core.*;
 import net.slipcor.pvpstats.display.SignDisplay;
@@ -144,10 +145,24 @@ public class PVPStats extends JavaPlugin {
                     commands = new YamlConfiguration();
                     commands.load(new File(getDataFolder(), "streak_commands.yml"));
                 }
-                String command = commands.getString(key, "");
-                if (!command.isEmpty()) {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-                            command.replace("%player%", PlayerNameHandler.getPlayerName(player)));
+
+                List<String> cmdList = new ArrayList<>();
+
+                // handle either a string or an array of strings in the file
+                if (commands.isString(key)) {
+                    String cmd = commands.getString(key, "");
+                    if (!cmd.equals("")) {
+                        cmdList.add(commands.getString(key, ""));
+                    }
+                } else if (commands.isList(key)) {
+                    cmdList = commands.getStringList(key);
+                }
+
+                for (String command : cmdList) {
+                    if (!command.isEmpty()) {
+                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+                                command.replace("%player%", PlayerNameHandler.getPlayerName(player)));
+                    }
                 }
             }
         } catch (IOException | InvalidConfigurationException exception) {
@@ -172,6 +187,8 @@ public class PVPStats extends JavaPlugin {
      * Instantiate command
      */
     private void loadCommands() {
+        commandList.clear();
+        commandMap.clear();
         new CommandCleanup().load(commandList, commandMap);
         new CommandConfig().load(commandList, commandMap);
         new CommandDebug().load(commandList, commandMap);
@@ -231,7 +248,7 @@ public class PVPStats extends JavaPlugin {
         } else {
             dbTable = config().get(Config.Entry.YML_TABLE);
             if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE) &&
-                config().getBoolean(Config.Entry.YML_COLLECT_PRECISE)) {
+                    config().getBoolean(Config.Entry.YML_COLLECT_PRECISE)) {
                 dbKillTable = config().get(Config.Entry.MYSQL_KILLTABLE);
             } else if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
                 getLogger().warning("Specific stats can be turned off as they are never used, they are intended for SQL and web frontend usage!");
@@ -301,6 +318,8 @@ public class PVPStats extends JavaPlugin {
             this.mySQL = false;
             this.SQLite = false;
         }
+        PlayerStatistic.ELO_DEFAULT = config().getInt(Config.Entry.ELO_DEFAULT);
+        PlayerStatistic.ELO_MINIMUM = config().getInt(Config.Entry.ELO_MINIMUM);
     }
 
     /**
@@ -374,7 +393,7 @@ public class PVPStats extends JavaPlugin {
         final OfflinePlayer player = PlayerNameHandler.findPlayer(args[0]);
 
         if (player == null) {
-            sender.sendMessage("Player not found: " + args[0]);
+            sendPrefixed(sender, Language.INFO_PLAYERNOTFOUND.toString(args[0]));
         }
 
         if (!found && DatabaseAPI.hasEntry(player.getUniqueId())) {

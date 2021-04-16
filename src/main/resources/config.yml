@@ -51,6 +51,9 @@ statistics:
   abuseSeconds: -1
   # save every kill - is never read internally, so only for web stats or alike
   collectPrecise: true
+  # player meta that marks players as not counting, for example 'NPC' for most plugins that add them
+  preventingPlayerMeta:
+  - NPC
   # always reset a streak when a player disconnects
   resetKillstreakOnQuit: false
   # seconds to wait before the top/flop leaderboard values will query the database again
@@ -59,10 +62,12 @@ statistics:
   streakAnnouncements: false
   # issue commands from streak_commands.yml on specific streak values
   streakCommands: false
-  # count dying from other sources than players towards death count and resetting of streaks
+  # count dying from other sources than players (and their tamed pets) towards death count and resetting of streaks
   countRegularDeaths: false
+  # count dying from other player's tamed pets for death count and resetting of streaks
+  countPetDeaths: false
   # mathematical formula to calculate kill/death ratio
-  killDeathCalculation: '&k/(&d+1)'
+  killDeathCalculation: '&k/&d'
   # simplify kill/death ratio calculation to just kills per deaths
   killDeathSimple: false
   # time in seconds to consider a former kill an assist
@@ -117,3 +122,7 @@ bStats:
   enabled: true
   # This setting sends a bit more detailed information about which features are used at all. Thank you for supporting me!
   full: true
+# === [ General Settings] ===
+general:
+  # Allow command shorthands
+  shortHandCommands: true

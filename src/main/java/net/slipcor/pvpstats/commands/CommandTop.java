@@ -18,7 +18,7 @@ public class CommandTop extends AbstractCommand {
     @Override
     public void commit(final CommandSender sender, final String[] args) {
         if (!hasPerms(sender)) {
-            sender.sendMessage(Language.MSG_NOPERMTOP.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMTOP.toString());
             return;
         }
 

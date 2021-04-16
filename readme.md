@@ -55,16 +55,21 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.7.41 - sync with master v1.8.10
-    - **FIX**: fix server crash when looking up player info on async compatible systems
-    - **FIX**: IDEA calls this "performance"
-    - **FIX**: fix debug "all"
-    - **FIX**: hotfix: fix crashes for mysql users
-    - **FIX**: update version check to work with alpha testing builds
-    - **FIX**: remove api version in plugin.yml, this was introduced in 1.13
-    - **FEAT**: change default behavior for precise stats to not run. there is an override config setting that will be announced instead of a warning that no-one listens to
-    - add debug logs for async or sync
-    - add discord dev build link
+- v1.7.42 - sync with master v1.9.4
+  - **FEAT**: add configurability for numbered entries, support player meta tags (NPC) to exclude from statistics
+  - **FEAT**: add ability to run multiple commands on a streak
+  - **FEAT**: introduce K/D interpreter - it supports powers `x² => (x^2)` - thanks to garbagemule for the inspiration
+  - **FEAT**: Add new config setting 'shortHandCommands' to disable exclamation point shorthand functionality
+  - **FEAT**: Introduce pvpstats.show to restrict players watching other players' stats
+  - **FIX**: shift the logic around to make meta restrictions work
+  - **FIX**: run streak commands synchronously!
+  - **FIX**: allow to count pet kills, fix newbie check for deaths not from PVP
+  - **FIX**: hide ELO information in outputs if ELO is not activated
+  - **FIX**: use plugin prefix in more places, this should reduce confusion and clarify who is talking
+  - **FIX**: properly treat the "simple calculation" config node as boolean
+  - **FIX**: teach K/D interpreter to display a number that makes some sense rather than 0, when dividing by 0
+  - **FIX**: take minimum and default ELO into account when creating player statistics; fix test logic
+  - **FIX**: Replace hardcoded messages with language messages
 - [read more](doc/changelog.md)
 
 ***

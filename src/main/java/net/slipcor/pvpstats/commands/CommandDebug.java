@@ -17,7 +17,7 @@ public class CommandDebug extends AbstractCommand {
     @Override
     public void commit(CommandSender sender, String[] args) {
         if (!hasPerms(sender)) {
-            sender.sendMessage(Language.MSG_NOPERMDEBUG.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMDEBUG.toString());
             return;
         }
         if (!argCountValid(sender, args, new Integer[]{2})) {

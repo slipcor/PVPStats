@@ -1,6 +1,7 @@
 package net.slipcor.pvpstats.core;
 
 
+import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.commands.AbstractCommand;
 import org.bukkit.command.CommandSender;
 
@@ -17,7 +18,9 @@ public final  class TabComplete {
             for (AbstractCommand command : commandList) {
                 if (command.hasPerms(sender)) {
                     matches.addAll(command.getMain());
-                    matches.addAll(command.getShort());
+                    if (PVPStats.getInstance().config().getBoolean(Config.Entry.GENERAL_SHORTHAND_COMMANDS)) {
+                        matches.addAll(command.getShort());
+                    }
                 }
             }
 
@@ -36,9 +39,11 @@ public final  class TabComplete {
                             matches.add(mainCmd);
                         }
                     }
-                    for (String shortHand : command.getShort()) {
-                        if (shortHand.toLowerCase().startsWith(typed)) {
-                            matches.add(shortHand);
+                    if (PVPStats.getInstance().config().getBoolean(Config.Entry.GENERAL_SHORTHAND_COMMANDS)) {
+                        for (String shortHand : command.getShort()) {
+                            if (shortHand.toLowerCase().startsWith(typed)) {
+                                matches.add(shortHand);
+                            }
                         }
                     }
                 }
@@ -58,9 +63,11 @@ public final  class TabComplete {
                         return command.completeTab(args);
                     }
                 }
-                for (String shortHand : command.getShort()) {
-                    if (shortHand.toLowerCase().equals(typed)) {
-                        return command.completeTab(args);
+                if (PVPStats.getInstance().config().getBoolean(Config.Entry.GENERAL_SHORTHAND_COMMANDS)) {
+                    for (String shortHand : command.getShort()) {
+                        if (shortHand.toLowerCase().equals(typed)) {
+                            return command.completeTab(args);
+                        }
                     }
                 }
             }

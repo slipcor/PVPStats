@@ -1,6 +1,6 @@
 name: pvpstats
 main: net.slipcor.pvpstats.PVPStats
-version: 1.7.41
+version: 1.7.42
 author: slipcor
 softdepend: [pvparena,PlaceholderAPI]
 website: https://www.spigotmc.org/resources/pvp-stats.59124/
@@ -42,6 +42,9 @@ permissions:
   pvpstats.newbie:
     description: Permission to be not out of newbie status
     default: false
+  pvpstats.show:
+    description: Ability to show other players' stats
+    default: op
   pvpstats.top:
     description: Permission to get global stats
     default: true

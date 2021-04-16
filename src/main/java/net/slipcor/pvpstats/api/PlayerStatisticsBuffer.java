@@ -10,7 +10,7 @@ import java.util.*;
 
 /**
  * Class for fast temporary access to player statistics
- * <p>
+ *
  * Should never be publicly used to SET variables, only for quick access to existing values
  *
  * @author slipcor
@@ -57,7 +57,7 @@ public final class PlayerStatisticsBuffer {
     public static boolean addStreak(UUID uuid) {
         final int streak = streaks.get(uuid) + 1;
 
-        Bukkit.getScheduler().runTaskLaterAsynchronously(
+        Bukkit.getScheduler().runTaskLater(
                 PVPStats.getInstance(), new Runnable() {
                     @Override
                     public void run() {
@@ -244,7 +244,12 @@ public final class PlayerStatisticsBuffer {
      * @return the player's current k/d ratio
      */
     public static Double getRatio(UUID uuid) {
-        return DatabaseAPI.calculateRatio(getKills(uuid), getDeaths(uuid), getStreak(uuid), getMaxStreak(uuid));
+        return DatabaseAPI.calculateRatio(
+                new PlayerStatistic(
+                        null, getKills(uuid), getDeaths(uuid), getMaxStreak(uuid), getStreak(uuid), 0, 0,
+                        uuid
+                )
+        );
     }
 
     /**

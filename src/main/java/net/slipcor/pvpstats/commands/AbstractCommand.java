@@ -1,6 +1,8 @@
 package net.slipcor.pvpstats.commands;
 
 
+import net.slipcor.pvpstats.PVPStats;
+import net.slipcor.pvpstats.core.Config;
 import net.slipcor.pvpstats.core.Language;
 import org.bukkit.command.CommandSender;
 
@@ -40,7 +42,7 @@ public abstract class AbstractCommand {
             }
         }
 
-        sender.sendMessage(Language.ERROR_INVALID_ARGUMENT_COUNT.toString(String.valueOf(args.length), joinArray(validCounts, "|")));
+        PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_INVALID_ARGUMENT_COUNT.toString(String.valueOf(args.length), joinArray(validCounts, "|")));
         return false;
     }
 
@@ -94,8 +96,10 @@ public abstract class AbstractCommand {
      * @param map  the map to add to
      */
     public void load(final List<AbstractCommand> list, final Map<String, AbstractCommand> map) {
-        for (String sShort : getShort()) {
-            map.put(sShort, this);
+        if (PVPStats.getInstance().config().getBoolean(Config.Entry.GENERAL_SHORTHAND_COMMANDS)) {
+            for (String sShort : getShort()) {
+                map.put(sShort, this);
+            }
         }
         for (String sMain : getMain()) {
             map.put(sMain, this);

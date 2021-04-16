@@ -1,5 +1,6 @@
 package net.slipcor.pvpstats.commands;
 
+import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
@@ -24,7 +25,7 @@ public class CommandDebugKill extends AbstractCommand {
     public void commit(CommandSender sender, String[] args) {
         debugger.i("debug kill!");
         if (!hasPerms(sender)) {
-            sender.sendMessage(Language.MSG_NOPERMDEBUG.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMDEBUG.toString());
             return;
         }
         if (!argCountValid(sender, args, new Integer[]{3})) {

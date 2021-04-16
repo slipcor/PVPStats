@@ -17,7 +17,7 @@ public class CommandMigrate extends AbstractCommand {
     @Override
     public void commit(CommandSender sender, String[] args) {
         if (!hasPerms(sender)) {
-            sender.sendMessage(Language.MSG_NOPERMMIGRATE.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMMIGRATE.toString());
             return;
         }
         if (!argCountValid(sender, args, new Integer[]{3})) {
@@ -31,7 +31,7 @@ public class CommandMigrate extends AbstractCommand {
                 args[2].toLowerCase().equals("yml")) {
             method = args[2].toLowerCase();
         } else {
-            sender.sendMessage(Language.ERROR_COMMAND_ARGUMENT.toString(args[2], "'mysql' or 'sqlite' or 'yml'"));
+            PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_COMMAND_ARGUMENT.toString(args[2], "'mysql' or 'sqlite' or 'yml'"));
             return;
         }
 
@@ -59,7 +59,7 @@ public class CommandMigrate extends AbstractCommand {
             return;
         }
 
-        sender.sendMessage(Language.ERROR_COMMAND_ARGUMENT.toString(args[1], "'from' or 'to'"));
+        PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_COMMAND_ARGUMENT.toString(args[1], "'from' or 'to'"));
     }
 
     public List<String> completeTab(String[] args) {
