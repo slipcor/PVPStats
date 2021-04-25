@@ -1,5 +1,6 @@
 package net.slipcor.pvpstats.core;
 
+import com.google.gson.*;
 import net.slipcor.pvpstats.PVPStats;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,8 +13,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Updater extends Thread {
     private final UpdateMode mode;
@@ -25,7 +24,7 @@ public class Updater extends Thread {
     private final int major;
     private final int minor;
 
-    private final List<UpdateInstance> instances = new ArrayList<>();
+    private UpdateInstance instance = null;
 
     protected enum UpdateMode {
         OFF, ANNOUNCE, DOWNLOAD, BOTH;
@@ -91,83 +90,30 @@ public class Updater extends Thread {
 
         if (mode == UpdateMode.OFF) {
             type = UpdateType.RELEASE;
+
+            PVPStats.getInstance().getLogger().info("Updates deactivated. Please check spigotmc.org for updates");
         } else {
-            instances.clear();
             type = UpdateType.getBySetting(plugin.config().get(Config.Entry.UPDATE_TYPE));
-            instances.add(new UpdateInstance("pvpstats"));
+            instance = new UpdateInstance("pvpstats");
+
             start();
         }
     }
 
     class UpdateInstance {
+        private boolean outdated = false;
         private byte updateDigit;
         private String vOnline;
         private String vThis;
         private final String pluginName;
         private String url;
 
-        private boolean msg;
-        private boolean outdated;
-
         UpdateInstance(String checkName) {
             pluginName = checkName;
         }
 
         /**
-         * calculate the message variables based on the versions
-         */
-        private void calculateVersions() {
-            final String[] aOnline = vOnline.split("\\.");
-            final String[] aThis = vThis.split("-")[0].split("\\.");
-            outdated = false;
-
-
-            for (int i = 0; i < aOnline.length && i < aThis.length; i++) {
-                try {
-                    final int iOnline = Integer.parseInt(aOnline[i]);
-                    final int iThis = Integer.parseInt(aThis[i]);
-                    if (iOnline == iThis) {
-                        msg = false;
-                        continue;
-                    }
-                    msg = true;
-                    outdated = iOnline > iThis;
-                    updateDigit = (byte) i;
-                    message(Bukkit.getConsoleSender(), this);
-                    return;
-                } catch (final Exception e) {
-                    calculateRadixString(aOnline[i], aThis[i], i);
-                    return;
-                }
-            }
-        }
-
-        /**
-         * calculate a version part based on letters
-         *
-         * @param sOnline the online letter(s)
-         * @param sThis   the local letter(s)
-         */
-        private void calculateRadixString(final String sOnline, final String sThis,
-                                          final int pos) {
-            try {
-                final int iOnline = Integer.parseInt(sOnline, 36);
-                final int iThis = Integer.parseInt(sThis, 36);
-                if (iOnline == iThis) {
-                    msg = false;
-                    return;
-                }
-                msg = true;
-                outdated = iOnline > iThis;
-                updateDigit = (byte) pos;
-                message(Bukkit.getConsoleSender(), this);
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        /**
-         * colorize a given string based on a char
+         * colorize a given string based on the updated digit
          *
          * @param string the string to colorize
          * @return a colorized string
@@ -175,12 +121,16 @@ public class Updater extends Thread {
         private String colorize(final String string) {
             final StringBuffer result;
             if (updateDigit == 0) {
+                // first digit means major update
                 result = new StringBuffer(ChatColor.RED.toString());
             } else if (updateDigit == 1) {
+                // second digit means minor update
                 result = new StringBuffer(ChatColor.GOLD.toString());
             } else if (updateDigit == 2) {
+                // third digit means a small patch or feature
                 result = new StringBuffer(ChatColor.YELLOW.toString());
             } else if (updateDigit == 3) {
+                // is that even used? what is blue anyway?
                 result = new StringBuffer(ChatColor.BLUE.toString());
             } else {
                 result = new StringBuffer(ChatColor.GREEN.toString());
@@ -190,41 +140,86 @@ public class Updater extends Thread {
             return result.toString();
         }
 
+        /**
+         * @return the upgrade type, colorized by volatility
+         */
+        private String colorizeUpgradeType() {
+            StringBuffer result;
+
+            switch (type) {
+                case ALPHA:
+                    result = new StringBuffer(ChatColor.RED.toString());
+                    break;
+                case BETA:
+                    result = new StringBuffer(ChatColor.YELLOW.toString());
+                    break;
+                case RELEASE:
+                    result = new StringBuffer(ChatColor.GREEN.toString());
+                    break;
+                default:
+                    result = new StringBuffer(ChatColor.BLUE.toString());
+            }
+
+            result.append(String.valueOf(type).toLowerCase());
+            result.append(ChatColor.RESET);
+
+            return result.toString();
+        }
+
         public void runMe() {
 
             try {
-
                 String version = "";
-
-                URL website = new URL("http://pa.slipcor.net/versioncheck.php?plugin=" + pluginName + "&type=" + type.toString().toLowerCase() + "&major=" + major + "&minor=" + minor);
-                URLConnection connection = website.openConnection();
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(
-                                connection.getInputStream()));
-                String inputLine;
-
-                if ((inputLine = in.readLine()) != null) {
-                    version = inputLine;
-                }
-                in.close();
-                vOnline = version.replace("v", "");
-
-                url = "https://www.spigotmc.org/resources/pvp-stats.59124/";
-
-                website = new URL("http://pa.slipcor.net/versioncheck.php?plugin=" + pluginName + "&link=true&type=" + type.toString().toLowerCase() + "&major=" + major + "&minor=" + minor);
-                connection = website.openConnection();
-                in = new BufferedReader(
-                        new InputStreamReader(
-                                connection.getInputStream()));
-
-                if ((inputLine = in.readLine()) != null) {
-                    url = inputLine;
-                }
-                in.close();
 
                 vThis = plugin.getDescription().getVersion().replace("v", "");
 
-                calculateVersions();
+                outdated = false;
+
+                URL website = new URL(String.format(
+                        "http://pa.slipcor.net/versioncheck.php?plugin=%s&type=%s&major=%d&minor=%d&version=%s",
+                        pluginName, type.toString().toLowerCase(), major, minor, vThis));
+                URLConnection connection = website.openConnection();
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                StringBuffer buffer = new StringBuffer();
+                String inputLine = in.readLine();
+
+                while (inputLine != null) {
+                    buffer.append(inputLine);
+                    inputLine = in.readLine();
+                }
+                in.close();
+
+                url = "https://www.spigotmc.org/resources/pvp-stats.59124/";
+
+                try {
+                    JsonElement element = new JsonParser().parse(buffer.toString());
+
+                    if (element.isJsonObject()) {
+                        JsonObject object = element.getAsJsonObject();
+                        if (object.has("update") && object.get("update").isJsonPrimitive()) {
+                            JsonPrimitive rawElement = object.getAsJsonPrimitive("update");
+                            outdated = rawElement.getAsBoolean();
+                        }
+                        if (outdated &&
+                                object.has("version") &&
+                                object.has("link") &&
+                                object.has("digit")) {
+                            version = object.getAsJsonPrimitive("version").getAsString();
+                            updateDigit = object.getAsJsonPrimitive("digit").getAsByte();
+                            url = object.getAsJsonPrimitive("link").getAsString();
+                        } else {
+                            return;
+                        }
+                    }
+                } catch (JsonSyntaxException e) {
+                    // something is wrong here. let's just assume everything is up to date
+                    version = vThis;
+                }
+
+                vOnline = version.replace("v", "");
+
+                message(Bukkit.getConsoleSender(), this);
 
             } catch (final Exception e) {
                 e.printStackTrace();
@@ -232,15 +227,11 @@ public class Updater extends Thread {
         }
     }
 
-    private void message(final CommandSender player, UpdateInstance instance) {
+    private void message(final CommandSender sender, UpdateInstance instance) {
         try {
-            if (!instance.msg) {
-                return;
-            }
-
             if (instance.outdated) {
                 boolean error = false;
-                if (!(player instanceof Player) && mode != UpdateMode.ANNOUNCE) {
+                if (!(sender instanceof Player) && mode != UpdateMode.ANNOUNCE) {
                     // not only announce, download!
                     final File updateFolder = Bukkit.getServer().getUpdateFolderFile();
                     if (!updateFolder.exists()) {
@@ -265,30 +256,34 @@ public class Updater extends Thread {
 
                 }
 
-                if ((mode != UpdateMode.DOWNLOAD || error) || (!(player instanceof Player))) {
-                    PVPStats.getInstance().sendPrefixed(player, "You are using " + instance.colorize('v' + instance.vThis)
-                            + ", an outdated version! Latest: " + ChatColor.COLOR_CHAR + 'a' + 'v' + instance.vOnline);
+                if ((mode != UpdateMode.DOWNLOAD || error) || (!(sender instanceof Player))) {
+                    PVPStats.getInstance().sendPrefixed(sender,
+                            String.format("You are using %s, an outdated version! Latest %s build: %sv%s",
+                                    instance.colorize('v' + instance.vThis),
+                                    instance.colorizeUpgradeType(),
+                                    ChatColor.GREEN,
+                                    instance.vOnline));
                 }
 
                 if (mode == UpdateMode.ANNOUNCE) {
-                    PVPStats.getInstance().sendPrefixed(player, instance.url);
+                    PVPStats.getInstance().sendPrefixed(sender, instance.url);
                 } else {
                     boolean finalError = error;
                     class RunLater implements Runnable {
                         @Override
                         public void run() {
                             if (finalError) {
-                                PVPStats.getInstance().sendPrefixed(player, "The plugin could not updated, download the new version here: https://www.spigotmc.org/resources/pvp-stats.59124/");
+                                PVPStats.getInstance().sendPrefixed(sender, "The plugin could not updated, download the new version here: https://www.spigotmc.org/resources/pvp-stats.59124/");
                             } else {
-                                PVPStats.getInstance().sendPrefixed(player, "The plugin has been updated, please restart the server!");
+                                PVPStats.getInstance().sendPrefixed(sender, "The plugin has been updated, please restart the server!");
                             }
                         }
                     }
                     Bukkit.getScheduler().runTaskLater(PVPStats.getInstance(), new RunLater(), 60L);
                 }
             } else {
-                if (mode != UpdateMode.DOWNLOAD || (!(player instanceof Player))) {
-                    PVPStats.getInstance().sendPrefixed(player, "You are using " + instance.colorize('v' + instance.vThis)
+                if (mode != UpdateMode.DOWNLOAD || (!(sender instanceof Player))) {
+                    PVPStats.getInstance().sendPrefixed(sender, "You are using " + instance.colorize('v' + instance.vThis)
                             + ", an experimental version! Latest stable: " + ChatColor.COLOR_CHAR + 'a' + 'v'
                             + instance.vOnline);
                 }
@@ -308,7 +303,7 @@ public class Updater extends Thread {
 
             @Override
             public void run() {
-                for (final UpdateInstance instance : instances) {
+                if (instance != null) {
                     message(player, instance);
                 }
             }
@@ -324,7 +319,7 @@ public class Updater extends Thread {
         }
 
         System.out.println(Language.LOG_UPDATE_ENABLED);
-        for (UpdateInstance instance : instances) {
+        if (instance != null) {
             instance.runMe();
         }
     }
