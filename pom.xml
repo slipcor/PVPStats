@@ -4,7 +4,7 @@
 
     <groupId>net.slipcor</groupId>
     <artifactId>pvpstats</artifactId>
-    <version>1.9</version>
+    <version>1.10</version>
     <name>PVP Stats</name>
 
     <properties>
@@ -96,9 +96,6 @@
                                 <includes>
                                     <include>net.slipcor:core</include>
                                 </includes>
-                                <excludes>
-                                    <exclude>META-INF/MANIFEST.MF</exclude>
-                                </excludes>
                             </artifactSet>
                             <filters>
                                 <filter>

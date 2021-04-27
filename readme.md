@@ -56,7 +56,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.9.6 - fix issue with mysql table checks with limited permissions 
+- v1.10.1 - refactor several features into a library that gets shaded in 
 - [read more](doc/changelog.md)
 
 ***
