@@ -22,6 +22,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 ## Dependencies
 
 - Spigot 1.12 and up
+- My [Core](https://github.com/slipcor/Core) library (automatically added to the plugin before release)
 
 ***
 
