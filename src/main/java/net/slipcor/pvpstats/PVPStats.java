@@ -1,13 +1,12 @@
 package net.slipcor.pvpstats;
 
+import net.slipcor.core.*;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.DatabaseConnection;
-import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.classes.PlaceholderAPIHook;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.commands.*;
-import net.slipcor.pvpstats.core.*;
 import net.slipcor.pvpstats.display.SignDisplay;
 import net.slipcor.pvpstats.impl.FlatFileConnection;
 import net.slipcor.pvpstats.impl.MySQLConnection;
@@ -17,8 +16,12 @@ import net.slipcor.pvpstats.listeners.PlayerListener;
 import net.slipcor.pvpstats.listeners.PluginListener;
 import net.slipcor.pvpstats.metrics.MetricsLite;
 import net.slipcor.pvpstats.metrics.MetricsMain;
+import net.slipcor.pvpstats.runnables.*;
 import net.slipcor.pvpstats.text.TextComponent;
 import net.slipcor.pvpstats.text.TextFormatter;
+import net.slipcor.pvpstats.yml.Config;
+import net.slipcor.pvpstats.yml.ConfigMigration;
+import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -29,7 +32,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +43,7 @@ import java.util.*;
  * @author slipcor
  */
 
-public class PVPStats extends JavaPlugin {
+public class PVPStats extends CorePlugin {
     // Plugin instance to use staticly all over the place
     private static PVPStats instance;
     private final static int CFGVERSION = 1;
@@ -54,10 +56,12 @@ public class PVPStats extends JavaPlugin {
     private DatabaseConnection dbHandler;
 
     // managers
-    private final Debugger debugger = new Debugger(8);
+    private CoreDebugger debugger;
     private Plugin paHandler = null;
-    private Updater updater = null;
+    private CoreUpdater updater = null;
+    private CoreLanguage language = null;
     private Config configHandler = null;
+    private CoreTabCompleter completer;
 
     private FileConfiguration announcements = null; // configurable announcements per streak level
     private FileConfiguration commands = null;      // configurable commands per streak level
@@ -67,8 +71,8 @@ public class PVPStats extends JavaPlugin {
     private final PVPArenaListener pluginListener = new PVPArenaListener(this);
 
     // commands
-    private final Map<String, AbstractCommand> commandMap = new HashMap<>();
-    private final List<AbstractCommand> commandList = new ArrayList<>();
+    private final Map<String, CoreCommand> commandMap = new HashMap<>();
+    private final List<CoreCommand> commandList = new ArrayList<>();
 
     public static PVPStats getInstance() {
         return instance;
@@ -89,6 +93,15 @@ public class PVPStats extends JavaPlugin {
             getLogger().info("Loaded config file!");
         }
         return configHandler;
+    }
+
+    @Override
+    protected String getMessagePrefix() {
+        return Language.MSG.MSG_PREFIX.parse();
+    }
+
+    public String getDebugPrefix() {
+        return "[PS-debug] ";
     }
 
     /**
@@ -115,7 +128,7 @@ public class PVPStats extends JavaPlugin {
     /**
      * @return the Updater instance
      */
-    public Updater getUpdater() {
+    public CoreUpdater getUpdater() {
         return updater;
     }
 
@@ -180,7 +193,7 @@ public class PVPStats extends JavaPlugin {
         if (!getConfig().contains(Config.Entry.IGNORE_WORLDS.getNode())) {
             return false;
         }
-        return config().getList(Config.Entry.IGNORE_WORLDS).contains(name);
+        return config().getStringList(Config.Entry.IGNORE_WORLDS, new ArrayList<String>()).contains(name);
     }
 
     /**
@@ -189,26 +202,27 @@ public class PVPStats extends JavaPlugin {
     public void loadCommands() {
         commandList.clear();
         commandMap.clear();
-        new CommandCleanup().load(commandList, commandMap);
-        new CommandConfig().load(commandList, commandMap);
-        new CommandDebug().load(commandList, commandMap);
-        new CommandDebugKill().load(commandList, commandMap);
-        new CommandMigrate().load(commandList, commandMap);
-        new CommandPurge().load(commandList, commandMap);
-        new CommandShow().load(commandList, commandMap);
-        new CommandSet().load(commandList, commandMap);
-        new CommandTop().load(commandList, commandMap);
-        new CommandReload().load(commandList, commandMap);
-        new CommandWipe().load(commandList, commandMap);
+        this.completer = null;
+        new CommandCleanup(this).load(commandList, commandMap);
+        new CommandConfig(this).load(commandList, commandMap);
+        new CommandDebug(this).load(commandList, commandMap);
+        new CommandDebugKill(this).load(commandList, commandMap);
+        new CommandMigrate(this).load(commandList, commandMap);
+        new CommandPurge(this).load(commandList, commandMap);
+        new CommandShow(this).load(commandList, commandMap);
+        new CommandSet(this).load(commandList, commandMap);
+        new CommandTop(this).load(commandList, commandMap);
+        new CommandReload(this).load(commandList, commandMap);
+        new CommandWipe(this).load(commandList, commandMap);
     }
 
     /**
-     * Read the config and try to connect to the database
+     * Try to connect to the database
      */
     public void loadConfig() {
         DatabaseAPI.initiate(this);
 
-        config().reload();
+        config().load();
 
         String dbHost = null;
         String dbUser = null;
@@ -222,34 +236,34 @@ public class PVPStats extends JavaPlugin {
         if (config().getBoolean(Config.Entry.MYSQL_ACTIVE)) {
             this.mySQL = true;
 
-            dbHost = config().get(Config.Entry.MYSQL_HOST);
-            dbUser = config().get(Config.Entry.MYSQL_USERNAME);
-            dbPass = config().get(Config.Entry.MYSQL_PASSWORD);
-            dbDatabase = config().get(Config.Entry.MYSQL_DATABASE);
-            dbTable = config().get(Config.Entry.MYSQL_TABLE);
-            dbOptions = config().get(Config.Entry.MYSQL_OPTIONS);
+            dbHost = config().getString(Config.Entry.MYSQL_HOST);
+            dbUser = config().getString(Config.Entry.MYSQL_USERNAME);
+            dbPass = config().getString(Config.Entry.MYSQL_PASSWORD);
+            dbDatabase = config().getString(Config.Entry.MYSQL_DATABASE);
+            dbTable = config().getString(Config.Entry.MYSQL_TABLE);
+            dbOptions = config().getString(Config.Entry.MYSQL_OPTIONS);
 
             if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
-                dbKillTable = config().get(Config.Entry.MYSQL_KILLTABLE);
+                dbKillTable = config().getString(Config.Entry.MYSQL_KILLTABLE);
             }
 
             dbPort = config().getInt(Config.Entry.MYSQL_PORT);
 
         } else if (config().getBoolean(Config.Entry.SQLITE_ACTIVE)) {
             this.SQLite = true;
-            dbDatabase = config().get(Config.Entry.SQLITE_FILENAME);
+            dbDatabase = config().getString(Config.Entry.SQLITE_FILENAME);
 
-            dbTable = config().get(Config.Entry.SQLITE_TABLE);
+            dbTable = config().getString(Config.Entry.SQLITE_TABLE);
             if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
-                dbKillTable = config().get(Config.Entry.SQLITE_KILLTABLE);
+                dbKillTable = config().getString(Config.Entry.SQLITE_KILLTABLE);
                 getLogger().warning("Specific stats can be turned off as they are never used, they are intended for SQL and web frontend usage!");
                 getLogger().warning("We recommend you set '" + Config.Entry.STATISTICS_COLLECT_PRECISE.getNode() + "' to false");
             }
         } else {
-            dbTable = config().get(Config.Entry.YML_TABLE);
+            dbTable = config().getString(Config.Entry.YML_TABLE);
             if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE) &&
                     config().getBoolean(Config.Entry.YML_COLLECT_PRECISE)) {
-                dbKillTable = config().get(Config.Entry.MYSQL_KILLTABLE);
+                dbKillTable = config().getString(Config.Entry.MYSQL_KILLTABLE);
             } else if (config().getBoolean(Config.Entry.STATISTICS_COLLECT_PRECISE)) {
                 getLogger().warning("Specific stats can be turned off as they are never used, they are intended for SQL and web frontend usage!");
                 getLogger().warning("Please either switch to SQLite or re-enable this by setting '" + Config.Entry.YML_COLLECT_PRECISE.getNode() + "' to true");
@@ -320,30 +334,14 @@ public class PVPStats extends JavaPlugin {
         }
 
         PlayerStatistic.ELO_DEFAULT = config().getInt(Config.Entry.ELO_DEFAULT);
-        PlayerStatistic.ELO_MINIMUM = config().getInt(Config.Entry.ELO_MINIMUM);    }
+        PlayerStatistic.ELO_MINIMUM = config().getInt(Config.Entry.ELO_MINIMUM);
+    }
 
     /**
      * Load the language file
      */
-    public void loadLanguage() {
-        final File langFile = new File(this.getDataFolder(), "lang.yml");
-        if (!langFile.exists()) {
-            try {
-                langFile.createNewFile();
-            } catch (IOException e) {
-                this.getLogger().warning("Language file could not be created. Using defaults!");
-                e.printStackTrace();
-            }
-        }
-        final YamlConfiguration cfg = YamlConfiguration.loadConfiguration(langFile);
-        if (Language.load(cfg)) {
-            try {
-                cfg.save(langFile);
-            } catch (IOException e) {
-                this.getLogger().warning("Language file could not be written. Using defaults!");
-                e.printStackTrace();
-            }
-        }
+    public String loadLanguage() {
+        return language.load("lang");
     }
 
     /**
@@ -361,7 +359,7 @@ public class PVPStats extends JavaPlugin {
 
         debugger.i("onCommand!", sender);
 
-        final AbstractCommand acc = (args.length > 0) ? commandMap.get(args[0].toLowerCase()) : null;
+        final CoreCommand acc = (args.length > 0) ? commandMap.get(args[0].toLowerCase()) : null;
         if (acc != null) {
             acc.commit(sender, args);
             return true;
@@ -383,7 +381,7 @@ public class PVPStats extends JavaPlugin {
         }
 
         boolean found = false;
-        for (AbstractCommand command : commandList) {
+        for (CoreCommand command : commandList) {
             if (command.hasPerms(sender)) {
                 sender.sendMessage(ChatColor.YELLOW + command.getShortInfo());
                 found = true;
@@ -393,7 +391,7 @@ public class PVPStats extends JavaPlugin {
         final OfflinePlayer player = PlayerNameHandler.findPlayer(args[0]);
 
         if (player == null) {
-            sendPrefixed(sender, Language.INFO_PLAYERNOTFOUND.toString(args[0]));
+            sendPrefixed(sender, Language.MSG.INFO_PLAYERNOTFOUND.parse(args[0]));
         }
 
         if (!found && DatabaseAPI.hasEntry(player.getUniqueId())) {
@@ -405,12 +403,19 @@ public class PVPStats extends JavaPlugin {
     }
 
     public void onDisable() {
-        Debugger.destroy();
+        destroyDebugger();
         getLogger().info("disabled. (version " + getDescription().getVersion() + ")");
     }
 
-    public void onEnable() {
+    @Override
+    public void onLoad() {
         instance = this;
+        language = new Language(this);
+        loadConfig();
+    }
+
+    public void onEnable() {
+        debugger = new CoreDebugger(this,8);
         try {
 
             OfflinePlayer.class.getDeclaredMethod("getUniqueId");
@@ -425,8 +430,19 @@ public class PVPStats extends JavaPlugin {
 
         final PluginDescriptionFile pdfFile = getDescription();
 
-        loadConfig();
         loadCommands();
+
+        DatabaseAPI.DEBUGGER = new CoreDebugger(this, 4);
+        CommandCleanup.debugger = new CoreDebugger(this, 11);
+        CommandDebugKill.debugger = new CoreDebugger(this, 13);
+        SignDisplay.debugger = new CoreDebugger(this, 16);
+        PlayerListener.Debugger = new CoreDebugger(this, 3);
+        CheckAndDo.DEBUGGER = new CoreDebugger(this, 20);
+        DatabaseIncreaseDeaths.debugger = new CoreDebugger(this, 19);
+        DatabaseIncreaseKills.debugger = new CoreDebugger(this, 17);
+        DatabaseIncreaseKillsStreak.debugger = new CoreDebugger(this, 15);
+        DatabaseKillAddition.debugger = new CoreDebugger(this, 14);
+
         if (!new File(getDataFolder(), "streak_announcements.yml").exists()) {
             saveResource("streak_announcements.yml", false);
         }
@@ -453,9 +469,14 @@ public class PVPStats extends JavaPlugin {
             }
         }
 
-        updater = new Updater(this, getFile());
+        updater = new CoreUpdater(this, getFile(),
+                "pvpstats", "https://www.spigotmc.org/resources/pvp-stats.59124/",
+                Config.Entry.UPDATE_MODE, Config.Entry.UPDATE_TYPE);
 
-        loadLanguage();
+        if (loadLanguage() != null) {
+            getPluginLoader().disablePlugin(this);
+            return;
+        }
 
         if (config().getBoolean(Config.Entry.BSTATS_ENABLED)) {
             if (config().getBoolean(Config.Entry.BSTATS_FULL)) {
@@ -470,7 +491,7 @@ public class PVPStats extends JavaPlugin {
             new PlaceholderAPIHook().register();
         }
 
-        Debugger.load(this, Bukkit.getConsoleSender());
+        loadDebugger("debug", Bukkit.getConsoleSender());
 
         if (config().getBoolean(Config.Entry.STATISTICS_CLEAR_ON_START)) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pvpstats cleanup");
@@ -483,18 +504,15 @@ public class PVPStats extends JavaPlugin {
 
     @Override
     public List<String> onTabComplete(final CommandSender sender, final Command cmd, final String alias, final String[] args) {
-        return TabComplete.getMatches(sender, commandList, args);
+        if (completer == null) {
+            completer = new CoreTabCompleter(config().getBoolean(Config.Entry.GENERAL_SHORTHAND_COMMANDS));
+        }
+        return completer.getMatches(sender, commandList, args);
     }
 
     public void reloadStreaks() {
         commands = null;
         announcements = null;
-    }
-
-    public void sendPrefixed(final CommandSender sender, final String message) {
-        if (!"".equals(message)) {
-            sender.sendMessage(Language.MSG_PREFIX + message);
-        }
     }
 
     public void sendPrefixedOP(List<CommandSender> senders, final TextComponent... message) {

@@ -1,8 +1,8 @@
 package net.slipcor.pvpstats.runnables;
 
+import net.slipcor.core.CoreDebugger;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
-import net.slipcor.pvpstats.classes.Debugger;
 import org.bukkit.Bukkit;
 
 import java.util.UUID;
@@ -16,7 +16,7 @@ public class CheckAndDo implements Runnable {
     private final int elo;
     private final String world;
 
-    private static final Debugger DEBUGGER = new Debugger(20);
+    public static CoreDebugger DEBUGGER;
     private final PVPStats plugin = PVPStats.getInstance();
 
     public CheckAndDo(final String playerName, final UUID uuid, final boolean kill, final boolean addMaxStreak, int elo, String world) {

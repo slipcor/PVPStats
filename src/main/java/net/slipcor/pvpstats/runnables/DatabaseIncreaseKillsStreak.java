@@ -1,7 +1,7 @@
 package net.slipcor.pvpstats.runnables;
 
+import net.slipcor.core.CoreDebugger;
 import net.slipcor.pvpstats.PVPStats;
-import net.slipcor.pvpstats.classes.Debugger;
 
 import java.util.UUID;
 
@@ -10,7 +10,7 @@ public class DatabaseIncreaseKillsStreak implements Runnable {
     private final UUID uuid;
     private final int elo;
 
-    static Debugger debugger = new Debugger(15);
+    public static CoreDebugger debugger;
     public DatabaseIncreaseKillsStreak(String name, UUID uuid, int elo) {
         this.name = name;
         this.uuid = uuid;

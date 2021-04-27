@@ -2,7 +2,7 @@ package net.slipcor.pvpstats.runnables;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
-import net.slipcor.pvpstats.core.Config;
+import net.slipcor.pvpstats.yml.Config;
 import org.bukkit.OfflinePlayer;
 
 public class DatabaseFirstEntry implements Runnable {

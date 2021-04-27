@@ -1,9 +1,11 @@
 package net.slipcor.pvpstats.commands;
 
+import net.slipcor.core.CoreCommand;
+import net.slipcor.core.CorePlugin;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
-import net.slipcor.pvpstats.core.Language;
+import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -13,31 +15,31 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandWipe extends AbstractCommand {
-    public CommandWipe() {
-        super(new String[]{"pvpstats.wipe"});
+public class CommandWipe extends CoreCommand {
+    public CommandWipe(CorePlugin plugin) {
+        super(plugin, "pvpstats.wipe", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
     }
 
     @Override
     public void commit(CommandSender sender, String[] args) {
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMWIPE.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMWIPE.parse());
             return;
         }
 
         if (args.length < 2) {
             DatabaseAPI.wipe(null);
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_WIPED.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_WIPED.parse());
         } else {
             OfflinePlayer player =  PlayerNameHandler.findPlayer(args[1]);
 
             if (player == null) {
-                PVPStats.getInstance().sendPrefixed(sender, Language.INFO_PLAYERNOTFOUND.toString(args[1]));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.INFO_PLAYERNOTFOUND.parse(args[1]));
                 return;
             }
 
             DatabaseAPI.wipe(player.getUniqueId());
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_WIPEDFOR.toString(args[1]));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_WIPEDFOR.parse(args[1]));
         }
 
         DatabaseAPI.refresh();
@@ -68,11 +70,6 @@ public class CommandWipe extends AbstractCommand {
     @Override
     public List<String> getMain() {
         return Collections.singletonList("wipe");
-    }
-
-    @Override
-    public String getName() {
-        return getClass().getName();
     }
 
     @Override

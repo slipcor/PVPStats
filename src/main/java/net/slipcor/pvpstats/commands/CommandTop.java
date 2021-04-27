@@ -1,8 +1,10 @@
 package net.slipcor.pvpstats.commands;
 
+import net.slipcor.core.CoreCommand;
+import net.slipcor.core.CorePlugin;
 import net.slipcor.pvpstats.PVPStats;
-import net.slipcor.pvpstats.core.Language;
 import net.slipcor.pvpstats.runnables.SendPlayerTop;
+import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -10,15 +12,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandTop extends AbstractCommand {
-    public CommandTop() {
-        super(new String[]{"pvpstats.top"});
+public class CommandTop extends CoreCommand {
+    public CommandTop(CorePlugin plugin) {
+        super(plugin, "pvpstats.top", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
     }
 
     @Override
     public void commit(final CommandSender sender, final String[] args) {
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMTOP.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMTOP.parse());
             return;
         }
 
@@ -118,11 +120,6 @@ public class CommandTop extends AbstractCommand {
     @Override
     public List<String> getMain() {
         return Collections.singletonList("top");
-    }
-
-    @Override
-    public String getName() {
-        return getClass().getName();
     }
 
     @Override

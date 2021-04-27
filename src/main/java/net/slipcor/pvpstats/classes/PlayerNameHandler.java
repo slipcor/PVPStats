@@ -1,7 +1,7 @@
 package net.slipcor.pvpstats.classes;
 
 import net.slipcor.pvpstats.PVPStats;
-import net.slipcor.pvpstats.core.Config;
+import net.slipcor.pvpstats.yml.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;

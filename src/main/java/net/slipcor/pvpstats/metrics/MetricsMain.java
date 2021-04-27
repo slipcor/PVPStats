@@ -2,8 +2,9 @@ package net.slipcor.pvpstats.metrics;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.slipcor.core.CoreMetrics;
 import net.slipcor.pvpstats.PVPStats;
-import net.slipcor.pvpstats.core.Config;
+import net.slipcor.pvpstats.yml.Config;
 import org.bukkit.plugin.Plugin;
 
 import java.util.concurrent.Callable;
@@ -13,8 +14,7 @@ import java.util.concurrent.Callable;
  *
  * Check out https://bStats.org/ to learn more about bStats!
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
-public class MetricsMain extends MetricsBase {
+public class MetricsMain extends CoreMetrics {
 
     /**
      * Class constructor.
@@ -22,7 +22,7 @@ public class MetricsMain extends MetricsBase {
      * @param plugin The plugin which stats should be submitted.
      */
     public MetricsMain(Plugin plugin) {
-        super(plugin);
+        super(plugin, 9747);
 
         this.addConnectionChart(Config.Entry.MYSQL_ACTIVE, Config.Entry.SQLITE_ACTIVE);
         this.addChart(Config.Entry.STATISTICS_KD_SIMPLE, "simple_kd_ratio");

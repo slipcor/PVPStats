@@ -1,10 +1,12 @@
 package net.slipcor.pvpstats.commands;
 
+import net.slipcor.core.CoreCommand;
+import net.slipcor.core.CorePlugin;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
-import net.slipcor.pvpstats.core.Language;
+import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -14,15 +16,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandSet extends AbstractCommand {
-    public CommandSet() {
-        super(new String[]{"pvpstats.set"});
+public class CommandSet extends CoreCommand {
+    public CommandSet(CorePlugin plugin) {
+        super(plugin, "pvpstats.set", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
     }
 
     @Override
     public void commit(final CommandSender sender, final String[] args) {
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMSET.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMSET.parse());
             return;
         }
 
@@ -59,14 +61,14 @@ public class CommandSet extends AbstractCommand {
                     return;
                 }
 
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG_SET.toString(args[2], args[1], String.valueOf(amount)));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_SET.parse(args[2], args[1], String.valueOf(amount)));
 
                 DatabaseAPI.refresh();
             } else {
-                PVPStats.getInstance().sendPrefixed(sender, Language.INFO_PLAYERNOTFOUND.toString(args[1]));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.INFO_PLAYERNOTFOUND.parse(args[1]));
             }
         } catch (Exception e) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.ERROR_INVALID_NUMBER.toString(args[3]));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_INVALID_NUMBER.parse(args[3]));
         }
     }
 
@@ -106,11 +108,6 @@ public class CommandSet extends AbstractCommand {
     @Override
     public List<String> getMain() {
         return Collections.singletonList("set");
-    }
-
-    @Override
-    public String getName() {
-        return getClass().getName();
     }
 
     @Override

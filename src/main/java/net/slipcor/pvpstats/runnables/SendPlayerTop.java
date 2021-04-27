@@ -1,7 +1,7 @@
 package net.slipcor.pvpstats.runnables;
 
 import net.slipcor.pvpstats.api.LeaderboardBuffer;
-import net.slipcor.pvpstats.core.Language;
+import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.command.CommandSender;
 
 public class SendPlayerTop implements Runnable {
@@ -27,15 +27,15 @@ public class SendPlayerTop implements Runnable {
     @Override
     public void run() {
         String[] top = LeaderboardBuffer.top(amount, name);
-        sender.sendMessage(Language.HEAD_LINE.toString());
-        sender.sendMessage(Language.HEAD_HEADLINE.toString(
+        sender.sendMessage(Language.MSG.HEAD_LINE.parse());
+        sender.sendMessage(Language.MSG.HEAD_HEADLINE.parse(
                 displayAmount,
-                Language.valueOf("HEAD_" + (name.equals("K-D") ? "RATIO" : name)).toString()));
-        sender.sendMessage(Language.HEAD_LINE.toString());
+                Language.MSG.valueOf("HEAD_" + (name.equals("K-D") ? "RATIO" : name)).parse()));
+        sender.sendMessage(Language.MSG.HEAD_LINE.parse());
 
         int pos = 1;
         for (String stat : top) {
-            sender.sendMessage(Language.INFO_NUMBERS.toString(String.valueOf(pos++), stat));
+            sender.sendMessage(Language.MSG.INFO_NUMBERS.parse(String.valueOf(pos++), stat));
         }
     }
 }

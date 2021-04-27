@@ -1,8 +1,6 @@
 package net.slipcor.pvpstats.classes;
 
-import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.InformationType;
-import net.slipcor.pvpstats.core.Config;
 
 import java.util.HashMap;
 import java.util.Map;
