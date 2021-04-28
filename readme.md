@@ -56,7 +56,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.10.1 - refactor several features into a library that gets shaded in 
+- v1.10.2 - improve world column check and support late loading of worlds, this should no longer throw around warnings and errors 
 - [read more](doc/changelog.md)
 
 ***

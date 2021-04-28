@@ -66,7 +66,8 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
         try {
             ResultSet result = executeQuery(
                     "SELECT `" + column + "` FROM `" + tableName + "` WHERE 1 LIMIT 1", false);
-            return result.getString(column).length() >= 0;
+            result.next(); // we just need to verify that this runs without error
+            return true;
         } catch (Exception e) {
         }
         return false;
@@ -84,7 +85,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     @Override
     public void addWorldColumn() {
         try {
-            String world = Bukkit.getServer().getWorlds().get(0).getName();
+            String world = Bukkit.getServer().getWorlds().size() > 0 ? Bukkit.getServer().getWorlds().get(0).getName() : "unknown";
             executeQuery("ALTER TABLE `" + dbKillTable + "` ADD `world` varchar(42) NOT NULL DEFAULT '" + world + "';", true);
         } catch (SQLException e) {
         }

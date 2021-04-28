@@ -97,7 +97,7 @@ public class MySQLConnection extends AbstractSQLConnection {
      */
     @Override
     public void createKillStatsTable(boolean printError) {
-        String world = Bukkit.getServer().getWorlds().get(0).getName();
+        String world = Bukkit.getServer().getWorlds().size() > 0 ? Bukkit.getServer().getWorlds().get(0).getName() : "unknown";
         final String query2 = "CREATE TABLE `" + dbKillTable + "` ( " +
                 "`id` int(16) NOT NULL AUTO_INCREMENT, " +
                 "`name` varchar(42) NOT NULL, " +

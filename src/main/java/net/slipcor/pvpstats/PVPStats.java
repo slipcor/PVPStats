@@ -321,11 +321,21 @@ public class PVPStats extends CorePlugin {
                     getLogger().info("Creating table " + dbKillTable);
                     dbHandler.createKillStatsTable(true);
                 }
-            } else if (!dbHandler.hasColumn(dbKillTable, "world")) {
-                dbHandler.addWorldColumn();
-                dbHandler.addKillVictim();
-            } else if (!dbHandler.hasColumn(dbKillTable, "victim")) {
-                dbHandler.addKillVictim();
+            } else if (dbKillTable != null) {
+                // Normal table exists, and we want to hook to the specific killstats
+                if (!dbHandler.tableExists(dbDatabase, dbKillTable)) {
+
+                    getLogger().info("Creating table " + dbKillTable);
+                    dbHandler.createKillStatsTable(true);
+
+                } else if (!dbHandler.hasColumn(dbKillTable, "world")) {
+
+                    dbHandler.addWorldColumn();
+                    dbHandler.addKillVictim();
+
+                } else if (!dbHandler.hasColumn(dbKillTable, "victim")) {
+                    dbHandler.addKillVictim();
+                }
             }
         } else {
             getLogger().severe("Database connection failed");
