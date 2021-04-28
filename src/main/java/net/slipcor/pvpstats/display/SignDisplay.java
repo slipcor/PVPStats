@@ -1,10 +1,10 @@
     package net.slipcor.pvpstats.display;
 
+    import net.slipcor.core.CoreDebugger;
     import net.slipcor.pvpstats.PVPStats;
     import net.slipcor.pvpstats.api.DatabaseAPI;
     import net.slipcor.pvpstats.api.InformationType;
-    import net.slipcor.pvpstats.classes.Debugger;
-    import net.slipcor.pvpstats.core.Language;
+    import net.slipcor.pvpstats.yml.Language;
     import org.bukkit.Bukkit;
     import org.bukkit.Location;
     import org.bukkit.World;
@@ -28,7 +28,7 @@
         private final BlockFace direction;  // the direction to look for sideways
         private final Location location;    // the initial top-left location
         private int signCount = 0;
-        static Debugger debugger = new Debugger(16);
+        public static CoreDebugger debugger;
 
         Map<Integer, List<Location>> signMap = new LinkedHashMap<>();
         Map<Integer, InformationType> columns = new LinkedHashMap<>();
@@ -328,8 +328,8 @@
 
             if (location.getBlock().getState() instanceof org.bukkit.block.Sign) {
                 org.bukkit.block.Sign sign = (org.bukkit.block.Sign) location.getBlock().getState();
-                sign.setLine(1, Language.MSG_DISPLAY_SORTEDBY.toString());
-                sign.setLine(2, Language.MSG_DISPLAY_SORTEDCOLUMN.toString(column.name()));
+                sign.setLine(1, Language.MSG.MSG_DISPLAY_SORTEDBY.parse());
+                sign.setLine(2, Language.MSG.MSG_DISPLAY_SORTEDCOLUMN.parse(column.name()));
                 sign.update();
             } else {
                 return;

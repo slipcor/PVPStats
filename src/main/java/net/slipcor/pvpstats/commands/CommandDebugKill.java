@@ -1,10 +1,12 @@
 package net.slipcor.pvpstats.commands;
 
+import net.slipcor.core.CoreCommand;
+import net.slipcor.core.CoreDebugger;
+import net.slipcor.core.CorePlugin;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
-import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
-import net.slipcor.pvpstats.core.Language;
+import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -14,18 +16,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandDebugKill extends AbstractCommand {
-    public CommandDebugKill() {
-        super(new String[]{"pvpstats.debugkill"});
+public class CommandDebugKill extends CoreCommand {
+    public CommandDebugKill(CorePlugin plugin) {
+        super(plugin, "pvpstats.debugkill", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
     }
 
-    static Debugger debugger = new Debugger(13);
+    public static CoreDebugger debugger;
 
     @Override
     public void commit(CommandSender sender, String[] args) {
         debugger.i("debug kill!");
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMDEBUG.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMDEBUG.parse());
             return;
         }
         if (!argCountValid(sender, args, new Integer[]{3})) {
@@ -67,11 +69,6 @@ public class CommandDebugKill extends AbstractCommand {
     @Override
     public List<String> getMain() {
         return Collections.singletonList("debugkill");
-    }
-
-    @Override
-    public String getName() {
-        return getClass().getName();
     }
 
     @Override

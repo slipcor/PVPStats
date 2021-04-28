@@ -1,4 +1,4 @@
-package net.slipcor.pvpstats.core;
+package net.slipcor.pvpstats.yml;
 
 import net.slipcor.pvpstats.PVPStats;
 import org.bukkit.configuration.file.FileConfiguration;

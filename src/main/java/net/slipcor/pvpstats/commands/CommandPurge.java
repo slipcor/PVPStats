@@ -1,23 +1,25 @@
 package net.slipcor.pvpstats.commands;
 
+import net.slipcor.core.CoreCommand;
+import net.slipcor.core.CorePlugin;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
-import net.slipcor.pvpstats.core.Language;
+import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandPurge extends AbstractCommand {
-    public CommandPurge() {
-        super(new String[]{"pvpstats.purge"});
+public class CommandPurge extends CoreCommand {
+    public CommandPurge(CorePlugin plugin) {
+        super(plugin, "pvpstats.purge", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
     }
 
     @Override
     public void commit(CommandSender sender, String[] args) {
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMPURGE.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMPURGE.parse());
             return;
         }
 
@@ -38,13 +40,13 @@ public class CommandPurge extends AbstractCommand {
         if (args.length > 1) {
             if (args[1].equalsIgnoreCase("specific")) {
                 final int count = DatabaseAPI.purgeKillStats(days);
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG_PURGED.toString(String.valueOf(count)));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_PURGED.parse(String.valueOf(count)));
             } else if (args[1].equalsIgnoreCase("standard")) {
                 final int count = DatabaseAPI.purgeStats(days);
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG_PURGED.toString(String.valueOf(count)));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_PURGED.parse(String.valueOf(count)));
             } else if (args[1].equalsIgnoreCase("both")) {
                 final int count = DatabaseAPI.purgeKillStats(days) + DatabaseAPI.purgeStats(days);
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG_PURGED.toString(String.valueOf(count)));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_PURGED.parse(String.valueOf(count)));
             } else {
                 PVPStats.getInstance().sendPrefixed(sender, "/pvpstats purge [specific | standard | both] [days]");
             }
@@ -81,11 +83,6 @@ public class CommandPurge extends AbstractCommand {
     @Override
     public List<String> getMain() {
         return Collections.singletonList("purge");
-    }
-
-    @Override
-    public String getName() {
-        return getClass().getName();
     }
 
     @Override

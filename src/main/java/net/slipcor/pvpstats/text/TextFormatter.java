@@ -2,8 +2,8 @@ package net.slipcor.pvpstats.text;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
-import net.slipcor.pvpstats.core.Config;
-import net.slipcor.pvpstats.core.Language;
+import net.slipcor.pvpstats.yml.Config;
+import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -19,7 +19,7 @@ public class TextFormatter {
 
 
     public static TextComponent[] addPrefix(TextComponent[] message) {
-        TextComponent[] prefix = TextFormatter.toTextComponent(Language.MSG_PREFIX.toString());
+        TextComponent[] prefix = TextFormatter.toTextComponent(Language.MSG.MSG_PREFIX.parse());
         TextComponent[] result = Arrays.copyOf(prefix, message.length + prefix.length);
         System.arraycopy(message, 0, result, prefix.length, message.length);
         return result;

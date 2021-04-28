@@ -1,34 +1,35 @@
 package net.slipcor.pvpstats.commands;
 
+import net.slipcor.core.CoreCommand;
+import net.slipcor.core.CorePlugin;
 import net.slipcor.pvpstats.PVPStats;
-import net.slipcor.pvpstats.classes.Debugger;
-import net.slipcor.pvpstats.core.Language;
+import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandDebug extends AbstractCommand {
-    public CommandDebug() {
-        super(new String[]{"pvpstats.debug"});
+public class CommandDebug extends CoreCommand {
+    public CommandDebug(CorePlugin plugin) {
+        super(plugin, "pvpstats.debug", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
     }
 
     @Override
     public void commit(CommandSender sender, String[] args) {
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMDEBUG.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMDEBUG.parse());
             return;
         }
         if (!argCountValid(sender, args, new Integer[]{2})) {
             return;
         }
-        Debugger.destroy();
+        PVPStats.getInstance().destroyDebugger();
         if (args.length > 1) {
             PVPStats.getInstance().getConfig().set("debug", args[1]);
         }
 
-        Debugger.load(PVPStats.getInstance(), sender);
+        PVPStats.getInstance().loadDebugger("debug", sender);
     }
 
     public List<String> completeTab(String[] args) {
@@ -63,11 +64,6 @@ public class CommandDebug extends AbstractCommand {
     @Override
     public List<String> getMain() {
         return Collections.singletonList("debug");
-    }
-
-    @Override
-    public String getName() {
-        return getClass().getName();
     }
 
     @Override

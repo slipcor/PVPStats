@@ -1,9 +1,11 @@
 package net.slipcor.pvpstats.commands;
 
+import net.slipcor.core.CoreCommand;
+import net.slipcor.core.CorePlugin;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.classes.PlayerNameHandler;
-import net.slipcor.pvpstats.core.Language;
 import net.slipcor.pvpstats.runnables.SendPlayerStats;
+import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -14,9 +16,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandShow extends AbstractCommand {
-    public CommandShow() {
-        super(new String[]{"pvpstats.count"});
+public class CommandShow extends CoreCommand {
+    public CommandShow(CorePlugin plugin) {
+        super(plugin, "pvpstats.count", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
     }
 
     @Override
@@ -31,7 +33,7 @@ public class CommandShow extends AbstractCommand {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(),
                         new SendPlayerStats(sender, (Player) sender));
             } else {
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOSTATS.toString());
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOSTATS.parse());
             }
             return;
         }
@@ -42,13 +44,13 @@ public class CommandShow extends AbstractCommand {
             final OfflinePlayer player = PlayerNameHandler.findPlayer(args[1]);
 
             if (player == null) {
-                PVPStats.getInstance().sendPrefixed(sender, Language.INFO_PLAYERNOTFOUND.toString(args[1]));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.INFO_PLAYERNOTFOUND.parse(args[1]));
                 return;
             }
             Bukkit.getScheduler().runTaskAsynchronously(
                     PVPStats.getInstance(), new SendPlayerStats(sender, player));
         } else {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG_NOPERMSHOW.toString());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMSHOW.parse());
         }
     }
 
@@ -90,11 +92,6 @@ public class CommandShow extends AbstractCommand {
     @Override
     public List<String> getMain() {
         return Collections.singletonList("show");
-    }
-
-    @Override
-    public String getName() {
-        return getClass().getName();
     }
 
     @Override

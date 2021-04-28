@@ -1,14 +1,14 @@
 package net.slipcor.pvpstats.listeners;
 
+import net.slipcor.core.CoreDebugger;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
-import net.slipcor.pvpstats.classes.Debugger;
 import net.slipcor.pvpstats.classes.PlayerDamageHistory;
-import net.slipcor.pvpstats.core.Config;
-import net.slipcor.pvpstats.core.Language;
 import net.slipcor.pvpstats.display.SignDisplay;
 import net.slipcor.pvpstats.text.TextFormatter;
+import net.slipcor.pvpstats.yml.Config;
+import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -34,7 +34,7 @@ import java.util.*;
 public class PlayerListener implements Listener {
     private final PVPStats plugin;
 
-    private final Debugger Debugger = new Debugger(3);
+    public static CoreDebugger Debugger;
 
     private int assistSeconds = 60;
 
@@ -182,7 +182,7 @@ public class PlayerListener implements Listener {
             return false; // we do eventually count this as regular death
         }
 
-        List<String> tags = plugin.config().getList(Config.Entry.STATISTICS_PREVENTING_PLAYER_META);
+        List<String> tags = plugin.config().getStringList(Config.Entry.STATISTICS_PREVENTING_PLAYER_META, new ArrayList<String>());
 
         for (String tag : tags) {
             if (player.hasMetadata(tag)) {
@@ -215,10 +215,10 @@ public class PlayerListener implements Listener {
                     if (display != null) {
                         if (!display.isValid()) {
                             // we could not create it!
-                            PVPStats.getInstance().sendPrefixed(event.getPlayer(), Language.ERROR_DISPLAY_INVALID.toString());
+                            PVPStats.getInstance().sendPrefixed(event.getPlayer(), Language.MSG.ERROR_DISPLAY_INVALID.parse());
                         } else {
                             PVPStats.getInstance().sendPrefixed(event.getPlayer(),
-                                    Language.MSG_DISPLAY_CREATED.toString(event.getClickedBlock().getLocation().toString()));
+                                    Language.MSG.MSG_DISPLAY_CREATED.parse(event.getClickedBlock().getLocation().toString()));
 
                             SignDisplay.saveAllDisplays();
                         }
@@ -233,7 +233,7 @@ public class PlayerListener implements Listener {
                 display.cycleSortColumn();
                 PVPStats.getInstance().sendPrefixed(
                         event.getPlayer(),
-                        Language.MSG_DISPLAY_COLUMN.toString(display.getSortColumn().name()));
+                        Language.MSG.MSG_DISPLAY_COLUMN.parse(display.getSortColumn().name()));
             } else if (SignDisplay.needsProtection(event.getPlayer().getLocation())) {
                 event.setCancelled(!event.getPlayer().isOp());
             }
