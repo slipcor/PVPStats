@@ -6,7 +6,6 @@ import net.slipcor.core.CorePlugin;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.yml.Config;
 import net.slipcor.pvpstats.yml.Language;
-import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -331,15 +330,15 @@ public class CommandConfig extends CoreCommand {
                 for (Config.Entry entry : Config.Entry.values()) {
 
                     if (args[1].equalsIgnoreCase("get")) {
-                        if (entry.getType().equals(ObjectUtils.Null.class)) {
+                        if (entry.getType() == ConfigEntry.Type.COMMENT) {
                             continue;
                         }
                     } else if (args[1].equalsIgnoreCase("set")) {
-                        if (entry.getType().equals(ObjectUtils.Null.class) || entry.getType().equals(List.class)) {
+                        if (entry.getType() == ConfigEntry.Type.COMMENT || entry.getType() == ConfigEntry.Type.LIST) {
                             continue;
                         }
                     } else {
-                        if (entry.getType().equals(ObjectUtils.Null.class) || !accessibleLists.contains(entry)) {
+                        if (entry.getType() == ConfigEntry.Type.COMMENT || !accessibleLists.contains(entry)) {
                             continue;
                         }
                     }
@@ -354,15 +353,15 @@ public class CommandConfig extends CoreCommand {
 
             for (Config.Entry entry : Config.Entry.values()) {
                 if (args[1].equalsIgnoreCase("get")) {
-                    if (entry.getType().equals(ObjectUtils.Null.class)) {
+                    if (entry.getType() == ConfigEntry.Type.COMMENT) {
                         continue;
                     }
                 } else if (args[1].equalsIgnoreCase("set")) {
-                    if (entry.getType().equals(ObjectUtils.Null.class) || entry.getType().equals(List.class)) {
+                    if (entry.getType() == ConfigEntry.Type.COMMENT || entry.getType() == ConfigEntry.Type.LIST) {
                         continue;
                     }
                 } else {
-                    if (entry.getType().equals(ObjectUtils.Null.class) || !accessibleLists.contains(entry)) {
+                    if (entry.getType() == ConfigEntry.Type.COMMENT || !accessibleLists.contains(entry)) {
                         continue;
                     }
                 }

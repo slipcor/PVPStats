@@ -180,7 +180,7 @@ public class Config extends CoreConfig {
             this.type = type;
             this.node = node;
             value = def;
-            this.comment = comment == null ? null : comment;
+            this.comment = comment;
         }
 
         /**

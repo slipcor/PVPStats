@@ -1,4 +1,6 @@
 # v1.X Changelog
+
+- v1.10.3 - fix config command tab completion
 - v1.10.2 - improve world column check and support late loading of worlds, this should no longer throw around warnings and errors
 - v1.10.1 - refactor several features into a library that gets shaded in
 - v1.9.6 - fix issue with mysql table checks with limited permissions
