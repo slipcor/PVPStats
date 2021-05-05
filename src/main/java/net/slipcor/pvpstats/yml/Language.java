@@ -97,13 +97,31 @@ public class Language extends CoreLanguage {
         MSG_WIPED("msg.wiped", "Statistics wiped!"),
         MSG_WIPEDFOR("msg.wipedfor", "Statistics wiped for %0%!");
 
-        private final String sDefault;
         private final String node;
-        private String value = null;
+        private String value;
 
-        MSG(final String node, final String content) {
+        MSG(final String node, final String value) {
             this.node = node;
-            sDefault = content;
+            this.value = value;
+        }
+
+        /**
+         * Return a colorized string with replaced placeholders
+         *
+         * @param args the placeholders to replace
+         * @return the replaced colorized string
+         */
+        @Override
+        public String parse(String... args) {
+            String result = toString();
+            for (int pos = 0; pos < args.length; pos++) {
+                result = result.replace("%" + pos + "%", args[pos]);
+            }
+            return ChatColor.translateAlternateColorCodes('&', result);
+        }
+
+        public String parse() {
+            return ChatColor.translateAlternateColorCodes('&', toString());
         }
 
         @Override
@@ -121,28 +139,9 @@ public class Language extends CoreLanguage {
             this.value = value;
         }
 
-        /**
-         * @return the node colorized content
-         */
         @Override
-        public String parse() {
-            final String result = (value == null) ? sDefault : value;
-            return ChatColor.translateAlternateColorCodes('&', result);
-        }
-
-        /**
-         * Return a colorized string with replaced placeholders
-         *
-         * @param args the placeholders to replace
-         * @return the replaced colorized string
-         */
-        @Override
-        public String parse(String... args) {
-            String result = value == null ? sDefault : value;
-            for (int pos = 0; pos < args.length; pos++) {
-                result = result.replace("%" + pos + "%", args[pos]);
-            }
-            return ChatColor.translateAlternateColorCodes('&', result);
+        public String toString() {
+            return value;
         }
     }
 }

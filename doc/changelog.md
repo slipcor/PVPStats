@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.10.4 - fix language file default values - sorry to new users!
 - v1.10.3 - fix config command tab completion
 - v1.10.2 - improve world column check and support late loading of worlds, this should no longer throw around warnings and errors
 - v1.10.1 - refactor several features into a library that gets shaded in
