@@ -5,8 +5,9 @@ import net.slipcor.pvpstats.yml.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
-public class PlayerNameHandler {
+public class PlayerHandler {
 
     public static OfflinePlayer findPlayer(String value) {
         OfflinePlayer result = null;
@@ -41,5 +42,18 @@ public class PlayerNameHandler {
             }
         }
         return offlinePlayer.getName();
+    }
+
+    public static String getPlayerWorld(OfflinePlayer offlinePlayer) {
+        if (offlinePlayer.getPlayer() != null) {
+            Player player = offlinePlayer.getPlayer();
+            return player.getWorld().getName();
+        }
+
+        if (Bukkit.getServer().getWorlds().size() < 1) {
+            return "unknown";
+        }
+
+        return Bukkit.getServer().getWorlds().get(0).getName();
     }
 }

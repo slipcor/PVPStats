@@ -1,7 +1,7 @@
 package net.slipcor.pvpstats.text;
 
 import net.slipcor.pvpstats.PVPStats;
-import net.slipcor.pvpstats.classes.PlayerNameHandler;
+import net.slipcor.pvpstats.classes.PlayerHandler;
 import net.slipcor.pvpstats.yml.Config;
 import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.Bukkit;
@@ -19,7 +19,7 @@ public class TextFormatter {
 
 
     public static TextComponent[] addPrefix(TextComponent[] message) {
-        TextComponent[] prefix = TextFormatter.toTextComponent(Language.MSG.MSG_PREFIX.parse());
+        TextComponent[] prefix = TextFormatter.toTextComponent(Language.MSG.MESSAGE_PREFIX.parse());
         TextComponent[] result = Arrays.copyOf(prefix, message.length + prefix.length);
         System.arraycopy(message, 0, result, prefix.length, message.length);
         return result;
@@ -157,9 +157,9 @@ public class TextFormatter {
 
         String abuseNode = Config.Entry.STATISTICS_CHECK_ABUSE.getNode();
 
-        message.add(new TextComponent(PlayerNameHandler.getPlayerName(attacker)).setColor(ChatColor.YELLOW));
+        message.add(new TextComponent(PlayerHandler.getPlayerName(attacker)).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" killing "));
-        message.add(new TextComponent(PlayerNameHandler.getPlayerName(victim)).setColor(ChatColor.YELLOW));
+        message.add(new TextComponent(PlayerHandler.getPlayerName(victim)).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" was not counted as it triggered the 'anti-abuse' system. You can configure " +
                 "the anti-abuse system with config nodes "));
         message.add(new TextComponent(abuseNode).setColor(ChatColor.AQUA).setUnderlined(true)
@@ -176,8 +176,8 @@ public class TextFormatter {
     public static void explainNewbieStatus(OfflinePlayer attacker, OfflinePlayer victim) {
         List<TextComponent> message = new ArrayList<>();
 
-        String killer = attacker == null ? "something unknown" : PlayerNameHandler.getPlayerName(attacker);
-        String killed = victim == null ? "nothing" : PlayerNameHandler.getPlayerName(victim);
+        String killer = attacker == null ? "something unknown" : PlayerHandler.getPlayerName(attacker);
+        String killed = victim == null ? "nothing" : PlayerHandler.getPlayerName(victim);
 
         message.add(new TextComponent(killer).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" killing "));
@@ -203,7 +203,7 @@ public class TextFormatter {
         String world = player.getWorld().getName();
 
         message.add(new TextComponent("The death of "));
-        message.add(new TextComponent(PlayerNameHandler.getPlayerName(player)).setColor(ChatColor.YELLOW));
+        message.add(new TextComponent(PlayerHandler.getPlayerName(player)).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" was not counted because the world '"));
         message.add(new TextComponent(world).setColor(ChatColor.YELLOW));
         message.add(new TextComponent("' in is in the ignored list. Edit the config node "));

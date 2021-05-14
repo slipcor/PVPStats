@@ -1,11 +1,15 @@
 package net.slipcor.pvpstats.classes;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import net.slipcor.core.LanguageEntry;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.LeaderboardBuffer;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
 import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.OfflinePlayer;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Hook class to hook into the Placeholder API
@@ -15,6 +19,17 @@ import org.bukkit.OfflinePlayer;
  */
 public class PlaceholderAPIHook extends PlaceholderExpansion {
     long lastError = 0;
+
+    static Map<String, LanguageEntry> stringToEntry = new HashMap<>();
+
+    static {
+        stringToEntry.put("LINE", Language.MSG.STATISTIC_SEPARATOR);
+        stringToEntry.put("KILLS", Language.MSG.STATISTIC_HEADLINE_KILLS);
+        stringToEntry.put("DEATHS", Language.MSG.STATISTIC_HEADLINE_DEATHS);
+        stringToEntry.put("STREAK", Language.MSG.STATISTIC_HEADLINE_STREAK);
+        stringToEntry.put("RATIO", Language.MSG.STATISTIC_HEADLINE_RATIO);
+        stringToEntry.put("ELO", Language.MSG.STATISTIC_HEADLINE_ELO);
+    }
 
     @Override
     public String getIdentifier() {
@@ -28,7 +43,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     @Override
     public String getVersion() {
-        return "0.0.3";
+        return "0.0.4";
     }
 
     @Override
@@ -70,9 +85,9 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 String name = split[1].toUpperCase();
 
                 if (split.length > 3) {
-                    return Language.MSG.HEAD_HEADLINE.parse(
+                    return Language.MSG.STATISTIC_HEADLINE_TOP.parse(
                             String.valueOf(pos),
-                            Language.MSG.valueOf("HEAD_" + name).parse());
+                            stringToEntry.get(name).parse());
                 }
 
                 String[] top = LeaderboardBuffer.top(pos, name);
@@ -81,7 +96,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                     return ""; // we do not have enough entries, return empty
                 }
 
-                return Language.MSG.INFO_NUMBERS.parse(String.valueOf(pos), top[pos-1]);
+                return Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos), top[pos-1]);
             } catch (Exception e) {
                 // let's ignore this for now
                 long now = System.currentTimeMillis();
@@ -99,9 +114,9 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 String name = split[1].toUpperCase();
 
                 if (split.length > 3) {
-                    return Language.MSG.HEAD_HEADLINE.parse(
+                    return Language.MSG.STATISTIC_HEADLINE_FLOP.parse(
                             String.valueOf(pos),
-                            Language.MSG.valueOf("HEAD_" + name).parse());
+                            stringToEntry.get(name).parse());
                 }
 
                 String[] top = LeaderboardBuffer.flop(pos, name);
@@ -110,7 +125,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                     return ""; // we do not have enough entries, return empty
                 }
 
-                return Language.MSG.INFO_NUMBERS.parse(String.valueOf(pos), top[pos-1]);
+                return Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos), top[pos-1]);
             } catch (Exception e) {
                 // let's ignore this for now
                 long now = System.currentTimeMillis();
@@ -121,15 +136,6 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 return "";
             }
         }
-
-        // slipcorpvpstats_top_kills_10_head
-
-        // slipcorpvpstats_top_kills_1
-        // slipcorpvpstats_top_deaths_1
-        // slipcorpvpstats_top_streak_1
-        // slipcorpvpstats_top_elo_1
-        // slipcorpvpstats_top_k-d_1
-
         return null;
     }
 }

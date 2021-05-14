@@ -13,13 +13,13 @@ import java.util.List;
 
 public class CommandMigrate extends CoreCommand {
     public CommandMigrate(CorePlugin plugin) {
-        super(plugin, "pvpstats.migrate", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
+        super(plugin, "pvpstats.migrate", Language.MSG.COMMAND_ARGUMENT_COUNT_INVALID);
     }
 
     @Override
     public void commit(CommandSender sender, String[] args) {
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMMIGRATE.parse());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.NO_PERMISSION_MIGRATE.parse());
             return;
         }
         if (!argCountValid(sender, args, new Integer[]{3})) {
@@ -33,7 +33,7 @@ public class CommandMigrate extends CoreCommand {
                 args[2].toLowerCase().equals("yml")) {
             method = args[2].toLowerCase();
         } else {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_COMMAND_ARGUMENT.parse(args[2], "'mysql' or 'sqlite' or 'yml'"));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_ARGUMENT_INVALID_TYPE.parse(args[2], "'mysql' or 'sqlite' or 'yml'"));
             return;
         }
 
@@ -41,9 +41,9 @@ public class CommandMigrate extends CoreCommand {
             int result = DatabaseAPI.migrateFrom(method, sender);
             if (result >= 0) {
                 if (result > 0) {
-                    PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_MIGRATED.parse(String.valueOf(result)));
+                    PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_MIGRATE_SUCCESS.parse(String.valueOf(result)));
                 } else {
-                    PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_MIGRATE_EMPTY.parse());
+                    PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_MIGRATE_SKIPPED.parse());
                 }
             }
 
@@ -53,15 +53,15 @@ public class CommandMigrate extends CoreCommand {
             int result = DatabaseAPI.migrateTo(method, sender);
             if (result >= 0) {
                 if (result > 0) {
-                    PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_MIGRATED.parse(String.valueOf(result)));
+                    PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_MIGRATE_SUCCESS.parse(String.valueOf(result)));
                 } else {
-                    PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_MIGRATE_EMPTY.parse());
+                    PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_MIGRATE_SKIPPED.parse());
                 }
             }
             return;
         }
 
-        PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_COMMAND_ARGUMENT.parse(args[1], "'from' or 'to'"));
+        PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_ARGUMENT_INVALID_TYPE.parse(args[1], "'from' or 'to'"));
     }
 
     public List<String> completeTab(String[] args) {

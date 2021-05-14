@@ -328,8 +328,8 @@
 
             if (location.getBlock().getState() instanceof org.bukkit.block.Sign) {
                 org.bukkit.block.Sign sign = (org.bukkit.block.Sign) location.getBlock().getState();
-                sign.setLine(1, Language.MSG.MSG_DISPLAY_SORTEDBY.parse());
-                sign.setLine(2, Language.MSG.MSG_DISPLAY_SORTEDCOLUMN.parse(column.name()));
+                sign.setLine(1, Language.MSG.SIGN_SORTED_BY.parse());
+                sign.setLine(2, Language.MSG.SIGN_SORTED_COLUMN.parse(column.name()));
                 sign.update();
             } else {
                 return;

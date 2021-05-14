@@ -12,13 +12,13 @@ import java.util.List;
 
 public class CommandDebug extends CoreCommand {
     public CommandDebug(CorePlugin plugin) {
-        super(plugin, "pvpstats.debug", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
+        super(plugin, "pvpstats.debug", Language.MSG.COMMAND_ARGUMENT_COUNT_INVALID);
     }
 
     @Override
     public void commit(CommandSender sender, String[] args) {
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMDEBUG.parse());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.NO_PERMISSION_DEBUG.parse());
             return;
         }
         if (!argCountValid(sender, args, new Integer[]{2})) {

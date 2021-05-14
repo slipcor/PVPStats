@@ -4,7 +4,7 @@ import net.slipcor.core.CoreCommand;
 import net.slipcor.core.CorePlugin;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
-import net.slipcor.pvpstats.classes.PlayerNameHandler;
+import net.slipcor.pvpstats.classes.PlayerHandler;
 import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -17,29 +17,29 @@ import java.util.List;
 
 public class CommandWipe extends CoreCommand {
     public CommandWipe(CorePlugin plugin) {
-        super(plugin, "pvpstats.wipe", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
+        super(plugin, "pvpstats.wipe", Language.MSG.COMMAND_ARGUMENT_COUNT_INVALID);
     }
 
     @Override
     public void commit(CommandSender sender, String[] args) {
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMWIPE.parse());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.NO_PERMISSION_WIPE.parse());
             return;
         }
 
         if (args.length < 2) {
             DatabaseAPI.wipe(null);
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_WIPED.parse());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_WIPE_GLOBAL_SUCCESS.parse());
         } else {
-            OfflinePlayer player =  PlayerNameHandler.findPlayer(args[1]);
+            OfflinePlayer player =  PlayerHandler.findPlayer(args[1]);
 
             if (player == null) {
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.INFO_PLAYERNOTFOUND.parse(args[1]));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_PLAYER_NOT_FOUND.parse(args[1]));
                 return;
             }
 
             DatabaseAPI.wipe(player.getUniqueId());
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_WIPEDFOR.parse(args[1]));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_WIPE_PLAYER_SUCCESS.parse(args[1]));
         }
 
         DatabaseAPI.refresh();

@@ -2,7 +2,7 @@ package net.slipcor.pvpstats.impl;
 
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseConnection;
-import net.slipcor.pvpstats.classes.PlayerNameHandler;
+import net.slipcor.pvpstats.classes.PlayerHandler;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -370,7 +370,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
                     UUID.fromString(result.getString("uid")));
         }
         return new PlayerStatistic(
-                PlayerNameHandler.getPlayerName(offlinePlayer),
+                PlayerHandler.getPlayerName(offlinePlayer),
                 0, 0, 0, 0, 0, 0,
                 offlinePlayer.getUniqueId());
     }

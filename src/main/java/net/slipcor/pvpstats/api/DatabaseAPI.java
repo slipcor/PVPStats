@@ -2,7 +2,7 @@ package net.slipcor.pvpstats.api;
 
 import net.slipcor.core.CoreDebugger;
 import net.slipcor.pvpstats.PVPStats;
-import net.slipcor.pvpstats.classes.PlayerNameHandler;
+import net.slipcor.pvpstats.classes.PlayerHandler;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.display.SignDisplay;
 import net.slipcor.pvpstats.impl.FlatFileConnection;
@@ -70,8 +70,7 @@ public final class DatabaseAPI {
             return;
         }
 
-        if ((attacker == null || attacker.getPlayer() == null) &&
-                (victim == null || victim.getPlayer() == null)) {
+        if ((attacker == null) && (victim == null)) {
             DEBUGGER.i("attacker and victim are null");
             return;
         }
@@ -87,7 +86,7 @@ public final class DatabaseAPI {
             lastKill.put(attacker.getName(), victim.getName());
             int abusesec = plugin.config().getInt(Config.Entry.STATISTICS_ABUSE_SECONDS);
             if (abusesec > 0) {
-                final String finalAttacker = attacker.getPlayer().getName();
+                final String finalAttacker = attacker.getName();
                 class RemoveLater implements Runnable {
 
                     @Override
@@ -107,7 +106,7 @@ public final class DatabaseAPI {
             }
         }
 
-        if (victim == null || victim.getPlayer() == null) {
+        if (victim == null) {
             DEBUGGER.i("victim is null", attacker.getName());
             if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_NEWBIES) && isNewbie(attacker)) {
 
@@ -115,25 +114,25 @@ public final class DatabaseAPI {
                 TextFormatter.explainNewbieStatus(attacker, null);
                 return;
             }
-            incKill(attacker.getPlayer(), PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
+            incKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
 
             if (plugin.getSQLHandler().allowsAsync()) {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
-                        PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
+                        PlayerHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
                         "", "",
-                        attacker.getPlayer().getWorld().getName()));
+                        PlayerHandler.getPlayerWorld(attacker)));
             } else {
                 Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
-                        PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
+                        PlayerHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
                         "", "",
-                        attacker.getPlayer().getWorld().getName()));
+                        PlayerHandler.getPlayerWorld(attacker)));
             }
 
             SignDisplay.updateAll();
             return;
         }
 
-        if (attacker == null || attacker.getPlayer() == null) {
+        if (attacker == null) {
             DEBUGGER.i("attacker is null", victim.getName());
             if (plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_NEWBIES) && isNewbie(victim)) {
 
@@ -141,18 +140,18 @@ public final class DatabaseAPI {
                 TextFormatter.explainNewbieStatus(null, victim);
                 return;
             }
-            incDeath(victim.getPlayer(), PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
+            incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
 
             if (plugin.getSQLHandler().allowsAsync()) {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
                         "", "",
-                        PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
-                        victim.getPlayer().getWorld().getName()));
+                        PlayerHandler.getPlayerName(victim), victim.getUniqueId().toString(),
+                        PlayerHandler.getPlayerWorld(victim)));
             } else {
                 Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
                         "", "",
-                        PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
-                        victim.getPlayer().getWorld().getName()));
+                        PlayerHandler.getPlayerName(victim), victim.getUniqueId().toString(),
+                        PlayerHandler.getPlayerWorld(victim)));
             }
 
             SignDisplay.updateAll();
@@ -167,23 +166,23 @@ public final class DatabaseAPI {
             return;
         }
         // here we go, PVP!
-        DEBUGGER.i("Counting kill by " + attacker.getName(), victim.getPlayer());
+        DEBUGGER.i("Counting kill by " + attacker.getName(), victim.getName());
 
         if (!plugin.config().getBoolean(Config.Entry.ELO_ACTIVE)) {
             DEBUGGER.i("no elo", victim.getName());
-            incKill(attacker.getPlayer(), PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
-            incDeath(victim.getPlayer(), PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
+            incKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
+            incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
 
             if (plugin.getSQLHandler().allowsAsync()) {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
-                        PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
-                        PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
-                        victim.getPlayer().getWorld().getName()));
+                        PlayerHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
+                        PlayerHandler.getPlayerName(victim), victim.getUniqueId().toString(),
+                        PlayerHandler.getPlayerWorld(victim)));
             } else {
                 Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
-                        PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
-                        PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
-                        victim.getPlayer().getWorld().getName()));
+                        PlayerHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
+                        PlayerHandler.getPlayerName(victim), victim.getUniqueId().toString(),
+                        PlayerHandler.getPlayerWorld(victim)));
             }
 
             SignDisplay.updateAll();
@@ -205,30 +204,34 @@ public final class DatabaseAPI {
         final int newA = calcElo(oldA, oldP, kA, true, min, max);
         final int newP = calcElo(oldP, oldA, kP, false, min, max);
 
-        if (incKill(attacker.getPlayer(), newA)) {
-            DEBUGGER.i("increasing kill", attacker.getPlayer());
+        if (incKill(attacker, newA)) {
+            DEBUGGER.i("increasing kill", attacker.getName());
 
             Bukkit.getScheduler().runTaskLaterAsynchronously(
                     PVPStats.getInstance(), new Runnable() {
                         @Override
                         public void run() {
-                            plugin.sendPrefixed(attacker.getPlayer(),
-                                    Language.MSG.MSG_ELO_ADDED.parse(String.valueOf(newA - oldA), String.valueOf(newA)));
+                            if (attacker.getPlayer() != null) {
+                                plugin.sendPrefixed(attacker.getPlayer(),
+                                        Language.MSG.PLAYER_ELO_ADDED.parse(String.valueOf(newA - oldA), String.valueOf(newA)));
+                            }
                         }
                     }, 1L
             );
 
             PlayerStatisticsBuffer.setEloScore(attacker.getUniqueId(), newA);
         }
-        if (incDeath(victim.getPlayer(), newP)) {
-            DEBUGGER.i("increasing death", victim.getPlayer());
+        if (incDeath(victim, newP)) {
+            DEBUGGER.i("increasing death", victim.getName());
 
             Bukkit.getScheduler().runTaskLaterAsynchronously(
                     PVPStats.getInstance(), new Runnable() {
                         @Override
                         public void run() {
-                            plugin.sendPrefixed(victim.getPlayer(),
-                                    Language.MSG.MSG_ELO_SUBBED.parse(String.valueOf(oldP - newP), String.valueOf(newP)));
+                            if (victim.getPlayer() != null) {
+                                plugin.sendPrefixed(victim.getPlayer(),
+                                        Language.MSG.PLAYER_ELO_REMOVED.parse(String.valueOf(oldP - newP), String.valueOf(newP)));
+                            }
                         }
                     }, 1L
             );
@@ -237,14 +240,14 @@ public final class DatabaseAPI {
         }
         if (plugin.getSQLHandler().allowsAsync()) {
             Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
-                    PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
-                    PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
-                    attacker.getPlayer().getWorld().getName()));
+                    PlayerHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
+                    PlayerHandler.getPlayerName(victim), victim.getUniqueId().toString(),
+                    PlayerHandler.getPlayerWorld(attacker)));
         } else {
             Bukkit.getScheduler().runTask(PVPStats.getInstance(), new DatabaseKillAddition(
-                    PlayerNameHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
-                    PlayerNameHandler.getPlayerName(victim), victim.getUniqueId().toString(),
-                    attacker.getPlayer().getWorld().getName()));
+                    PlayerHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),
+                    PlayerHandler.getPlayerName(victim), victim.getUniqueId().toString(),
+                    PlayerHandler.getPlayerWorld(attacker)));
         }
 
         SignDisplay.updateAll();
@@ -287,7 +290,7 @@ public final class DatabaseAPI {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
             plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
-            return new PlayerStatistic(PlayerNameHandler.getPlayerName(player),
+            return new PlayerStatistic(PlayerHandler.getPlayerName(player),
                     0, 0, 0, 0, 0, 0, player.getUniqueId());
         }
 
@@ -296,7 +299,7 @@ public final class DatabaseAPI {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new PlayerStatistic(PlayerNameHandler.getPlayerName(player),
+        return new PlayerStatistic(PlayerHandler.getPlayerName(player),
                 0, 0, 0, 0, 0, 0, player.getUniqueId());
     }
 
@@ -397,7 +400,7 @@ public final class DatabaseAPI {
             result = plugin.getSQLHandler().getStats(player);
             if (result == null) {
                 String[] output = new String[1];
-                output[0] = Language.MSG.INFO_PLAYERNOTFOUND.parse(PlayerNameHandler.getPlayerName(player));
+                output[0] = Language.MSG.COMMAND_PLAYER_NOT_FOUND.parse(PlayerHandler.getPlayerName(player));
                 return output;
             }
         } catch (SQLException e) {
@@ -406,8 +409,8 @@ public final class DatabaseAPI {
 
         if (result == null) {
             String[] output = new String[1];
-            output[0] = Language.MSG.INFO_PLAYERNOTFOUND.parse(PlayerNameHandler.getPlayerName(player));
-            output[1] = Language.MSG.INFO_PLAYERNOTFOUND2.parse();
+            output[0] = Language.MSG.COMMAND_PLAYER_NOT_FOUND.parse(PlayerHandler.getPlayerName(player));
+            output[1] = Language.MSG.COMMAND_PLAYER_NOT_FOUND_EXPLANATION.parse();
             return output;
         }
         String[] output;
@@ -447,28 +450,28 @@ public final class DatabaseAPI {
 
         output = new String[plugin.config().getBoolean(Config.Entry.ELO_ACTIVE) ? 7 : 6];
 
-        output[0] = Language.MSG.INFO_FORMAT.parse(
-                Language.MSG.INFO_NAME.parse(),
+        output[0] = Language.MSG.STATISTIC_FORMAT_VALUE.parse(
+                Language.MSG.STATISTIC_VALUE_NAME.parse(),
                 name);
-        output[1] = Language.MSG.INFO_FORMAT.parse(
-                Language.MSG.INFO_KILLS.parse(),
+        output[1] = Language.MSG.STATISTIC_FORMAT_VALUE.parse(
+                Language.MSG.STATISTIC_VALUE_KILLS.parse(),
                 String.valueOf(kills));
-        output[2] = Language.MSG.INFO_FORMAT.parse(
-                Language.MSG.INFO_DEATHS.parse(),
+        output[2] = Language.MSG.STATISTIC_FORMAT_VALUE.parse(
+                Language.MSG.STATISTIC_VALUE_DEATHS.parse(),
                 String.valueOf(deaths));
-        output[3] = Language.MSG.INFO_FORMAT.parse(
-                Language.MSG.INFO_RATIO.parse(),
+        output[3] = Language.MSG.STATISTIC_FORMAT_VALUE.parse(
+                Language.MSG.STATISTIC_VALUE_RATIO.parse(),
                 df.format(ratio));
-        output[4] = Language.MSG.INFO_FORMAT.parse(
-                Language.MSG.INFO_STREAK.parse(),
+        output[4] = Language.MSG.STATISTIC_FORMAT_VALUE.parse(
+                Language.MSG.STATISTIC_VALUE_STREAK.parse(),
                 String.valueOf(streak));
-        output[5] = Language.MSG.INFO_FORMAT.parse(
-                Language.MSG.INFO_MAXSTREAK.parse(),
+        output[5] = Language.MSG.STATISTIC_FORMAT_VALUE.parse(
+                Language.MSG.STATISTIC_VALUE_MAX_STREAK.parse(),
                 String.valueOf(maxStreak));
 
         if (plugin.config().getBoolean(Config.Entry.ELO_ACTIVE)) {
-            output[6] = Language.MSG.INFO_FORMAT.parse(
-                    Language.MSG.INFO_ELO.parse(),
+            output[6] = Language.MSG.STATISTIC_FORMAT_VALUE.parse(
+                    Language.MSG.STATISTIC_VALUE_ELO.parse(),
                     String.valueOf(elo));
         }
         return output;
@@ -491,7 +494,7 @@ public final class DatabaseAPI {
     public static void initiatePlayer(OfflinePlayer player) {
         if (getAllUUIDs().contains(player.getUniqueId())) {
             // an entry exists!
-        } else if (getAllPlayers().contains(PlayerNameHandler.getPlayerName(player))) {
+        } else if (getAllPlayers().contains(PlayerHandler.getPlayerName(player))) {
             // an entry without UUID exists!
             try {
                  plugin.getSQLHandler().setStatUIDByPlayer(player);
@@ -499,7 +502,7 @@ public final class DatabaseAPI {
                 e.printStackTrace();
             }
             allUUIDs.add(player.getUniqueId());
-            allPlayerNames.remove(PlayerNameHandler.getPlayerName(player));
+            allPlayerNames.remove(PlayerHandler.getPlayerName(player));
         } else if (plugin.config().getBoolean(Config.Entry.STATISTICS_CREATE_ON_JOIN)) {
             if (plugin.getSQLHandler().allowsAsync()) {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseFirstEntry(player));
@@ -532,7 +535,7 @@ public final class DatabaseAPI {
 
         if (method.equals("yml")) {
             if (PVPStats.getInstance().getSQLHandler() instanceof FlatFileConnection) {
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_DATABASE_METHOD.parse());
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_MIGRATE_DATABASE_METHOD_INVALID.parse());
                 return null;
             }
 
@@ -545,7 +548,7 @@ public final class DatabaseAPI {
             dbHandler = new FlatFileConnection(dbTable, dbKillTable);
         } else if (method.equals("sqlite")) {
             if (PVPStats.getInstance().getSQLHandler() instanceof SQLiteConnection) {
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_DATABASE_METHOD.parse());
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_MIGRATE_DATABASE_METHOD_INVALID.parse());
                 return null;
             }
 
@@ -559,7 +562,7 @@ public final class DatabaseAPI {
             dbHandler = new SQLiteConnection(dbDatabase, dbTable, dbKillTable);
         } else if (method.equals("mysql")) {
             if (PVPStats.getInstance().getSQLHandler() instanceof MySQLConnection) {
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_DATABASE_METHOD.parse());
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_MIGRATE_DATABASE_METHOD_INVALID.parse());
                 return null;
             }
 
@@ -831,23 +834,23 @@ public final class DatabaseAPI {
                 switch (sort) {
 
                     case "KILLS":
-                        sortedValues.add(Language.MSG.INFO_FORMAT.parse(
+                        sortedValues.add(Language.MSG.STATISTIC_FORMAT_VALUE.parse(
                                 entry.getName(), String.valueOf(entry.getKills())));
                         break;
                     case "DEATHS":
-                        sortedValues.add(Language.MSG.INFO_FORMAT.parse(
+                        sortedValues.add(Language.MSG.STATISTIC_FORMAT_VALUE.parse(
                                 entry.getName(),String.valueOf(entry.getDeaths())));
                         break;
                     case "ELO":
-                        sortedValues.add(Language.MSG.INFO_FORMAT.parse(
+                        sortedValues.add(Language.MSG.STATISTIC_FORMAT_VALUE.parse(
                                 entry.getName(),String.valueOf(entry.getELO())));
                         break;
                     case "STREAK":
-                        sortedValues.add(Language.MSG.INFO_FORMAT.parse(
+                        sortedValues.add(Language.MSG.STATISTIC_FORMAT_VALUE.parse(
                                 entry.getName(),String.valueOf(entry.getMaxStreak())));
                         break;
                     case "CURRENTSTREAK":
-                        sortedValues.add(Language.MSG.INFO_FORMAT.parse(
+                        sortedValues.add(Language.MSG.STATISTIC_FORMAT_VALUE.parse(
                                 entry.getName(),String.valueOf(entry.getCurrentStreak())));
                         break;
                     default:
@@ -925,23 +928,23 @@ public final class DatabaseAPI {
                 switch (sort) {
 
                     case "KILLS":
-                        sortedValues.add(Language.MSG.INFO_FORMAT.parse(
+                        sortedValues.add(Language.MSG.STATISTIC_FORMAT_VALUE.parse(
                                 entry.getName(), String.valueOf(entry.getKills())));
                         break;
                     case "DEATHS":
-                        sortedValues.add(Language.MSG.INFO_FORMAT.parse(
+                        sortedValues.add(Language.MSG.STATISTIC_FORMAT_VALUE.parse(
                                 entry.getName(),String.valueOf(entry.getDeaths())));
                         break;
                     case "ELO":
-                        sortedValues.add(Language.MSG.INFO_FORMAT.parse(
+                        sortedValues.add(Language.MSG.STATISTIC_FORMAT_VALUE.parse(
                                 entry.getName(),String.valueOf(entry.getELO())));
                         break;
                     case "STREAK":
-                        sortedValues.add(Language.MSG.INFO_FORMAT.parse(
+                        sortedValues.add(Language.MSG.STATISTIC_FORMAT_VALUE.parse(
                                 entry.getName(),String.valueOf(entry.getMaxStreak())));
                         break;
                     case "CURRENTSTREAK":
-                        sortedValues.add(Language.MSG.INFO_FORMAT.parse(
+                        sortedValues.add(Language.MSG.STATISTIC_FORMAT_VALUE.parse(
                                 entry.getName(),String.valueOf(entry.getCurrentStreak())));
                         break;
                     default:
@@ -1109,32 +1112,18 @@ public final class DatabaseAPI {
         }
     }
 
-    private static boolean incDeath(final Player player, int elo) {
-        if (player.hasPermission("pvpstats.count")) {
+    private static boolean incDeath(final OfflinePlayer player, int elo) {
+        if (player.getPlayer() == null || player.getPlayer().hasPermission("pvpstats.count")) {
             PlayerStatisticsBuffer.setStreak(player.getUniqueId(), 0);
-            checkAndDo(PlayerNameHandler.getPlayerName(player), player.getUniqueId(),
-                    false, false, elo, player.getWorld().getName());
+            checkAndDo(PlayerHandler.getPlayerName(player), player.getUniqueId(),
+                    false, false, elo, PlayerHandler.getPlayerWorld(player));
             return true;
         }
         return false;
     }
 
-    /**
-     * Force increase a death count
-     *
-     * @param player the player to increase
-     * @param elo        the ELO score to set
-     * @return whether the setting succeeded
-     */
-    public static boolean forceIncDeath(final OfflinePlayer player, int elo) {
-        PlayerStatisticsBuffer.setStreak(player.getUniqueId(), 0);
-        checkAndDo(PlayerNameHandler.getPlayerName(player), player.getUniqueId(),
-                false, false, elo, "world");
-        return true;
-    }
-
-    private static boolean incKill(final Player player, int elo) {
-        if (player.hasPermission("pvpstats.count")) {
+    private static boolean incKill(final OfflinePlayer player, int elo) {
+        if (player.getPlayer() == null || player.getPlayer().hasPermission("pvpstats.count")) {
             boolean incMaxStreak;
             if (PlayerStatisticsBuffer.hasStreak(player.getUniqueId())) {
                 incMaxStreak = PlayerStatisticsBuffer.addStreak(player.getUniqueId());
@@ -1151,40 +1140,11 @@ public final class DatabaseAPI {
                 }
 
             }
-            checkAndDo(PlayerNameHandler.getPlayerName(player), player.getUniqueId(),
-                    true, incMaxStreak, elo, player.getWorld().getName());
+            checkAndDo(PlayerHandler.getPlayerName(player), player.getUniqueId(),
+                    true, incMaxStreak, elo, PlayerHandler.getPlayerWorld(player));
             return true;
         }
         return false;
-    }
-
-    /**
-     * Force increase a kill count
-     *
-     * @param player the player to increase
-     * @param elo        the ELO score to set
-     * @return whether the setting succeeded
-     */
-    public static boolean forceIncKill(final OfflinePlayer player, int elo) {
-        boolean incMaxStreak;
-        if (PlayerStatisticsBuffer.hasStreak(player.getUniqueId())) {
-            incMaxStreak = PlayerStatisticsBuffer.addStreak(player.getUniqueId());
-            PlayerStatisticsBuffer.getStreak(player.getUniqueId());
-        } else {
-
-            int streakCheck = PlayerStatisticsBuffer.getStreak(player.getUniqueId());
-            if (streakCheck < 1) {
-                PlayerStatisticsBuffer.setStreak(player.getUniqueId(), 1);
-                PlayerStatisticsBuffer.setMaxStreak(player.getUniqueId(), 1);
-                incMaxStreak = true;
-            } else {
-                incMaxStreak = PlayerStatisticsBuffer.addStreak(player.getUniqueId());
-            }
-
-        }
-        checkAndDo(PlayerNameHandler.getPlayerName(player), player.getUniqueId(),
-                true, incMaxStreak, elo, "world");
-        return true;
     }
 
     private static String[] sortParse(final Map<String, Double> results,
@@ -1198,7 +1158,7 @@ public final class DatabaseAPI {
 
         for (String key : results.keySet()) {
             sort[pos] = results.get(key);
-            result[pos] = Language.MSG.INFO_FORMAT.parse(key, df.format(sort[pos]));
+            result[pos] = Language.MSG.STATISTIC_FORMAT_VALUE.parse(key, df.format(sort[pos]));
             pos++;
         }
 

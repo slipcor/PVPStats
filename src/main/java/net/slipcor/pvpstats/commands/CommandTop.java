@@ -14,13 +14,13 @@ import java.util.List;
 
 public class CommandTop extends CoreCommand {
     public CommandTop(CorePlugin plugin) {
-        super(plugin, "pvpstats.top", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
+        super(plugin, "pvpstats.top", Language.MSG.COMMAND_ARGUMENT_COUNT_INVALID);
     }
 
     @Override
     public void commit(final CommandSender sender, final String[] args) {
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMTOP.parse());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.NO_PERMISSION_TOP.parse());
             return;
         }
 

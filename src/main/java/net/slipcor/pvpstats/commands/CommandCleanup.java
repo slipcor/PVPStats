@@ -13,7 +13,7 @@ import java.util.List;
 
 public class CommandCleanup extends CoreCommand {
     public CommandCleanup(CorePlugin plugin) {
-        super(plugin, "pvpstats.cleanup", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
+        super(plugin, "pvpstats.cleanup", Language.MSG.COMMAND_ARGUMENT_COUNT_INVALID);
     }
 
     public static CoreDebugger debugger;
@@ -22,16 +22,16 @@ public class CommandCleanup extends CoreCommand {
     public void commit(CommandSender sender, String[] args) {
         debugger.i("cleaning up");
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMCLEANUP.parse());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.NO_PERMISSION_CLEANUP.parse());
             return;
         }
 
         int count = PVPStats.getInstance().getSQLHandler().cleanup(sender);
 
         if (count > 0) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_CLEANED.parse(String.valueOf(count)));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CLEANUP_SUCCESS.parse(String.valueOf(count)));
         } else if (count == 0) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOTCLEANED.parse());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CLEANUP_SKIPPED.parse());
         }
         // else we sent an error
     }

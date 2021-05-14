@@ -5,7 +5,7 @@ import net.slipcor.core.CorePlugin;
 import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
-import net.slipcor.pvpstats.classes.PlayerNameHandler;
+import net.slipcor.pvpstats.classes.PlayerHandler;
 import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,13 +18,13 @@ import java.util.List;
 
 public class CommandSet extends CoreCommand {
     public CommandSet(CorePlugin plugin) {
-        super(plugin, "pvpstats.set", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
+        super(plugin, "pvpstats.set", Language.MSG.COMMAND_ARGUMENT_COUNT_INVALID);
     }
 
     @Override
     public void commit(final CommandSender sender, final String[] args) {
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMSET.parse());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.NO_PERMISSION_SET.parse());
             return;
         }
 
@@ -38,7 +38,7 @@ public class CommandSet extends CoreCommand {
         try {
             int amount = Integer.parseInt(args[3]);
 
-            OfflinePlayer player =  PlayerNameHandler.findPlayer(args[1]);
+            OfflinePlayer player =  PlayerHandler.findPlayer(args[1]);
 
             if (player != null && DatabaseAPI.hasEntry(player.getUniqueId())) {
                 if (args[2].toLowerCase().equals("kills")) {
@@ -61,14 +61,14 @@ public class CommandSet extends CoreCommand {
                     return;
                 }
 
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_SET.parse(args[2], args[1], String.valueOf(amount)));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_SET_SUCCESS.parse(args[2], args[1], String.valueOf(amount)));
 
                 DatabaseAPI.refresh();
             } else {
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.INFO_PLAYERNOTFOUND.parse(args[1]));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_PLAYER_NOT_FOUND.parse(args[1]));
             }
         } catch (Exception e) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_INVALID_NUMBER.parse(args[3]));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_ARGUMENT_INVALID_NUMBER.parse(args[3]));
         }
     }
 

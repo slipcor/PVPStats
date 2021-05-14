@@ -4,7 +4,7 @@ import net.slipcor.core.*;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.DatabaseConnection;
 import net.slipcor.pvpstats.classes.PlaceholderAPIHook;
-import net.slipcor.pvpstats.classes.PlayerNameHandler;
+import net.slipcor.pvpstats.classes.PlayerHandler;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
 import net.slipcor.pvpstats.commands.*;
 import net.slipcor.pvpstats.display.SignDisplay;
@@ -20,8 +20,8 @@ import net.slipcor.pvpstats.runnables.*;
 import net.slipcor.pvpstats.text.TextComponent;
 import net.slipcor.pvpstats.text.TextFormatter;
 import net.slipcor.pvpstats.yml.Config;
-import net.slipcor.pvpstats.yml.ConfigMigration;
 import net.slipcor.pvpstats.yml.Language;
+import net.slipcor.pvpstats.yml.LanguageMigration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -97,7 +97,7 @@ public class PVPStats extends CorePlugin {
 
     @Override
     protected String getMessagePrefix() {
-        return Language.MSG.MSG_PREFIX.parse();
+        return Language.MSG.MESSAGE_PREFIX.parse();
     }
 
     public String getDebugPrefix() {
@@ -150,7 +150,7 @@ public class PVPStats extends CorePlugin {
                 String message = announcements.getString(key, "");
                 if (!message.isEmpty()) {
                     Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message)
-                            .replace("%player%", PlayerNameHandler.getPlayerName(player)));
+                            .replace("%player%", PlayerHandler.getPlayerName(player)));
                 }
             }
             if (config().getBoolean(Config.Entry.STATISTICS_STREAK_COMMANDS)) {
@@ -174,7 +174,7 @@ public class PVPStats extends CorePlugin {
                 for (String command : cmdList) {
                     if (!command.isEmpty()) {
                         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-                                command.replace("%player%", PlayerNameHandler.getPlayerName(player)));
+                                command.replace("%player%", PlayerHandler.getPlayerName(player)));
                     }
                 }
             }
@@ -351,6 +351,7 @@ public class PVPStats extends CorePlugin {
      * Load the language file
      */
     public String loadLanguage() {
+        LanguageMigration.commit(this);
         return language.load("lang");
     }
 
@@ -398,10 +399,10 @@ public class PVPStats extends CorePlugin {
             }
         }
 
-        final OfflinePlayer player = PlayerNameHandler.findPlayer(args[0]);
+        final OfflinePlayer player = PlayerHandler.findPlayer(args[0]);
 
         if (player == null) {
-            sendPrefixed(sender, Language.MSG.INFO_PLAYERNOTFOUND.parse(args[0]));
+            sendPrefixed(sender, Language.MSG.COMMAND_PLAYER_NOT_FOUND.parse(args[0]));
         }
 
         if (!found && DatabaseAPI.hasEntry(player.getUniqueId())) {
@@ -435,7 +436,6 @@ public class PVPStats extends CorePlugin {
             return;
         }
 
-        ConfigMigration.commit(); //TODO: remove class next major bump or reuse next rewrite
         configHandler = config();
 
         final PluginDescriptionFile pdfFile = getDescription();

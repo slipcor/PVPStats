@@ -215,10 +215,10 @@ public class PlayerListener implements Listener {
                     if (display != null) {
                         if (!display.isValid()) {
                             // we could not create it!
-                            PVPStats.getInstance().sendPrefixed(event.getPlayer(), Language.MSG.ERROR_DISPLAY_INVALID.parse());
+                            PVPStats.getInstance().sendPrefixed(event.getPlayer(), Language.MSG.DISPLAY_SETUP_INVALID.parse());
                         } else {
                             PVPStats.getInstance().sendPrefixed(event.getPlayer(),
-                                    Language.MSG.MSG_DISPLAY_CREATED.parse(event.getClickedBlock().getLocation().toString()));
+                                    Language.MSG.DISPLAY_SUCCESSFUL.parse(event.getClickedBlock().getLocation().toString()));
 
                             SignDisplay.saveAllDisplays();
                         }
@@ -233,7 +233,7 @@ public class PlayerListener implements Listener {
                 display.cycleSortColumn();
                 PVPStats.getInstance().sendPrefixed(
                         event.getPlayer(),
-                        Language.MSG.MSG_DISPLAY_COLUMN.parse(display.getSortColumn().name()));
+                        Language.MSG.DISPLAY_SORTED_BY.parse(display.getSortColumn().name()));
             } else if (SignDisplay.needsProtection(event.getPlayer().getLocation())) {
                 event.setCancelled(!event.getPlayer().isOp());
             }

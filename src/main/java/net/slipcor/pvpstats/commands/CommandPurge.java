@@ -13,13 +13,13 @@ import java.util.List;
 
 public class CommandPurge extends CoreCommand {
     public CommandPurge(CorePlugin plugin) {
-        super(plugin, "pvpstats.purge", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
+        super(plugin, "pvpstats.purge", Language.MSG.COMMAND_ARGUMENT_COUNT_INVALID);
     }
 
     @Override
     public void commit(CommandSender sender, String[] args) {
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMPURGE.parse());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.NO_PERMISSION_PURGE.parse());
             return;
         }
 
@@ -40,13 +40,13 @@ public class CommandPurge extends CoreCommand {
         if (args.length > 1) {
             if (args[1].equalsIgnoreCase("specific")) {
                 final int count = DatabaseAPI.purgeKillStats(days);
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_PURGED.parse(String.valueOf(count)));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_PURGE_SUCCESS.parse(String.valueOf(count)));
             } else if (args[1].equalsIgnoreCase("standard")) {
                 final int count = DatabaseAPI.purgeStats(days);
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_PURGED.parse(String.valueOf(count)));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_PURGE_SUCCESS.parse(String.valueOf(count)));
             } else if (args[1].equalsIgnoreCase("both")) {
                 final int count = DatabaseAPI.purgeKillStats(days) + DatabaseAPI.purgeStats(days);
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_PURGED.parse(String.valueOf(count)));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_PURGE_SUCCESS.parse(String.valueOf(count)));
             } else {
                 PVPStats.getInstance().sendPrefixed(sender, "/pvpstats purge [specific | standard | both] [days]");
             }

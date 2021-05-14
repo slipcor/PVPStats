@@ -16,7 +16,7 @@ public class CommandConfig extends CoreCommand {
     final List<Config.Entry> accessibleLists = new ArrayList<>();
 
     public CommandConfig(CorePlugin plugin) {
-        super(plugin, "pvpstats.config", Language.MSG.ERROR_INVALID_ARGUMENT_COUNT);
+        super(plugin, "pvpstats.config", Language.MSG.COMMAND_ARGUMENT_COUNT_INVALID);
 
         accessibleLists.add(Config.Entry.IGNORE_WORLDS);
     }
@@ -24,7 +24,7 @@ public class CommandConfig extends CoreCommand {
     @Override
     public void commit(final CommandSender sender, final String[] args) {
         if (!hasPerms(sender)) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_NOPERMCONFIGSET.parse());
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.NO_PERMISSION_CONFIG_SET.parse());
             return;
         }
 
@@ -109,7 +109,7 @@ public class CommandConfig extends CoreCommand {
         final Config.Entry entry = Config.Entry.getByNode(node);
 
         if (entry == null) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_UNKNOWN.parse(node));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_UNKNOWN_NODE.parse(node));
             return;
         }
         final ConfigEntry.Type entryType = entry.getType();
@@ -117,19 +117,19 @@ public class CommandConfig extends CoreCommand {
         Config config = PVPStats.getInstance().config();
 
         if (entryType == ConfigEntry.Type.COMMENT) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_SET_GROUP.parse(node));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_SET_GROUP_IMPOSSIBLE.parse(node));
             return;
         } else if (entryType == ConfigEntry.Type.LIST) {
             List<String> newList = new ArrayList<>(config.getStringList(entry, new ArrayList<String>()));
             if (newList.contains(value)) {
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_ADD.parse(node, value));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_ADD_SKIPPED.parse(node, value));
                 return;
             }
             newList.add(value);
             config.setValue(entry, newList);
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_CONFIGADDED.parse(node, value));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_ADD_SUCCESS.parse(node, value));
         } else {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_NO_LIST_NODE.parse(node));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_NO_LIST.parse(node));
             return;
         }
         config.save();
@@ -148,11 +148,11 @@ public class CommandConfig extends CoreCommand {
         final Config.Entry entry = Config.Entry.getByNode(node);
 
         if (entry == null) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_UNKNOWN.parse(node));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_UNKNOWN_NODE.parse(node));
             return;
         }
         if (entry.secret) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_SECRET.parse(node));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_GET_SECRET_FORBIDDEN.parse(node));
             return;
         }
         final ConfigEntry.Type entryType = entry.getType();
@@ -160,7 +160,7 @@ public class CommandConfig extends CoreCommand {
         Config config = PVPStats.getInstance().config();
 
         if (entryType == ConfigEntry.Type.COMMENT) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_GET_GROUP.parse(node));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_GET_GROUP_IMPOSSIBLE.parse(node));
         } else if (entryType == ConfigEntry.Type.LIST) {
             StringBuffer value = new StringBuffer();
             List<String> list = config.getStringList(entry, new ArrayList<String>());
@@ -168,19 +168,19 @@ public class CommandConfig extends CoreCommand {
                 value.append("\n");
                 value.append(item);
             }
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_CONFIGGET.parse(node, value.toString()));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_GET_SUCCESS.parse(node, value.toString()));
         } else if (entryType == ConfigEntry.Type.BOOLEAN) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_CONFIGGET.parse(node, String.valueOf(config.getBoolean(entry))));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_GET_SUCCESS.parse(node, String.valueOf(config.getBoolean(entry))));
         } else if (entryType == ConfigEntry.Type.STRING) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_CONFIGGET.parse(node, config.getString(entry)));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_GET_SUCCESS.parse(node, config.getString(entry)));
         } else if (entryType == ConfigEntry.Type.INT) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_CONFIGGET.parse(node, String.valueOf(config.getInt(entry))));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_GET_SUCCESS.parse(node, String.valueOf(config.getInt(entry))));
         } else if (entryType == ConfigEntry.Type.DOUBLE) {
             PVPStats.getInstance().sendPrefixed(sender,
-                    Language.MSG.MSG_CONFIGGET.parse(node, String.format("%.2f", config.getDouble(entry))));
+                    Language.MSG.COMMAND_CONFIG_GET_SUCCESS.parse(node, String.format("%.2f", config.getDouble(entry))));
         } else {
             PVPStats.getInstance().sendPrefixed(sender,
-                    Language.MSG.ERROR_CONFIG_TYPE_UNKNOWN.parse(entryType.name()));
+                    Language.MSG.COMMAND_CONFIG_UNKNOWN_TYPE.parse(entryType.name()));
         }
     }
 
@@ -197,7 +197,7 @@ public class CommandConfig extends CoreCommand {
         final Config.Entry entry = Config.Entry.getByNode(node);
 
         if (entry == null) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_UNKNOWN.parse(node));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_UNKNOWN_NODE.parse(node));
             return;
         }
         final ConfigEntry.Type entryType = entry.getType();
@@ -205,19 +205,19 @@ public class CommandConfig extends CoreCommand {
         Config config = PVPStats.getInstance().config();
 
         if (entryType == ConfigEntry.Type.COMMENT) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_SET_GROUP.parse(node));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_SET_GROUP_IMPOSSIBLE.parse(node));
             return;
         } else if (entryType == ConfigEntry.Type.LIST) {
             List<String> newList = new ArrayList<>(config.getStringList(entry, new ArrayList<String>()));
             if (!newList.contains(value)) {
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_REMOVE.parse(node, value));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_REMOVE_SKIPPED.parse(node, value));
                 return;
             }
             newList.remove(value);
             config.setValue(entry, newList);
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_CONFIGREMOVED.parse(node, value));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_REMOVE_SUCCESS.parse(node, value));
         } else {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_NO_LIST_NODE.parse(node));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_NO_LIST.parse(node));
             return;
         }
         config.save();
@@ -236,7 +236,7 @@ public class CommandConfig extends CoreCommand {
         final Config.Entry entry = Config.Entry.getByNode(node);
 
         if (entry == null) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_UNKNOWN.parse(node));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_UNKNOWN_NODE.parse(node));
             return;
         }
         final ConfigEntry.Type entryType = entry.getType();
@@ -244,37 +244,37 @@ public class CommandConfig extends CoreCommand {
         Config config = PVPStats.getInstance().config();
 
         if (entryType == ConfigEntry.Type.COMMENT) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_SET_GROUP.parse(node));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_SET_GROUP_IMPOSSIBLE.parse(node));
             return;
         } else if (entryType == ConfigEntry.Type.LIST) {
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_CONFIG_SET_LIST.parse(node));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_SET_LIST_IMPOSSIBLE.parse(node));
             return;
         } else if (entryType == ConfigEntry.Type.BOOLEAN) {
             if ("true".equalsIgnoreCase(value)) {
                 config.setValue(entry, Boolean.TRUE);
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_CONFIGSET.parse(node, "true"));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_SET_SUCCESS.parse(node, "true"));
             } else if ("false".equalsIgnoreCase(value)) {
                 config.setValue(entry, Boolean.FALSE);
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_CONFIGSET.parse(node, "false"));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_SET_SUCCESS.parse(node, "false"));
             } else {
                 PVPStats.getInstance().sendPrefixed(sender,
-                        Language.MSG.ERROR_COMMAND_ARGUMENT.parse(value, "boolean (true|false)"));
+                        Language.MSG.COMMAND_ARGUMENT_INVALID_TYPE.parse(value, "boolean (true|false)"));
                 return;
             }
         } else if (entryType == ConfigEntry.Type.STRING) {
             config.setValue(entry, String.valueOf(value));
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_CONFIGSET.parse(node, value));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_SET_SUCCESS.parse(node, value));
         } else if (entryType == ConfigEntry.Type.INT) {
             final int iValue;
 
             try {
                 iValue = Integer.parseInt(value);
             } catch (final Exception e) {
-                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.ERROR_INVALID_NUMBER.parse(value));
+                PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_ARGUMENT_INVALID_NUMBER.parse(value));
                 return;
             }
             config.setValue(entry, iValue);
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_CONFIGSET.parse(node, String.valueOf(iValue)));
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_SET_SUCCESS.parse(node, String.valueOf(iValue)));
         } else if (entryType == ConfigEntry.Type.DOUBLE) {
             final double dValue;
 
@@ -282,15 +282,15 @@ public class CommandConfig extends CoreCommand {
                 dValue = Double.parseDouble(value);
             } catch (final Exception e) {
                 PVPStats.getInstance().sendPrefixed(sender,
-                        Language.MSG.ERROR_COMMAND_ARGUMENT.parse(value, "double (e.g. 12.00)"));
+                        Language.MSG.COMMAND_ARGUMENT_INVALID_TYPE.parse(value, "double (e.g. 12.00)"));
                 return;
             }
             config.setValue(entry, dValue);
-            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.MSG_CONFIGSET.parse(node,
+            PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_CONFIG_SET_SUCCESS.parse(node,
                             String.valueOf(dValue)));
         } else {
             PVPStats.getInstance().sendPrefixed(sender,
-                    Language.MSG.ERROR_CONFIG_TYPE_UNKNOWN.parse(entryType.name()));
+                    Language.MSG.COMMAND_CONFIG_UNKNOWN_TYPE.parse(entryType.name()));
             return;
         }
         config.save();
