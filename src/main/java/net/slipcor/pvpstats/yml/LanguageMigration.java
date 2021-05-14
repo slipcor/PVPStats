@@ -17,6 +17,10 @@ public class LanguageMigration {
         try {
             File languageFile = new File(plugin.getDataFolder(), "lang.yml");
 
+            if (!languageFile.exists()) {
+                return;
+            }
+
             File backup = new File(plugin.getDataFolder(), "lang_backup.yml");
 
             cfg.load(languageFile);

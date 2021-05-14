@@ -4,6 +4,9 @@ import net.slipcor.core.CoreLanguage;
 import net.slipcor.core.CorePlugin;
 import net.slipcor.core.LanguageEntry;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
 
 public class Language extends CoreLanguage {
     public Language(CorePlugin plugin) {
@@ -13,6 +16,34 @@ public class Language extends CoreLanguage {
     @Override
     protected LanguageEntry[] getAllNodes() {
         return MSG.values();
+    }
+
+    @Override
+    public String load(String fileName) {
+        String error = super.load(fileName);
+
+        if (error != null) {
+            return error;
+        }
+
+        final File configFile = new File(plugin.getDataFolder(), fileName + ".yml");
+
+        final YamlConfiguration config = new YamlConfiguration();
+        try {
+            config.load(configFile);
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return "Error when loading language file:\n" + e.getMessage();
+        }
+        try {
+            config.set("version", 1.1103);
+
+            config.save(configFile);
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return "Error when saving language file:\n" + e.getMessage();
+        }
+        return null;
     }
 
     /**
