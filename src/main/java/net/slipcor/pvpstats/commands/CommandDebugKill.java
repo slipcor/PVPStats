@@ -35,27 +35,6 @@ public class CommandDebugKill extends CoreCommand {
         }
         debugger.i("let's go!");
 
-        if (args.length == 5) {
-            String attacker = args[1];
-            String victim1 = args[2];
-            String victim2 = args[3];
-            String victim3 = args[4];
-
-            NeinOfflinePlayer offlineAttacker = Bukkit.getServer().getOfflinePlayer(attacker);
-            NeinOfflinePlayer offlineVictim1 = Bukkit.getServer().getOfflinePlayer(victim1);
-            NeinOfflinePlayer offlineVictim2 = Bukkit.getServer().getOfflinePlayer(victim2);
-            NeinOfflinePlayer offlineVictim3 = Bukkit.getServer().getOfflinePlayer(victim3);
-
-            for (int i = 1; i <= 100; i++) {
-                DatabaseAPI.AkilledB(offlineAttacker, offlineVictim1);
-                DatabaseAPI.AkilledB(offlineAttacker, offlineVictim2);
-                DatabaseAPI.AkilledB(offlineAttacker, offlineVictim3);
-                System.out.println("kill counted: " + i);
-            }
-
-            return;
-        }
-
         String attacker = args[1];
         String victim = args[2];
 

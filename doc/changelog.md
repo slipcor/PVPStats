@@ -1,6 +1,8 @@
 # v1.X Changelog
 
-- v1.11.1 two updates:
+- v1.11.3 - remove debug code
+- v1.11.2 - activate encryption!
+- v1.11.1 - two updates:
   - **CHANGE**: Move around language nodes
   - **FIX**: (Core) do not inform people when they use an experimental version
 - v1.10.4 - fix language file default values - sorry to new users!
