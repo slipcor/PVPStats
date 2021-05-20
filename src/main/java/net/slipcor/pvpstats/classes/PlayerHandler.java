@@ -12,6 +12,9 @@ public class PlayerHandler {
     public static OfflinePlayer findPlayer(String value) {
         OfflinePlayer result = null;
         for (OfflinePlayer off : Bukkit.getOfflinePlayers()) {
+            if (off == null || off.getName() == null) {
+                continue;
+            }
             if (off.getName().equalsIgnoreCase(value)) {
                 return off;
             }

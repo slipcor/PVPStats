@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.6 - support null OfflinePlayers, because that is a thing
 - v1.11.5 - update plugin.yml to reflect version bump
 - v1.11.4 - properly create the language file for new users****
 - v1.11.3 - remove debug code
