@@ -310,7 +310,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
     public OfflinePlayer findPlayer(String name) {
         try {
             PreparedStatement statement = databaseConnection.prepareStatement("SELECT `name`, `uid` FROM " + dbTable + " WHERE `name` LIKE ?;");
-            statement.setString(1, name);
+            statement.setString(1, "%" + name + "%");
             ResultSet result = statement.executeQuery();
 
             String match = null;
