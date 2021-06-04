@@ -56,7 +56,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.7 - maybe prevent OfflinePlayer lookups crashing servers
+- v1.11.8 - try a more sturdy and database based approach to find OfflinePlayers, for bigger servers
 - [read more](doc/changelog.md)
 
 ***

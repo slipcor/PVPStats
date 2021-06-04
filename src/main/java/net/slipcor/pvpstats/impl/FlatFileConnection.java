@@ -4,6 +4,7 @@ import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.DatabaseConnection;
 import net.slipcor.pvpstats.classes.PlayerHandler;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -37,6 +38,7 @@ public class FlatFileConnection implements DatabaseConnection {
     public int cleanup(CommandSender sender) {
         return 0; // based on how YML is saved this can not be a problem
     }
+
 
     /**
      * Try to connect to the database
@@ -336,6 +338,39 @@ public class FlatFileConnection implements DatabaseConnection {
 
         save(statConfig, dbTable);
         return removeables.size();
+    }
+
+    /**
+     * Find a player by their name
+     *
+     * @param name the player's last known name
+     * @return an OfflinePlayer, can be null!
+     */
+    @Override
+    public OfflinePlayer findPlayer(String name) {
+        String match = null;
+
+        ConfigurationSection root = statConfig.getConfigurationSection(statConfig.getCurrentPath());
+
+        Map<String, Object> uuids = root.getValues(false);
+
+        for (String uuid : uuids.keySet()) {
+            ConfigurationSection player = root.getConfigurationSection(uuid);
+
+            if (player.getString("name").toLowerCase().contains(name.toLowerCase())) {
+                match = uuid;
+            }
+
+            if (player.getString("name").equalsIgnoreCase(name)) {
+                break;
+            }
+        }
+
+        if (match == null) {
+            return null;
+        }
+
+        return Bukkit.getOfflinePlayer(UUID.fromString(match));
     }
 
     /**

@@ -10,7 +10,21 @@ import org.bukkit.entity.Player;
 public class PlayerHandler {
 
     public static OfflinePlayer findPlayer(String value) {
-        OfflinePlayer result = null;
+        OfflinePlayer result = Bukkit.getServer().getPlayer(value);
+
+        if (result != null) {
+            return result;
+        }
+
+        if (value.length() < 3 || value.length() > 16 || value.contains(" ")) {
+            // player name invalid
+            return null;
+        }
+
+        if (Bukkit.getOfflinePlayers().length > 10000) {
+            return PVPStats.getInstance().getSQLHandler().findPlayer(value);
+        }
+
         for (OfflinePlayer off : Bukkit.getOfflinePlayers()) {
             if (off == null) {
                 continue;

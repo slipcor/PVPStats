@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.8 - try a more sturdy and database based approach to find OfflinePlayers, for bigger servers
 - v1.11.7 - maybe prevent OfflinePlayer lookups crashing servers
 - v1.11.6 - support null OfflinePlayers, because that is a thing
 - v1.11.5 - update plugin.yml to reflect version bump

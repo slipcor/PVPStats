@@ -10,10 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 /**
@@ -301,6 +298,50 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
         }
         executeQuery("DELETE FROM `" + dbTable + "` WHERE `time` < " + timestamp + ";", true);
         return count;
+    }
+
+    /**
+     * Find a player by their name
+     *
+     * @param name the player's last known name
+     * @return an OfflinePlayer, can be null!
+     */
+    @Override
+    public OfflinePlayer findPlayer(String name) {
+        try {
+            PreparedStatement statement = databaseConnection.prepareStatement("SELECT `name`, `uid` FROM " + dbTable + " WHERE `name` LIKE ?;");
+            statement.setString(1, name);
+            ResultSet result = statement.executeQuery();
+
+            String match = null;
+            UUID matchUUID = null;
+
+            while (result.next()) {
+
+                String rowName = result.getString("name");
+                String rowUUID = result.getString("uid");
+
+                if (rowUUID != null && !rowUUID.isEmpty()) {
+                    matchUUID = UUID.fromString(rowUUID);
+                }
+                match = rowName;
+
+                if (match.equalsIgnoreCase(name)) {
+                    break;
+                }
+            }
+
+            if (matchUUID != null) {
+                return Bukkit.getOfflinePlayer(matchUUID);
+            }
+            if (match != null) {
+                return Bukkit.getOfflinePlayer(match);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

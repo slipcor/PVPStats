@@ -269,4 +269,12 @@ public interface DatabaseConnection {
      * @return the amount of entries that have been removed
      */
     int cleanup(CommandSender sender);
+
+    /**
+     * Find a player by their name
+     *
+     * @param name the player's last known name
+     * @return an OfflinePlayer, can be null!
+     */
+    OfflinePlayer findPlayer(String name);
 }
