@@ -56,7 +56,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.9 - match player names more leniently 
+- v1.11.10 - only clear caches instead of pre-caching all players who might have stats 
 - [read more](doc/changelog.md)
 
 ***

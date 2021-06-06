@@ -6,7 +6,9 @@ import net.slipcor.pvpstats.yml.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Class for fast temporary access to player statistics
@@ -355,13 +357,15 @@ public final class PlayerStatisticsBuffer {
      * Refresh the maps after making changes by command
      */
     static void refresh() {
-        List<UUID> uuids = new ArrayList<>(DatabaseAPI.getAllUUIDs());
+        //List<UUID> uuids = new ArrayList<>(DatabaseAPI.getAllUUIDs());
 
         clear(null); // clear all entries
-
+/*
         for (UUID uuid : uuids) {
             OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
             DatabaseAPI.info(player); // pre-load previously loaded players
         }
+
+ */
     }
 }
