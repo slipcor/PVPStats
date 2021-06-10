@@ -1,4 +1,5 @@
 # v1.X Changelog
+- v1.11.11 - improve update config setting comment, fix all comments having duplicated comment characters
 - v1.11.10 - only clear caches instead of pre-caching all players who might have stats
 - v1.11.9 - match player names more leniently
 - v1.11.8 - try a more sturdy and database based approach to find OfflinePlayers, for bigger servers
