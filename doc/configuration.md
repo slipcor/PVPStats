@@ -92,7 +92,7 @@ This is the default configuation file.
     update:
       # phone home to inform slipcor that you use the plugin
       tracker: true
-      # what to do? Valid values: off, announce, download, both
+      # what to do? Valid values: disable, announce, download, both
       mode: both
       # which type of branch to get updates? Valid values: dev, alpha, beta, release
       type: beta
