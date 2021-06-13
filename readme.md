@@ -56,7 +56,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.11 - improve update config setting comment, fix all comments having duplicated comment characters 
+- v1.11.12 - remove deprecated SQL driver, this loading is no longer necessary anyway 
 - [read more](doc/changelog.md)
 
 ***
@@ -81,15 +81,15 @@ Joining the Discord Server gets you early access to latest builds, and maybe it 
 
 ***
 
+## Todos
+
+- Investigate OfflinePlayer queries, maybe prioritize database over laggy Mojang lookup
+
+***
+
 ## Credits
 
 - pandapipino for the idea
 
-
-***
-
-## Todos
-
-- Move language nodes into proper block logic
 
 ***

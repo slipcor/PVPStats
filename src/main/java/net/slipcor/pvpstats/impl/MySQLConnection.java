@@ -23,8 +23,6 @@ public class MySQLConnection extends AbstractSQLConnection {
         this.dbUsername = username;
         this.dbPassword = password;
         this.dbOptions = dbOptions;
-
-        Class.forName("com.mysql.jdbc.Driver").newInstance();
     }
 
     public boolean allowsAsync() {
