@@ -74,6 +74,8 @@ public class Config extends CoreConfig {
                 "=== [ Statistic Settings ] ==="),
         STATISTICS_ASSIST_SECONDS(Type.INT, "statistics.assistSeconds", 60,
                 "time in seconds to consider a former kill an assist"),
+        STATISTICS_LIST_LENGTH(Type.INT, "statistics.maxListLength", 10,
+                "amount of players to be stored in cached top and flop lists"),
         STATISTICS_CLEAR_ON_START(Type.BOOLEAN, "statistics.clearOnStart", true,
                 "clear (duplicated) statistics on every start"),
         STATISTICS_CREATE_ON_JOIN(Type.BOOLEAN, "statistics.createOnJoin", true,

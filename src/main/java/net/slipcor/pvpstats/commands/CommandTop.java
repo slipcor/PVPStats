@@ -56,14 +56,25 @@ public class CommandTop extends CoreCommand {
                         amount = 10;
                     }
 
+                    int offset = 0;
+
+                    if (args.length > 3) {
+                        // /pvpstats top [type] [amount] [page] - show the top [amount] players of [type], page number [page]
+                        try {
+                            offset = amount * (Integer.parseInt(args[3])-1);
+                        } catch (Exception ignored) {
+                        }
+                    }
+                    offset = Math.max(0, offset);
+
                     if (args[1].equalsIgnoreCase("kills")) {
-                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "KILLS", amount));
+                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "KILLS", amount, offset));
                     } else if (args[1].equalsIgnoreCase("deaths")) {
-                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "DEATHS", amount));
+                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "DEATHS", amount, offset));
                     } else if (args[1].equalsIgnoreCase("streak")) {
-                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "STREAK", amount));
+                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "STREAK", amount, offset));
                     } else if (args[1].equalsIgnoreCase("elo")) {
-                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "ELO", amount));
+                        Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "ELO", amount, offset));
                     } else {
                         return;
                     }
@@ -84,7 +95,12 @@ public class CommandTop extends CoreCommand {
                 if (legacyTop == 0) {
                     args[0] = String.valueOf(count);
                 }
-                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "K-D", count, args[0]));
+                int offset = 0;
+                if (args.length > 1) {
+                    // /pvpstats [amount] [page]
+                    offset = count * (Integer.parseInt(args[1]) - 1);
+                }
+                Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "K-D", count, args[0], offset));
             } catch (Exception e) {
                 e.printStackTrace();
             }

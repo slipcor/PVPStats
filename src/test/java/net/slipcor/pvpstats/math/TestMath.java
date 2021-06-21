@@ -1,8 +1,7 @@
 package net.slipcor.pvpstats.math;
 
 import net.slipcor.pvpstats.classes.PlayerStatistic;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
@@ -10,12 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestMath {
-    MathFormulaManager parser;
-
-    @Before
-    public void before() {
-        parser = MathFormulaManager.getInstance();
-    }
+    private static MathFormulaManager parser = MathFormulaManager.getInstance();
 
     @Test
     public void testSimpleNumbers() {

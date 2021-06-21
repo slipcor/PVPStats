@@ -13,6 +13,7 @@ public class SendPlayerTop implements Runnable {
     final String name;
     final int amount;
     final String displayAmount;
+    final int offset;
 
     static Map<String, LanguageEntry> stringToEntry = new HashMap<>();
 
@@ -26,23 +27,21 @@ public class SendPlayerTop implements Runnable {
         stringToEntry.put("ELO", Language.MSG.STATISTIC_HEADLINE_ELO);
     }
 
-    public SendPlayerTop(CommandSender sender, String name, int amount) {
-        this.sender = sender;
-        this.name = name;
-        this.amount = amount;
-        displayAmount = String.valueOf(amount);
+    public SendPlayerTop(CommandSender sender, String name, int amount, int offset) {
+        this (sender, name, amount, String.valueOf(amount), offset);
     }
 
-    public SendPlayerTop(CommandSender sender, String name, int amount, String displayAmount) {
+    public SendPlayerTop(CommandSender sender, String name, int amount, String displayAmount, int offset) {
         this.sender = sender;
         this.name = name;
         this.amount = amount;
         this.displayAmount = displayAmount;
+        this.offset = offset;
     }
 
     @Override
     public void run() {
-        String[] top = LeaderboardBuffer.top(amount, name);
+        String[] top = LeaderboardBuffer.top(amount, name, offset);
         sender.sendMessage(Language.MSG.STATISTIC_SEPARATOR.parse());
         sender.sendMessage(Language.MSG.STATISTIC_HEADLINE_TOP.parse(
                 displayAmount,

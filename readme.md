@@ -56,7 +56,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.12 - remove deprecated SQL driver, this loading is no longer necessary anyway 
+- v1.11.13 - properly use unit testing, start pagination implementation by allowing a page argument in the top and show commands 
 - [read more](doc/changelog.md)
 
 ***

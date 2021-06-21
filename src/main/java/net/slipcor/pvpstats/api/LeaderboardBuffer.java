@@ -39,7 +39,7 @@ public class LeaderboardBuffer {
 
     }
 
-    public static String[] top(int value, String type) {
+    public static String[] top(int value, String type, int offset) {
         type = type.toUpperCase();
         long last = LASTCHECKEDTOP.get(type);
         long now = System.currentTimeMillis() / 1000;
@@ -49,7 +49,7 @@ public class LeaderboardBuffer {
             last *= -1; // now we know that seconds have passed, are they enough?
             if (last > PVPStats.getInstance().config().getInt(Config.Entry.STATISTICS_LEADERBOARD_REFRESH)) {
 
-                String[] array = DatabaseAPI.top(10, type);
+                String[] array = DatabaseAPI.top(PVPStats.getInstance().config().getInt(Config.Entry.STATISTICS_LIST_LENGTH), type);
                 if (array == null) {
                     array = new String[0];
                 }
@@ -61,11 +61,15 @@ public class LeaderboardBuffer {
         // return saved state
         String[] values = TOP.get(type);
 
-        int length = Math.min(value, values.length); // get a safe value to not overreach
+        int length = Math.min(value, values.length-offset); // get a safe value to not overreach
+
+        if (length <= 0) {
+            return new String[0];
+        }
 
         String[] result = new String[length];
 
-        System.arraycopy(values, 0, result, 0 ,length);
+        System.arraycopy(values, offset, result, 0 ,length);
 
         return result;
     }

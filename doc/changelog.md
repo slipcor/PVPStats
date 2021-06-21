@@ -1,4 +1,6 @@
 # v1.X Changelog
+
+- v1.11.13 - properly use unit testing, start pagination implementation by allowing a page argument in the top and show commands
 - v1.11.12 - remove deprecated SQL driver, this loading is no longer necessary anyway
 - v1.11.11 - improve update config setting comment, fix all comments having duplicated comment characters
 - v1.11.10 - only clear caches instead of pre-caching all players who might have stats
