@@ -56,7 +56,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.13 - properly use unit testing, start pagination implementation by allowing a page argument in the top and show commands 
+- v1.11.14 - clear up sorting (top/flop) code
 - [read more](doc/changelog.md)
 
 ***

@@ -823,9 +823,14 @@ public final class DatabaseAPI {
 
             int limit = sort.equals("K-D") ? Math.min(count, 50) : count;
 
-            result = plugin.getSQLHandler().getTopSorted(limit, order,
-                    sort.equals("DEATHS") &&
-                            !PVPStats.getInstance().config().getBoolean(Config.Entry.STATISTICS_DEATHS_DESCENDING));
+            // we want descending values (more at top) except for deaths (less at top) - but if the config is set ignore
+            boolean isAscending = false;
+
+            if (!PVPStats.getInstance().config().getBoolean(Config.Entry.STATISTICS_DEATHS_DESCENDING) && sort.equals("DEATHS")) {
+                isAscending = true;
+            }
+
+            result = plugin.getSQLHandler().getTopSorted(limit, order, isAscending);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -918,8 +923,14 @@ public final class DatabaseAPI {
 
             int limit = sort.equals("K-D") ? Math.min(count, 50) : count;
 
-            result = plugin.getSQLHandler().getTopSorted(limit, order, !sort.equals("DEATHS") ||
-                    !PVPStats.getInstance().config().getBoolean(Config.Entry.STATISTICS_DEATHS_DESCENDING));
+            // we want ascending values (less at top) except for deaths (more at top) - but if the config is set ignore
+            boolean isAscending = true;
+
+            if (!PVPStats.getInstance().config().getBoolean(Config.Entry.STATISTICS_DEATHS_DESCENDING) && sort.equals("DEATHS")) {
+                isAscending = false;
+            }
+
+            result = plugin.getSQLHandler().getTopSorted(limit, order, isAscending);
         } catch (SQLException e) {
             e.printStackTrace();
         }
