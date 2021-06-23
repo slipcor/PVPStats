@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.16 - [core update] do not log prefixed messages unless sent to console
 - v1.11.15 - allow multiple lines in announcements
 - v1.11.14 - clear up sorting (top/flop) code
 - v1.11.13 - properly use unit testing, start pagination implementation by allowing a page argument in the top and show commands
