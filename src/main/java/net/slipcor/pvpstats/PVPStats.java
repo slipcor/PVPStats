@@ -147,10 +147,24 @@ public class PVPStats extends CorePlugin {
                     announcements = new YamlConfiguration();
                     announcements.load(new File(getDataFolder(), "streak_announcements.yml"));
                 }
-                String message = announcements.getString(key, "");
-                if (!message.isEmpty()) {
-                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message)
-                            .replace("%player%", PlayerHandler.getPlayerName(player)));
+
+                List<String> msgList = new ArrayList<>();
+
+                // handle either a string or an array of strings in the file
+                if (announcements.isString(key)) {
+                    String msg = announcements.getString(key, "");
+                    if (!msg.equals("")) {
+                        msgList.add(msg);
+                    }
+                } else if (announcements.isList(key)) {
+                    msgList = announcements.getStringList(key);
+                }
+
+                for (String message : msgList) {
+                    if (!message.isEmpty()) {
+                        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message)
+                                .replace("%player%", PlayerHandler.getPlayerName(player)));
+                    }
                 }
             }
             if (config().getBoolean(Config.Entry.STATISTICS_STREAK_COMMANDS)) {
