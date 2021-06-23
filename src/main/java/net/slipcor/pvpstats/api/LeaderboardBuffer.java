@@ -67,6 +67,8 @@ public class LeaderboardBuffer {
             return new String[0];
         }
 
+        length = Math.min(10, length);
+
         String[] result = new String[length];
 
         System.arraycopy(values, offset, result, 0 ,length);
@@ -95,6 +97,12 @@ public class LeaderboardBuffer {
         // return saved state
         String[] values = FLOP.get(type);
         int length = Math.min(value, values.length); // get a safe value to not overreach
+
+        if (length <= 0) {
+            return new String[0];
+        }
+
+        length = Math.min(10, length);
 
         String[] result = new String[length];
 

@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.17 - change pagination logic, needs more testing, use with caution!
 - v1.11.16 - [core update] do not log prefixed messages unless sent to console
 - v1.11.15 - allow multiple lines in announcements
 - v1.11.14 - clear up sorting (top/flop) code

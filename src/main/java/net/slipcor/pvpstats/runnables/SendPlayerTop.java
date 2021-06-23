@@ -50,7 +50,7 @@ public class SendPlayerTop implements Runnable {
 
         int pos = 1;
         for (String stat : top) {
-            sender.sendMessage(Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos++), stat));
+            sender.sendMessage(Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos++ + offset), stat));
         }
     }
 }

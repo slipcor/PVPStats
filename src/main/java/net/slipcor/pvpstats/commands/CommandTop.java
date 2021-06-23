@@ -61,7 +61,7 @@ public class CommandTop extends CoreCommand {
                     if (args.length > 3) {
                         // /pvpstats top [type] [amount] [page] - show the top [amount] players of [type], page number [page]
                         try {
-                            offset = amount * (Integer.parseInt(args[3])-1);
+                            offset = 10 * (Integer.parseInt(args[3])-1);
                         } catch (Exception ignored) {
                         }
                     }
@@ -88,17 +88,16 @@ public class CommandTop extends CoreCommand {
 
             // /pvpstats [amount] - show the top [amount] players (K-D)
             try {
+                // legacytop == 0 -->
                 int count = legacyTop == 0 ? 10 : Integer.parseInt(args[0]);
-                if (count > 20) {
-                    count = 20;
-                }
                 if (legacyTop == 0) {
                     args[0] = String.valueOf(count);
                 }
                 int offset = 0;
-                if (args.length > 1) {
-                    // /pvpstats [amount] [page]
-                    offset = count * (Integer.parseInt(args[1]) - 1);
+                if (args.length > 2) {
+                    // we did offset the arguments for backwards compatibility
+                    // /pvpstats [amount] [amount] [page]
+                    offset = 10 * (Integer.parseInt(args[2]) - 1);
                 }
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new SendPlayerTop(sender, "K-D", count, args[0], offset));
             } catch (Exception e) {

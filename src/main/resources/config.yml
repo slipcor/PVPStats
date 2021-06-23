@@ -72,6 +72,8 @@ statistics:
   killDeathSimple: false
   # time in seconds to consider a former kill an assist
   assistSeconds: 60
+  # amount of players to be stored in cached top and flop lists
+  maxListLength: 10
 # === [ Integration into other Plugins ] ===
 other:
   # use players' display names
