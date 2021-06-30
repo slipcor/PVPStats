@@ -30,6 +30,9 @@ public class PlayerHandler {
                 continue;
             }
             String name = off.getName();
+            if (name == null) {
+                continue;
+            }
 
             if (name.equalsIgnoreCase(value)) {
                 return off;

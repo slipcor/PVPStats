@@ -104,6 +104,8 @@ public class Config extends CoreConfig {
                 "always reset a streak when a player disconnects"),
         STATISTICS_LEADERBOARD_REFRESH(Type.INT, "statistics.leaderboardRefresh", 60,
                 "seconds to wait before the top/flop leaderboard values will query the database again"),
+        STATISTICS_SHORT_PLACEHOLDERS(Type.BOOLEAN, "statistics.shortPlaceholders", false,
+                "try using super short placeholders"),
         STATISTICS_STREAK_ANNOUNCEMENTS(Type.BOOLEAN, "statistics.streakAnnouncements", false,
                 "announce lines from streak_announcements.yml on specific streak values"),
         STATISTICS_STREAK_COMMANDS(Type.BOOLEAN, "statistics.streakCommands", false,

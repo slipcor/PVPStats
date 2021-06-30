@@ -56,7 +56,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.17 - change pagination logic, needs more testing, use with caution!
+- v1.11.18 - fix NullPointer for null names and add short placeholders - this might not work, let's hope it does!
 - [read more](doc/changelog.md)
 
 ***

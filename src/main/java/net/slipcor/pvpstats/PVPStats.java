@@ -3,6 +3,7 @@ package net.slipcor.pvpstats;
 import net.slipcor.core.*;
 import net.slipcor.pvpstats.api.DatabaseAPI;
 import net.slipcor.pvpstats.api.DatabaseConnection;
+import net.slipcor.pvpstats.classes.PlaceholderAPIAbbreviationHook;
 import net.slipcor.pvpstats.classes.PlaceholderAPIHook;
 import net.slipcor.pvpstats.classes.PlayerHandler;
 import net.slipcor.pvpstats.classes.PlayerStatistic;
@@ -511,8 +512,13 @@ public class PVPStats extends CorePlugin {
         }
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            getLogger().info("PVPStats - PlaceholderAPI found.");
-            new PlaceholderAPIHook().register();
+            if (configHandler.getBoolean(Config.Entry.STATISTICS_SHORT_PLACEHOLDERS)) {
+                getLogger().info("PVPStats - PlaceholderAPI found - trying to use short placeholders");
+                new PlaceholderAPIAbbreviationHook().register();
+            } else {
+                getLogger().info("PVPStats - PlaceholderAPI found.");
+                new PlaceholderAPIHook().register();
+            }
         }
 
         loadDebugger("debug", Bukkit.getConsoleSender());
