@@ -167,6 +167,7 @@ public final class DatabaseAPI {
         }
         // here we go, PVP!
         DEBUGGER.i("Counting kill by " + attacker.getName(), victim.getName());
+        lastKill.put(attacker.getName(), victim.getName());
 
         if (!plugin.config().getBoolean(Config.Entry.ELO_ACTIVE)) {
             DEBUGGER.i("no elo", victim.getName());
@@ -362,6 +363,10 @@ public final class DatabaseAPI {
         }
 
         return result < 0 ? 0 : result;
+    }
+
+    public static String getLastKilled(String killer) {
+        return lastKill.get(killer);
     }
 
     /**

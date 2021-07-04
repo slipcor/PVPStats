@@ -163,8 +163,15 @@ public class PVPStats extends CorePlugin {
 
                 for (String message : msgList) {
                     if (!message.isEmpty()) {
-                        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message)
-                                .replace("%player%", PlayerHandler.getPlayerName(player)));
+                        String replacement = ChatColor.translateAlternateColorCodes('&', message)
+                                .replace("%player%", PlayerHandler.getPlayerName(player));
+                        if (message.contains("%killed%")) {
+                            String lastKill = DatabaseAPI.getLastKilled(player.getName());
+                            if (lastKill != null && Bukkit.getPlayer(lastKill) != null) {
+                                replacement = replacement.replace("%killed%", PlayerHandler.getPlayerName(Bukkit.getPlayer(lastKill)));
+                            }
+                        }
+                        Bukkit.broadcastMessage(replacement);
                     }
                 }
             }
@@ -188,8 +195,16 @@ public class PVPStats extends CorePlugin {
 
                 for (String command : cmdList) {
                     if (!command.isEmpty()) {
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-                                command.replace("%player%", PlayerHandler.getPlayerName(player)));
+                        String replacement = ChatColor.translateAlternateColorCodes('&', command)
+                                .replace("%player%", PlayerHandler.getPlayerName(player));
+                        if (command.contains("%killed%")) {
+                            String lastKill = DatabaseAPI.getLastKilled(player.getName());
+                            if (lastKill != null) {
+                                replacement = replacement.replace("%killed%", lastKill);
+                            }
+                        }
+                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), replacement);
+
                     }
                 }
             }
