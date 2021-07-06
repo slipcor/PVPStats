@@ -2,7 +2,8 @@
 
 These are the placeholders you can use where PAPI Placeholders are supported:
 
-**Shorthand needs to be enabled in the config: `/pvpstats config set shortPlaceholders true`**
+**🔴 Shorthand needs to be enabled in the config: 🔴
+`/pvpstats config set shortPlaceholders true`**
 
 ## Player based statistics
 
@@ -40,7 +41,7 @@ slipcorpvpstats_flop_kills_5 | sps_f_kills_5 | ...
 ---
 
 Valid statistical entries instead of "kills" for the above lists are:
-* **deaths** (sorting ascending by default!)
+* **deaths** (🟡 sorting ascending by default! 🟡)
 * **streak** (maximum streak)
 * **elo** (ELO score)
 * **k-d** (kill/death ratio, can be defined to fancy things in the config)
