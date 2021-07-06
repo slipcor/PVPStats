@@ -48,9 +48,10 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 - [API](doc/api.md)
 - [Commands](doc/commands.md)
-- [Permissions](doc/permissions.md)
 - [Configuration](doc/configuration.md)
 - [LeaderBoards](doc/leaderboards.md)
+- [Permissions](doc/permissions.md)
+- [PAPI Placeholders](doc/placeholders.md)
 
 ***
 
