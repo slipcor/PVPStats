@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.20 - do no longer count "last damage" for kill after death
 - v1.11.19 - try supporting %killed% as placeholder for announcements and commands
 - v1.11.18 - fix NullPointer for null names and add short placeholders - this might not work, let's hope it does!
 - v1.11.17 - change pagination logic, needs more testing, use with caution!

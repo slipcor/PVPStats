@@ -161,6 +161,7 @@ public class PlayerListener implements Listener {
                 return;
             }
         }
+        lastDamage.remove(player.getUniqueId()); // clear map for next kill
 
         if (notCountingEntity(attacker)) {
             Debugger.i("not counting this one!");
