@@ -3,7 +3,7 @@ main: net.slipcor.pvpstats.PVPStats
 version: 1.11.build-number
 api-version: 1.13
 author: slipcor
-softdepend: [pvparena,PlaceholderAPI]
+softdepend: [pvparena,PlaceholderAPI,WorldGuard]
 website: https://www.spigotmc.org/resources/pvp-stats.59124/
 commands:
   pvpstats:

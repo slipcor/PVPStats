@@ -174,6 +174,7 @@ public final class DatabaseAPI {
             incKill(attacker, PlayerStatisticsBuffer.getEloScore(attacker.getUniqueId()));
             incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
 
+            DEBUGGER.i("internal stats updated. sending database update!");
             if (plugin.getSQLHandler().allowsAsync()) {
                 Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(
                         PlayerHandler.getPlayerName(attacker), attacker.getUniqueId().toString(),

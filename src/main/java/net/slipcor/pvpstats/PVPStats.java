@@ -144,9 +144,11 @@ public class PVPStats extends CorePlugin {
         OfflinePlayer player = Bukkit.getPlayer(uuid);
         try {
             if (config().getBoolean(Config.Entry.STATISTICS_STREAK_ANNOUNCEMENTS)) {
+                debugger.i("we want announcements");
                 if (announcements == null) {
                     announcements = new YamlConfiguration();
                     announcements.load(new File(getDataFolder(), "streak_announcements.yml"));
+                    debugger.i("we loaded the announcements");
                 }
 
                 List<String> msgList = new ArrayList<>();
@@ -160,16 +162,20 @@ public class PVPStats extends CorePlugin {
                 } else if (announcements.isList(key)) {
                     msgList = announcements.getStringList(key);
                 }
+                debugger.i("we got the announcement list");
 
                 for (String message : msgList) {
                     if (!message.isEmpty()) {
+                        debugger.i("message: " + message);
                         String replacement = ChatColor.translateAlternateColorCodes('&', message)
                                 .replace("%player%", PlayerHandler.getPlayerName(player));
+                        debugger.i("message replaced to " + replacement);
                         if (message.contains("%killed%")) {
                             String lastKill = DatabaseAPI.getLastKilled(player.getName());
                             if (lastKill != null && Bukkit.getPlayer(lastKill) != null) {
                                 replacement = replacement.replace("%killed%", PlayerHandler.getPlayerName(Bukkit.getPlayer(lastKill)));
                             }
+                            debugger.i("and again replaced to " + replacement);
                         }
                         Bukkit.broadcastMessage(replacement);
                     }

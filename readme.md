@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.20 - do no longer count "last damage" for kill after death
+- v1.11.21 - reduce priority and generally wait for WorldGuard specifically to allow for PVP cancelling before we care about it
 - [read more](doc/changelog.md)
 
 ***

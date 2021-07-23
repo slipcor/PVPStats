@@ -52,7 +52,7 @@ public class PlayerListener implements Listener {
      *
      * @param event the EntityDamageByEntityEvent
      */
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerDamage(EntityDamageByEntityEvent event) {
         if (event.getEntityType() != EntityType.PLAYER) {
             return;

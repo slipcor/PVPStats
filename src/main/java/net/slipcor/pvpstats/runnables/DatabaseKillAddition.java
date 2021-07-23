@@ -17,6 +17,7 @@ public class DatabaseKillAddition implements Runnable {
         this.victimName = victimName;
         this.victimUUID = victimUUID;
         this.world = world;
+        debugger.i("kill addition KA created!");
     }
 
     @Override
