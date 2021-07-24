@@ -252,6 +252,22 @@ public class PVPStats extends CorePlugin {
         new CommandTop(this).load(commandList, commandMap);
         new CommandReload(this).load(commandList, commandMap);
         new CommandWipe(this).load(commandList, commandMap);
+
+        if (dbHandler != null) {
+            int seconds = config().getInt(Config.Entry.STATISTICS_FORCE_RELOAD_INTERVAL);
+            if (seconds > 0) {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        DatabaseAPI.refresh();
+                    }
+                };
+                if (this.reloadTask != null) {
+                    reloadTask.cancel();
+                }
+                this.reloadTask = Bukkit.getScheduler().runTaskTimer(this, runnable, 20 * seconds, 20 * seconds);
+            }
+        }
     }
 
     /**
@@ -383,22 +399,6 @@ public class PVPStats extends CorePlugin {
 
         PlayerStatistic.ELO_DEFAULT = config().getInt(Config.Entry.ELO_DEFAULT);
         PlayerStatistic.ELO_MINIMUM = config().getInt(Config.Entry.ELO_MINIMUM);
-
-        if (dbHandler != null) {
-            int seconds = config().getInt(Config.Entry.STATISTICS_FORCE_RELOAD_INTERVAL);
-            if (seconds > 0) {
-                Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        DatabaseAPI.refresh();
-                    }
-                };
-                if (this.reloadTask != null) {
-                    reloadTask.cancel();
-                }
-                this.reloadTask = Bukkit.getScheduler().runTaskTimer(this, runnable, 20 * seconds, 20 * seconds);
-            }
-        }
     }
 
     /**

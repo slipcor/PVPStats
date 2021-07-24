@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.22 - allow to force reload the database after X seconds for multi-server setups
+- v1.11.23 - move update task to a later stage
 - [read more](doc/changelog.md)
 
 ***

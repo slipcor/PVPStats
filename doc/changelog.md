@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.23 - move update task to a later stage
 - v1.11.22 - allow to force reload the database after X seconds for multi-server setups
 - v1.11.21 - reduce priority and generally wait for WorldGuard specifically to allow for PVP cancelling before we care about it
 - v1.11.20 - do no longer count "last damage" for kill after death
