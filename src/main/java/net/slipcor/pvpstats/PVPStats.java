@@ -33,6 +33,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,6 +75,7 @@ public class PVPStats extends CorePlugin {
     // commands
     private final Map<String, CoreCommand> commandMap = new HashMap<>();
     private final List<CoreCommand> commandList = new ArrayList<>();
+    private BukkitTask reloadTask = null;
 
     public static PVPStats getInstance() {
         return instance;
@@ -381,6 +383,22 @@ public class PVPStats extends CorePlugin {
 
         PlayerStatistic.ELO_DEFAULT = config().getInt(Config.Entry.ELO_DEFAULT);
         PlayerStatistic.ELO_MINIMUM = config().getInt(Config.Entry.ELO_MINIMUM);
+
+        if (dbHandler != null) {
+            int seconds = config().getInt(Config.Entry.STATISTICS_FORCE_RELOAD_INTERVAL);
+            if (seconds > 0) {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        DatabaseAPI.refresh();
+                    }
+                };
+                if (this.reloadTask != null) {
+                    reloadTask.cancel();
+                }
+                this.reloadTask = Bukkit.getScheduler().runTaskTimer(this, runnable, 20 * seconds, 20 * seconds);
+            }
+        }
     }
 
     /**

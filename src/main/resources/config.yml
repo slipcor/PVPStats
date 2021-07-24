@@ -76,6 +76,8 @@ statistics:
   assistSeconds: 60
   # amount of players to be stored in cached top and flop lists
   maxListLength: 10
+  # force reload the database from outside changes after how many seconds
+  forceReloadInterval: -1
 # === [ Integration into other Plugins ] ===
 other:
   # use players' display names

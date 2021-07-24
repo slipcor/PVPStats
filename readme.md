@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.21 - reduce priority and generally wait for WorldGuard specifically to allow for PVP cancelling before we care about it
+- v1.11.22 - allow to force reload the database after X seconds for multi-server setups
 - [read more](doc/changelog.md)
 
 ***

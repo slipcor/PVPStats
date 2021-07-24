@@ -110,6 +110,8 @@ public class Config extends CoreConfig {
                 "announce lines from streak_announcements.yml on specific streak values"),
         STATISTICS_STREAK_COMMANDS(Type.BOOLEAN, "statistics.streakCommands", false,
                 "issue commands from streak_commands.yml on specific streak values"),
+        STATISTICS_FORCE_RELOAD_INTERVAL(Type.INT, "statistics.forceReloadInterval", -1,
+                "force reload the database from outside changes after how many seconds"),
 
 
         ELO(Type.COMMENT, "eloscore", null,
