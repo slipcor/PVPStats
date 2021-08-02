@@ -39,6 +39,14 @@ public class LeaderboardBuffer {
 
     }
 
+    /**
+     * Get the players with the highest score of a value type
+     *
+     * @param value the amount of lines to read
+     * @param type the statistic to sort by
+     * @param offset an offset for pagination, 0 for first page, [value * x] for xth page
+     * @return an array of up to the requested amount of player stats, sorted by the given type
+     */
     public static String[] top(int value, String type, int offset) {
         type = type.toUpperCase();
         long last = LASTCHECKEDTOP.get(type);
@@ -76,6 +84,13 @@ public class LeaderboardBuffer {
         return result;
     }
 
+    /**
+     * Get the players with the worst score of a value type
+     *
+     * @param value the amount of lines to read
+     * @param type the statistic to sort by
+     * @return an array of up to the requested amount of player stats, sorted by the given type
+     */
     public static String[] flop(int value, String type) {
         type = type.toUpperCase();
         long last = LASTCHECKEDFLOP.get(type);

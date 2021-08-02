@@ -29,7 +29,9 @@ This documentation is not extensive, but explains up the methods that I would de
     String value;  // the information to get and to sort by
     
     // valid values for type: "elo", "kills", "deaths", "streak", "currentstreak"
-    String[] lines = LeaderboardBuffer.top(value, type);
+    String[] lines = LeaderBoardBuffer.top(value, type, 0);
+
+    // if you want to get the second page, you need to increase 0 by value
     
     // lines will be an array of formatted values, by default "1. {player}: {value}"
 
