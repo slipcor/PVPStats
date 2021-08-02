@@ -1,5 +1,7 @@
 # v1.X Changelog
 
+- v1.11.25 - add spacer line breaks before comments for readability [core update]
+- v1.11.24 - someone pushed the wrong button [Documentation commit]
 - v1.11.23 - move update task to a later stage
 - v1.11.22 - allow to force reload the database after X seconds for multi-server setups
 - v1.11.21 - reduce priority and generally wait for WorldGuard specifically to allow for PVP cancelling before we care about it
