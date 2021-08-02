@@ -25,11 +25,12 @@ This documentation is not extensive, but explains up the methods that I would de
 
 ### top - get the top stats 
 
-    int value;     // how many entries to get (max: 10);
-    String value;  // the information to get and to sort by
+    int value = 10;         // how many entries to get (maximum is set in "maxListLength");
+    String type = "kills";  // the information to get and to sort by
+    int offset = 0;         // an offset for pagination. 0 for first page, value for second page, value * 2 for third page...
     
     // valid values for type: "elo", "kills", "deaths", "streak", "currentstreak"
-    String[] lines = LeaderBoardBuffer.top(value, type, 0);
+    String[] lines = LeaderBoardBuffer.top(value, type, offset);
 
     // if you want to get the second page, you need to increase 0 by value
     
@@ -38,8 +39,8 @@ This documentation is not extensive, but explains up the methods that I would de
 
 ### flop - get the bottom stats
 
-    int value;     // how many entries to get (max: 10);
-    String value;  // the information to get and to sort by
+    int value = 10;     // how many entries to get (maximum is set in "maxListLength");
+    String type = "kills";  // the information to get and to sort by
     
     // valid values for type: "elo", "kills", "deaths", "streak", "currentstreak"
     String[] lines = LeaderboardBuffer.flop(value, type);
