@@ -64,6 +64,10 @@ statistics:
   streakAnnouncements: false
   # issue commands from streak_commands.yml on specific streak values
   streakCommands: false
+  # announce lines from streak_announcements.yml after a set amount of streak levels
+  streakIntervalAnnouncements: false
+  # issue commands from streak_commands.yml after a set amount of streak levels
+  streakIntervalCommands: false
   # count dying from other sources than players (and their tamed pets) towards death count and resetting of streaks
   countRegularDeaths: false
   # count dying from other player's tamed pets for death count and resetting of streaks

@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.26 - allow to set up streaks and commands "every X streak levels" - there can be only one logic so it will override the former version if activated
 - v1.11.25 - add spacer line breaks before comments for readability [core update]
 - v1.11.24 - someone pushed the wrong button [Documentation commit]
 - v1.11.23 - move update task to a later stage

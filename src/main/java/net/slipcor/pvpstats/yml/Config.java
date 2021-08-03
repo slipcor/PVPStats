@@ -108,8 +108,12 @@ public class Config extends CoreConfig {
                 "try using super short placeholders"),
         STATISTICS_STREAK_ANNOUNCEMENTS(Type.BOOLEAN, "statistics.streakAnnouncements", false,
                 "announce lines from streak_announcements.yml on specific streak values"),
+        STATISTICS_STREAK_INTERVAL_ANNOUNCEMENTS(Type.BOOLEAN, "statistics.streakIntervalAnnouncements", false,
+                "announce lines from streak_announcements.yml after a set amount of streak levels"),
         STATISTICS_STREAK_COMMANDS(Type.BOOLEAN, "statistics.streakCommands", false,
                 "issue commands from streak_commands.yml on specific streak values"),
+        STATISTICS_STREAK_INTERVAL_COMMANDS(Type.BOOLEAN, "statistics.streakIntervalCommands", false,
+                "issue commands from streak_commands.yml after a set amount of streak levels"),
         STATISTICS_FORCE_RELOAD_INTERVAL(Type.INT, "statistics.forceReloadInterval", -1,
                 "force reload the database from outside changes after how many seconds"),
 

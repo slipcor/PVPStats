@@ -142,16 +142,17 @@ public class PVPStats extends CorePlugin {
      * @param value the new streak value
      */
     public void handleStreak(UUID uuid, int value) {
-        String key = String.valueOf(value);
         OfflinePlayer player = Bukkit.getPlayer(uuid);
         try {
-            if (config().getBoolean(Config.Entry.STATISTICS_STREAK_ANNOUNCEMENTS)) {
+            if (config().getBoolean(Config.Entry.STATISTICS_STREAK_ANNOUNCEMENTS) || config().getBoolean(Config.Entry.STATISTICS_STREAK_INTERVAL_ANNOUNCEMENTS)) {
+
                 debugger.i("we want announcements");
                 if (announcements == null) {
                     announcements = new YamlConfiguration();
                     announcements.load(new File(getDataFolder(), "streak_announcements.yml"));
                     debugger.i("we loaded the announcements");
                 }
+                String key = getMatchingKey(announcements, config().getBoolean(Config.Entry.STATISTICS_STREAK_INTERVAL_ANNOUNCEMENTS), value);
 
                 List<String> msgList = new ArrayList<>();
 
@@ -183,11 +184,13 @@ public class PVPStats extends CorePlugin {
                     }
                 }
             }
-            if (config().getBoolean(Config.Entry.STATISTICS_STREAK_COMMANDS)) {
+            if (config().getBoolean(Config.Entry.STATISTICS_STREAK_COMMANDS) || config().getBoolean(Config.Entry.STATISTICS_STREAK_INTERVAL_COMMANDS)) {
+
                 if (commands == null) {
                     commands = new YamlConfiguration();
                     commands.load(new File(getDataFolder(), "streak_commands.yml"));
                 }
+                String key = getMatchingKey(commands, config().getBoolean(Config.Entry.STATISTICS_STREAK_INTERVAL_COMMANDS), value);
 
                 List<String> cmdList = new ArrayList<>();
 
@@ -200,16 +203,20 @@ public class PVPStats extends CorePlugin {
                 } else if (commands.isList(key)) {
                     cmdList = commands.getStringList(key);
                 }
+                debugger.i("we got the commands list");
 
                 for (String command : cmdList) {
                     if (!command.isEmpty()) {
+                        debugger.i("command: " + command);
                         String replacement = ChatColor.translateAlternateColorCodes('&', command)
                                 .replace("%player%", PlayerHandler.getPlayerName(player));
+                        debugger.i("command replaced to " + replacement);
                         if (command.contains("%killed%")) {
                             String lastKill = DatabaseAPI.getLastKilled(player.getName());
                             if (lastKill != null) {
                                 replacement = replacement.replace("%killed%", lastKill);
                             }
+                            debugger.i("and again replaced to " + replacement);
                         }
                         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), replacement);
 
@@ -219,6 +226,25 @@ public class PVPStats extends CorePlugin {
         } catch (IOException | InvalidConfigurationException exception) {
             exception.printStackTrace();
         }
+    }
+
+    private String getMatchingKey(FileConfiguration configuration, boolean interval, int value) {
+        if (!interval) {
+            return String.valueOf(value);
+        }
+        int match = 0;
+        for (String key : configuration.getKeys(false)) {
+            try {
+                int keyValue = Integer.parseInt(key);
+                if (value % keyValue == 0) {
+                    // we get priority for later matches, hope that makes sense
+                    match = keyValue;
+                }
+            } catch (NumberFormatException e) {
+
+            }
+        }
+        return String.valueOf(match);
     }
 
     /**
