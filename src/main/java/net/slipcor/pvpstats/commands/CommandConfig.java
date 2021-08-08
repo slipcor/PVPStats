@@ -133,6 +133,7 @@ public class CommandConfig extends CoreCommand {
             return;
         }
         config.save();
+        PVPStats.getInstance().reloadConfig();
     }
 
     private void get(final CommandSender sender, final String node) {
@@ -221,6 +222,7 @@ public class CommandConfig extends CoreCommand {
             return;
         }
         config.save();
+        PVPStats.getInstance().reloadConfig();
     }
 
     private void set(final CommandSender sender, final String node, final String value) {
@@ -294,6 +296,7 @@ public class CommandConfig extends CoreCommand {
             return;
         }
         config.save();
+        PVPStats.getInstance().reloadConfig();
     }
 
     public List<String> completeTab(String[] args) {
