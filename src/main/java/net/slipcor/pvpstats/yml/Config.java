@@ -28,6 +28,8 @@ public class Config extends CoreConfig {
                 "=== [ General Settings ] ==="),
         GENERAL_SHORTHAND_COMMANDS(Type.BOOLEAN, "general.shortHandCommands", true,
                 "Allow command shorthands"),
+        GENERAL_SHOW_COMMANDS(Type.BOOLEAN, "general.showCommands", true, //TODO change to "false" after a while, because it makes more sense for new people
+                "Show available commands instead of looking for a player"),
 
         MYSQL(Type.COMMENT, "MySQL", null,
                 "=== [ MySQL Settings ] ==="),

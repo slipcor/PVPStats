@@ -100,6 +100,7 @@ public class Language extends CoreLanguage {
         NO_PERMISSION_CLEANUP("No permission to clean up!"),
         NO_PERMISSION_CONFIG_SET("No permission to set config setting!"),
         NO_PERMISSION_DEBUG("No permission to debug!"),
+        NO_PERMISSION_HELP("No permission to get command help!"),
         NO_PERMISSION_MIGRATE("No permission to migrate!"),
         NO_PERMISSION_PURGE("No permission to purge!"),
         NO_PERMISSION_RELOAD("No permission to reload!"),

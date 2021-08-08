@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.28 - allow to change default command behavior to show player's stats instead of a list of available commands - general.showCommands
 - v1.11.27 - reload the plugin when changing the config via command, so that all settings actually take effect
 - v1.11.26 - allow to set up streaks and commands "every X streak levels" - there can be only one logic so it will override the former version if activated
 - v1.11.25 - add spacer line breaks before comments for readability [core update]

@@ -19,6 +19,9 @@ permissions:
   pvpstats.config:
     description: Ability to read and alter config values
     default: op
+  pvpstats.help:
+    description: Ability to get command help
+    default: true
   pvpstats.migrate:
     description: Ability to migrate
     default: op

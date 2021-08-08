@@ -136,3 +136,5 @@ bStats:
 general:
   # Allow command shorthands
   shortHandCommands: true
+  # Show available commands instead of looking for a player
+  showCommands: true

@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.27 - reload the plugin when changing the config via command, so that all settings actually take effect 
+- v1.11.28 - allow to change default command behavior to show player's stats instead of a list of available commands - general.showCommands 
 - [read more](doc/changelog.md)
 
 ***

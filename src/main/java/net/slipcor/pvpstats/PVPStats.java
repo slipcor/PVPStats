@@ -98,6 +98,10 @@ public class PVPStats extends CorePlugin {
         return configHandler;
     }
 
+    public List<CoreCommand> getCommands() {
+        return new ArrayList<>(commandList);
+    }
+
     @Override
     protected String getMessagePrefix() {
         return Language.MSG.MESSAGE_PREFIX.parse();
@@ -271,6 +275,7 @@ public class PVPStats extends CorePlugin {
         new CommandConfig(this).load(commandList, commandMap);
         new CommandDebug(this).load(commandList, commandMap);
         new CommandDebugKill(this).load(commandList, commandMap);
+        new CommandHelp(this).load(commandList, commandMap);
         new CommandMigrate(this).load(commandList, commandMap);
         new CommandPurge(this).load(commandList, commandMap);
         new CommandShow(this).load(commandList, commandMap);
@@ -456,6 +461,7 @@ public class PVPStats extends CorePlugin {
             return true;
         }
 
+        // no arguments, fall back to "get my stats"
         if (args.length < 1) {
             commandMap.get("show").commit(sender, new String[0]);
             return true;
@@ -463,34 +469,42 @@ public class PVPStats extends CorePlugin {
         int legacy = 0;
         try {
             legacy = Integer.parseInt(args[0]);
+
+            if (legacy > 0) {
+                // first argument is a number, an oldschool user wants to see the best X people
+
+                commandMap.get("top").commit(sender, args);
+                return true;
+            }
         } catch (Exception e) {
         }
 
-        if (legacy > 0) {
-            commandMap.get("top").commit(sender, args);
-            return true;
-        }
+        if (config().getBoolean(Config.Entry.GENERAL_SHOW_COMMANDS)) {
 
-        boolean found = false;
-        for (CoreCommand command : commandList) {
-            if (command.hasPerms(sender)) {
-                sender.sendMessage(ChatColor.YELLOW + command.getShortInfo());
-                found = true;
+            boolean found = false;
+            for (CoreCommand command : commandList) {
+                if (command.hasPerms(sender)) {
+                    sender.sendMessage(ChatColor.YELLOW + command.getShortInfo());
+                    found = true;
+                }
             }
+
+            if (!found) {
+                commandMap.get("show").commit(sender, args);
+            }
+            return found;
         }
 
         final OfflinePlayer player = PlayerHandler.findPlayer(args[0]);
 
         if (player == null) {
             sendPrefixed(sender, Language.MSG.COMMAND_PLAYER_NOT_FOUND.parse(args[0]));
+        } else {
+            String[] newArgs = new String[]{"show", args[0]};
+            commandMap.get("show").commit(sender, newArgs);
         }
 
-        if (!found && DatabaseAPI.hasEntry(player.getUniqueId())) {
-            commandMap.get("show").commit(sender, args);
-            return true;
-        }
-
-        return found;
+        return true;
     }
 
     public void onDisable() {
