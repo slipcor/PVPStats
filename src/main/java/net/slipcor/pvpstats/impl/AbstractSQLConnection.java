@@ -462,6 +462,12 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
         String query = "SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`,`elo`,`time`,`uid` FROM `" +
                 dbTable + "` WHERE 1 ORDER BY `" + orderBy + "` " + (ascending ? "ASC" : "DESC") + " LIMIT " + amount + ";";
 
+        if (orderBy.contains("`")) {
+            // special delivery, just throw all of this into the mix without escaping
+            query = "SELECT `name`,`kills`,`deaths`,`streak`,`currentstreak`,`elo`,`time`,`uid` FROM `" +
+                    dbTable + "` WHERE 1 ORDER BY " + orderBy + " " + (ascending ? "ASC" : "DESC") + " LIMIT " + amount + ";";
+        }
+
         List<PlayerStatistic> list = new ArrayList<>();
 
         ResultSet result = executeQuery(query, false);

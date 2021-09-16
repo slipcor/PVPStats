@@ -494,8 +494,11 @@ public class FlatFileConnection implements DatabaseConnection {
                         return (stat1.getCurrentStreak() - stat2.getCurrentStreak()) * (ascending ? 1 : -1);
                     case "elo":
                         return (stat1.getELO() - stat2.getELO()) * (ascending ? 1 : -1);
+                    default:
+                        return ((stat1.getKills() / (stat1.getDeaths() + 1) ) -
+                                (stat2.getKills() / (stat2.getDeaths() + 1))
+                                ) * (ascending ? 1 : -1);
                 }
-                return 0;
             }
         }
 

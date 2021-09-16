@@ -787,11 +787,11 @@ public final class DatabaseAPI {
     /**
      * Get the top statistics sorted by type
      *
-     * @param count the amount to fetch
+     * @param limit the amount to fetch
      * @param sort  the type to sort by
      * @return a sorted array
      */
-    public static String[] top(final int count, String sort) {
+    public static String[] top(final int limit, String sort) {
         if (!plugin.getSQLHandler().isConnected()) {
             plugin.getLogger().severe("Database is not connected!");
             plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
@@ -820,14 +820,14 @@ public final class DatabaseAPI {
                 case "ELO":
                     order = "elo";
                     break;
-                case "KILLS":
                 case "K-D":
+                    order = "`kills`/(`deaths`+0.001)";
+                    break;
+                case "KILLS":
                 default:
                     order = "kills";
                     break;
             }
-
-            int limit = sort.equals("K-D") ? Math.min(count, 50) : count;
 
             // we want descending values (more at top) except for deaths (less at top) - but if the config is set ignore
             boolean isAscending = false;
@@ -881,7 +881,7 @@ public final class DatabaseAPI {
             return output;
         }
 
-        return sortParse(results, count);
+        return sortParse(results, limit);
     }
 
     /**
@@ -920,14 +920,16 @@ public final class DatabaseAPI {
                 case "ELO":
                     order = "elo";
                     break;
-                case "KILLS":
                 case "K-D":
+                    order = "`kills`/(`deaths`+0.001)";
+                    break;
+                case "KILLS":
                 default:
                     order = "kills";
                     break;
             }
 
-            int limit = sort.equals("K-D") ? Math.min(count, 50) : count;
+            int limit = count;
 
             // we want ascending values (less at top) except for deaths (more at top) - but if the config is set ignore
             boolean isAscending = true;
