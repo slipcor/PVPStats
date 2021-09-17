@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.30 - properly pre-select top and flop kills when sorting by ratio
 - v1.11.29 - properly pre-select top and flop kills when sorting by ratio
 - v1.11.28 - allow to change default command behavior to show player's stats instead of a list of available commands - general.showCommands
 - v1.11.27 - reload the plugin when changing the config via command, so that all settings actually take effect

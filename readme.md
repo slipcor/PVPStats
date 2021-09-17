@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.29 - properly pre-select top and flop kills when sorting by ratio 
+- v1.11.30 - properly pre-select top and flop kills when sorting by ratio 
 - [read more](doc/changelog.md)
 
 ***

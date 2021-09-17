@@ -821,7 +821,7 @@ public final class DatabaseAPI {
                     order = "elo";
                     break;
                 case "K-D":
-                    order = "`kills`/(`deaths`+0.001)";
+                    order = "`kills`/(`deaths`+1.0)";
                     break;
                 case "KILLS":
                 default:
@@ -921,7 +921,7 @@ public final class DatabaseAPI {
                     order = "elo";
                     break;
                 case "K-D":
-                    order = "`kills`/(`deaths`+0.001)";
+                    order = "`kills`/(`deaths`+1.0)";
                     break;
                 case "KILLS":
                 default:
