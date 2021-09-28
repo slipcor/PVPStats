@@ -27,7 +27,7 @@ public class TextFormatter {
 
     private static TextComponent[] toTextComponent(String string) {
         if (string.contains("&")) {
-            string = ChatColor.translateAlternateColorCodes('&', string);
+            string = Language.colorize(string);
         }
 
         if (!string.contains("§")) {

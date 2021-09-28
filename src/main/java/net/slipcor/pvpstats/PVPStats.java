@@ -174,7 +174,7 @@ public class PVPStats extends CorePlugin {
                 for (String message : msgList) {
                     if (!message.isEmpty()) {
                         debugger.i("message: " + message);
-                        String replacement = ChatColor.translateAlternateColorCodes('&', message)
+                        String replacement = Language.colorize(message)
                                 .replace("%player%", PlayerHandler.getPlayerName(player));
                         debugger.i("message replaced to " + replacement);
                         if (message.contains("%killed%")) {
@@ -212,7 +212,7 @@ public class PVPStats extends CorePlugin {
                 for (String command : cmdList) {
                     if (!command.isEmpty()) {
                         debugger.i("command: " + command);
-                        String replacement = ChatColor.translateAlternateColorCodes('&', command)
+                        String replacement = Language.colorize(command)
                                 .replace("%player%", PlayerHandler.getPlayerName(player));
                         debugger.i("command replaced to " + replacement);
                         if (command.contains("%killed%")) {

@@ -3,7 +3,6 @@ package net.slipcor.pvpstats.yml;
 import net.slipcor.core.CoreLanguage;
 import net.slipcor.core.CorePlugin;
 import net.slipcor.core.LanguageEntry;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -158,11 +157,11 @@ public class Language extends CoreLanguage {
             for (int pos = 0; pos < args.length; pos++) {
                 result = result.replace("%" + pos + "%", args[pos]);
             }
-            return ChatColor.translateAlternateColorCodes('&', result);
+            return colorize(result);
         }
 
         public String parse() {
-            return ChatColor.translateAlternateColorCodes('&', toString());
+            return colorize(toString());
         }
 
         @Override

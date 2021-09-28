@@ -19,7 +19,6 @@ import net.slipcor.pvpstats.text.TextFormatter;
 import net.slipcor.pvpstats.yml.Config;
 import net.slipcor.pvpstats.yml.Language;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -447,7 +446,7 @@ public final class DatabaseAPI {
                 line = line.replace("%s", String.valueOf(streak));
                 line = line.replace("%e", String.valueOf(elo));
 
-                output[i] = ChatColor.translateAlternateColorCodes('&', line);
+                output[i] = Language.colorize(line);
             }
 
             return output;
