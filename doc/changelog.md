@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.32 - add URL verification to prevent tampering with it [core update]
 - v1.11.31 - support hex color codes (Core Update)
 - v1.11.30 - properly pre-select top and flop kills when sorting by ratio
 - v1.11.29 - properly pre-select top and flop kills when sorting by ratio

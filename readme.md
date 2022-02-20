@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.31 - support hex color codes (Core Update) 
+- v1.11.32 - add URL verification to prevent tampering with it [core update] 
 - [read more](doc/changelog.md)
 
 ***
