@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.35 - properly apply command logic /pvpstats topplus [type] [days] {amount}
 - v1.11.34 - attempt to implement "topplus" which allows for "top players in the last X days"
 - v1.11.33 - move to HTTPS for Updater [core update]
 - v1.11.32 - add URL verification to prevent tampering with it [core update]

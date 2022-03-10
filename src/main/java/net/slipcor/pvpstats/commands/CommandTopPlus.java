@@ -27,24 +27,24 @@ public class CommandTopPlus extends CoreCommand {
         // /pvpstats topplus [type] [days]
 
         if (args.length > 2) {
-            int amount;
+            int days;
 
             try {
-                amount = Integer.parseInt(args[2]);
+                days = Integer.parseInt(args[2]);
             } catch (Exception e) {
                 PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_ARGUMENT_INVALID_NUMBER.parse(args[2]));
                 return;
             }
 
-            int days = 7;
+            int amount = 10;
 
             if (args.length > 3) {
                 // /pvpstats topplus [type] [days] [amount] - show the top [amount] players of the last [days] days
                 try {
-                    days = Integer.parseInt(args[3]);
+                    amount = Integer.parseInt(args[3]);
                 } catch (Exception e2) {
                     PVPStats.getInstance().sendPrefixed(sender, Language.MSG.COMMAND_ARGUMENT_INVALID_NUMBER.parse(args[3]));
-                    days = 7;
+                    amount = 10;
                 }
             }
 

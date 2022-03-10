@@ -478,7 +478,7 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
 
         while (result.next()) {
             UUID killerUID = UUID.fromString(result.getString("uid"));
-            UUID victimUID = UUID.fromString(result.getString("victim"));
+            UUID victimUID = UUID.fromString(result.getString("victimuid"));
 
             if (killerUID.equals(victimUID)) {
                 continue;
