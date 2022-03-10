@@ -281,6 +281,7 @@ public class PVPStats extends CorePlugin {
         new CommandShow(this).load(commandList, commandMap);
         new CommandSet(this).load(commandList, commandMap);
         new CommandTop(this).load(commandList, commandMap);
+        new CommandTopPlus(this).load(commandList, commandMap);
         new CommandReload(this).load(commandList, commandMap);
         new CommandWipe(this).load(commandList, commandMap);
 

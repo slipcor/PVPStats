@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.34 - attempt to implement "topplus" which allows for "top players in the last X days"
 - v1.11.33 - move to HTTPS for Updater [core update]
 - v1.11.32 - add URL verification to prevent tampering with it [core update]
 - v1.11.31 - support hex color codes (Core Update)

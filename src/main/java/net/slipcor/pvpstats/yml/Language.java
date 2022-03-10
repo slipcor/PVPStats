@@ -106,6 +106,7 @@ public class Language extends CoreLanguage {
         NO_PERMISSION_SET("No permission to set!"),
         NO_PERMISSION_SHOW("No permission to see stats!"),
         NO_PERMISSION_TOP("No permission to view top players!"),
+        NO_PERMISSION_TOPPLUS("No permission to view timed top players!"),
         NO_PERMISSION_WIPE("No permission to wipe!"),
 
         PLAYER_ELO_ADDED("You got %0% ELO points! Your score is now: %1%"),

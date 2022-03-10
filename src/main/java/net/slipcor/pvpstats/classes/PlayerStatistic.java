@@ -11,8 +11,8 @@ import java.util.UUID;
  */
 public class PlayerStatistic {
     private final String name;
-    private final int kills;
-    private final int deaths;
+    private int kills;
+    private int deaths;
     private final int streak;
     private final int currentstreak;
     private final int elo;
@@ -61,6 +61,10 @@ public class PlayerStatistic {
         return time;
     }
 
+    public double getRatio() {
+        return ((double) kills) / (deaths + 1);
+    }
+
     public UUID getUid() { return uid; }
 
     public Map<InformationType, String> toStringMap() {
@@ -74,5 +78,13 @@ public class PlayerStatistic {
         result.put(InformationType.STREAK, String.valueOf(streak));
 
         return result;
+    }
+
+    public void addKill() {
+        kills++;
+    }
+
+    public void addDeath() {
+        deaths++;
     }
 }

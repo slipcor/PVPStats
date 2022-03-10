@@ -886,6 +886,64 @@ public final class DatabaseAPI {
     /**
      * Get the top statistics sorted by type
      *
+     * @param limit the amount to fetch
+     * @param sort  the type to sort by
+     * @param days  the amount of days to query
+     * @return a sorted array
+     */
+    public static String[] topPlus(final int limit, String sort, int days) {
+        if (!plugin.getSQLHandler().isConnected()) {
+            plugin.getLogger().severe("Database is not connected!");
+            plugin.sendPrefixedOP(new ArrayList<>(), DATABASE_CONNECTED);
+            return null;
+        }
+
+        sort = sort.toUpperCase();
+        List<PlayerStatistic> result = null;
+        final Map<String, Double> results = new HashMap<>();
+
+        final List<String> sortedValues = new ArrayList<>();
+
+        try {
+            result = plugin.getSQLHandler().getTopPlusSorted(limit, sort, days);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (result != null) {
+            for (PlayerStatistic entry : result) {
+                switch (sort) {
+
+                    case "KILLS":
+                        sortedValues.add(Language.MSG.STATISTIC_FORMAT_VALUE.parse(
+                                entry.getName(), String.valueOf(entry.getKills())));
+                        break;
+                    case "DEATHS":
+                        sortedValues.add(Language.MSG.STATISTIC_FORMAT_VALUE.parse(
+                                entry.getName(),String.valueOf(entry.getDeaths())));
+                        break;
+                    default:
+                        results.put(entry.getName(), calculateRatio(entry));
+                        break;
+                }
+            }
+        }
+        if (sort.equals("KILLS") || sort.equals("DEATHS")) {
+            String[] output = new String[sortedValues.size()];
+
+            int pos = 0;
+
+            for (String s : sortedValues) {
+                output[pos++] = s;
+            }
+            return output;
+        }
+
+        return sortParse(results, limit);
+    }
+
+    /**
+     * Get the top statistics sorted by type
+     *
      * @param count the amount to fetch
      * @param sort  the type to sort by
      * @return a sorted array

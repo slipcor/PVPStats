@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.33 - move to HTTPS for Updater [core update] 
+- v1.11.34 - attempt to implement "topplus" which allows for "top players in the last X days" 
 - [read more](doc/changelog.md)
 
 ***

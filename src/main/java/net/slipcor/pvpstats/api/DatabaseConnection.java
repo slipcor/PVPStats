@@ -183,6 +183,17 @@ public interface DatabaseConnection {
      *
      * @param amount    the amount to return
      * @param orderBy   the column to sort by
+     * @param days      the amount of days to query
+     * @return a list of all stats from the top players
+     * @throws SQLException
+     */
+    public List<PlayerStatistic> getTopPlusSorted(int amount, String orderBy, int days) throws SQLException;
+
+    /**
+     * Get the top players sorted by a given column
+     *
+     * @param amount    the amount to return
+     * @param orderBy   the column to sort by
      * @param ascending true if ascending order, false otherwise
      * @return a list of all stats from the top players
      * @throws SQLException

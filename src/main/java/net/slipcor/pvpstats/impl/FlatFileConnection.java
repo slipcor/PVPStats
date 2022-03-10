@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 
 public class FlatFileConnection implements DatabaseConnection {
@@ -525,6 +526,83 @@ public class FlatFileConnection implements DatabaseConnection {
         Collections.sort(result, new CustomComparator());
 
         return result.size() > amount ? result.subList(0, amount) : result;
+    }
+
+    /**
+     * Get the top players sorted by a given column
+     *
+     * @param amount    the amount to return
+     * @param orderBy   the column to sort by
+     * @param days      the amount of days to query
+     * @return a list of all stats from the top players
+     * @throws SQLException
+     */
+    @Override
+    public List<PlayerStatistic> getTopPlusSorted(int amount, String orderBy, int days) throws SQLException {
+
+        long queryTime = (System.currentTimeMillis() / 1000) - (days * (60 * 60 * 24));
+
+        ConfigurationSection root = killStatConfig.getConfigurationSection(killStatConfig.getCurrentPath());
+
+        Map<String, Object> uuids = root.getValues(false);
+
+        List<PlayerStatistic> result = new ArrayList<>();
+
+        for (String uuid : uuids.keySet()) {
+            int deathCount = 0;
+            int killCount = 0;
+            ConfigurationSection player = root.getConfigurationSection(uuid);
+
+            ConfigurationSection deathSection = player.getConfigurationSection("deaths");
+
+            Map<String, Object> deaths = deathSection.getValues(false);
+
+            long latest = 0;
+            String name = "";
+            UUID uid = UUID.fromString(uuid);
+
+            for (String timeString : deaths.keySet()) {
+                Long time = Long.parseLong(timeString);
+                if (time > queryTime) {
+                    deathCount++;
+                    if (time > latest) {
+                        time = latest;
+                        name = deathSection.getString(timeString + ".victimName");
+                    }
+                }
+            }
+            ConfigurationSection killSection = player.getConfigurationSection("kills");
+
+            Map<String, Object> kills = killSection.getValues(false);
+
+            for (String timeString : kills.keySet()) {
+                Long time = Long.parseLong(timeString);
+                if (time > queryTime) {
+                    killCount++;
+                    if (time > latest) {
+                        time = latest;
+                        name = deathSection.getString(timeString + ".killerName");
+                    }
+                }
+            }
+            result.add(new PlayerStatistic(name,
+                    killCount, deathCount,
+                    0, 0, 0, 0L, uid));
+        }
+
+        if (orderBy.equals("KILLS")) {
+            Collections.sort(result, Comparator.comparingInt(PlayerStatistic::getKills).reversed());
+        } else if (orderBy.equals("DEATHS")) {
+            Collections.sort(result, Comparator.comparingInt(PlayerStatistic::getDeaths).reversed());
+        } else {
+            Collections.sort(result, Comparator.comparingDouble(PlayerStatistic::getRatio).reversed());
+        }
+
+        while (result.size() > amount) {
+            result.remove(amount);
+        }
+
+        return result;
     }
 
     /**

@@ -15,10 +15,12 @@ import java.util.Map;
  */
 public class LeaderboardBuffer {
     private static final Map<String, Long> LASTCHECKEDTOP = new HashMap<>();
+    private static final Map<String, Long> LASTCHECKEDTOPPLUS = new HashMap<>();
     private static final Map<String, Long> LASTCHECKEDFLOP = new HashMap<>();
 
 
     private static final Map<String, String[]> TOP = new HashMap<>();
+    private static final Map<String, String[]> TOPPLUS = new HashMap<>();
     private static final Map<String, String[]> FLOP = new HashMap<>();
     private LeaderboardBuffer() {
     }
@@ -80,6 +82,54 @@ public class LeaderboardBuffer {
         String[] result = new String[length];
 
         System.arraycopy(values, offset, result, 0 ,length);
+
+        return result;
+    }
+
+    /**
+     * Get the players with the highest score of a value type
+     *
+     * @param value the amount of lines to read
+     * @param type the statistic to sort by
+     * @param days the amount of days to query
+     * @return an array of up to the requested amount of player stats, sorted by the given type
+     */
+    public static String[] topPlus(int value, String type, int days) {
+        type = type.toUpperCase();
+
+        String mapKey = type + days;
+
+        long last = LASTCHECKEDTOPPLUS.getOrDefault(mapKey, 0L);
+        long now = System.currentTimeMillis() / 1000;
+        last -= now;
+
+        if (last < 0) {
+            last *= -1; // now we know that seconds have passed, are they enough?
+            if (last > PVPStats.getInstance().config().getInt(Config.Entry.STATISTICS_LEADERBOARD_REFRESH)) {
+
+                String[] array = DatabaseAPI.topPlus(PVPStats.getInstance().config().getInt(Config.Entry.STATISTICS_LIST_LENGTH), type, days);
+                if (array == null) {
+                    array = new String[0];
+                }
+                TOPPLUS.put(mapKey, array);
+                LASTCHECKEDTOPPLUS.put(mapKey, now);
+            }
+        }
+
+        // return saved state
+        String[] values = TOPPLUS.get(mapKey);
+
+        int length = Math.min(value, values.length); // get a safe value to not overreach
+
+        if (length <= 0) {
+            return new String[0];
+        }
+
+        length = Math.min(10, length);
+
+        String[] result = new String[length];
+
+        System.arraycopy(values, 0, result, 0 ,length);
 
         return result;
     }
