@@ -19,4 +19,5 @@ Valid types to look for are:
 - deaths
 - streak
 - elo
+- ratio
 

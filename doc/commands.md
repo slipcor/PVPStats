@@ -12,7 +12,7 @@ Command | Shorthand | Definition
 [/pvpstats top](commands/top.md) [amount] | /stats !t [amount] | show the top [amount] killers
 [/pvpstats top](commands/top.md) [type] [amount] | /stats !t [type] [amount] | show the top [amount] of a category
 
-Valid categories are: kills, deaths, streak, elo
+Valid categories are: kills, deaths, streak, elo, ratio
 
 ***
 
