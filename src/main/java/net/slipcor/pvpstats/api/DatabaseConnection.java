@@ -190,6 +190,18 @@ public interface DatabaseConnection {
     public List<PlayerStatistic> getTopPlusSorted(int amount, String orderBy, int days) throws SQLException;
 
     /**
+     * Get a world's top players sorted by a given column
+     *
+     * @param amount    the amount to return
+     * @param orderBy   the column to sort by
+     * @param world     the world to filter by
+     * @param days      the amount of days to query
+     * @return a list of all stats from the top players
+     * @throws SQLException
+     */
+    public List<PlayerStatistic> getTopWorldSorted(int amount, String orderBy, String world, int days) throws SQLException;
+
+    /**
      * Get the top players sorted by a given column
      *
      * @param amount    the amount to return

@@ -453,6 +453,88 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
      *
      * @param amount    the amount to return
      * @param orderBy   the column to sort by
+     * @param world     the world to filter by
+     * @param days      the amount of days to query
+     * @return a list of all stats from the top players
+     * @throws SQLException
+     */
+    @Override
+    public List<PlayerStatistic> getTopWorldSorted(int amount, String orderBy, String world, int days) throws SQLException {
+
+        List<PlayerStatistic> list = new ArrayList<>();
+
+        long queryTime = (System.currentTimeMillis() / 1000) - (days * (60 * 60 * 24));
+
+        ResultSet result = executeQuery("SELECT * FROM " + dbKillTable + " WHERE `time` > " + queryTime + " ORDER BY `time` DESC", false);
+
+        if (result == null) {
+            return null;
+        }
+        Map<UUID, PlayerStatistic> players = new HashMap<>();
+
+        /**
+         * executeQuery("INSERT INTO " + dbKillTable + " (`name`,`uid`,`victim`,`victimuid`,`time`,`world`) VALUES(" +
+         *                     "'" + playerName + "', '" + uuid + "', '" + victimName + "', '" + victimUUID + "', " + time + ", '" + world +"')", true);
+         */
+
+        while (result.next()) {
+            if (!result.getString("world").equals(world)) {
+                continue;
+            }
+            UUID killerUID = UUID.fromString(result.getString("uid"));
+            UUID victimUID = UUID.fromString(result.getString("victimuid"));
+
+            if (killerUID.equals(victimUID)) {
+                continue;
+            }
+
+            if (players.containsKey(killerUID)) {
+                // we already are tracked, let us just add one to the kills!
+                players.get(killerUID).addKill();
+            } else {
+                players.put(killerUID,
+                        new PlayerStatistic(
+                                result.getString("name"),
+                                1, 0, 0, 0, 0, 0,
+                                killerUID
+                        )
+                );
+            }
+            if (players.containsKey(victimUID)) {
+                // we already are tracked, let us just add one to the deaths!
+                players.get(victimUID).addDeath();
+            } else {
+                players.put(victimUID,
+                        new PlayerStatistic(
+                                result.getString("victim"),
+                                0, 1, 0, 0, 0, 0,
+                                victimUID
+                        )
+                );
+            }
+        }
+        list.addAll(players.values());
+
+        if (orderBy.equals("KILLS")) {
+            Collections.sort(list, Comparator.comparingInt(PlayerStatistic::getKills).reversed());
+        } else if (orderBy.equals("DEATHS")) {
+            Collections.sort(list, Comparator.comparingInt(PlayerStatistic::getDeaths).reversed());
+        } else {
+            Collections.sort(list, Comparator.comparingDouble(PlayerStatistic::getRatio).reversed());
+        }
+
+        while (list.size() > amount) {
+            list.remove(amount);
+        }
+
+        return list;
+    }
+
+    /**
+     * Get the top players sorted by a given column
+     *
+     * @param amount    the amount to return
+     * @param orderBy   the column to sort by
      * @param days      the amount of days to query
      * @return a list of all stats from the top players
      * @throws SQLException
@@ -489,11 +571,11 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
                 players.get(killerUID).addKill();
             } else {
                 players.put(killerUID,
-                    new PlayerStatistic(
-                        result.getString("name"),
-                        1, 0, 0, 0, 0, 0,
-                        killerUID
-                    )
+                        new PlayerStatistic(
+                                result.getString("name"),
+                                1, 0, 0, 0, 0, 0,
+                                killerUID
+                        )
                 );
             }
             if (players.containsKey(victimUID)) {
@@ -501,11 +583,11 @@ public abstract class AbstractSQLConnection implements DatabaseConnection {
                 players.get(victimUID).addDeath();
             } else {
                 players.put(victimUID,
-                    new PlayerStatistic(
-                        result.getString("victim"),
-                        0, 1, 0, 0, 0, 0,
-                        victimUID
-                    )
+                        new PlayerStatistic(
+                                result.getString("victim"),
+                                0, 1, 0, 0, 0, 0,
+                                victimUID
+                        )
                 );
             }
         }

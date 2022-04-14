@@ -77,9 +77,9 @@ public class CommandTopPlus extends CoreCommand {
         }
 
         // we started typing!
-        addIfMatches(results, "kills", args[1].toLowerCase());
-        addIfMatches(results, "deaths", args[1].toLowerCase());
-        addIfMatches(results, "ratio", args[1].toLowerCase());
+        addIfMatches(results, "kills", args[1]);
+        addIfMatches(results, "deaths", args[1]);
+        addIfMatches(results, "ratio", args[1]);
 
         return results;
     }

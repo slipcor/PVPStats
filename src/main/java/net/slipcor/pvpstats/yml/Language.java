@@ -81,6 +81,8 @@ public class Language extends CoreLanguage {
         COMMAND_PLAYER_NOT_FOUND("Player not found: %0%"),
         COMMAND_PLAYER_NOT_FOUND_EXPLANATION("They probably did not kill or die yet!"),
 
+        COMMAND_TOPWORLD_INVALID_WORLD("World not found: %0%"),
+
         COMMAND_PURGE_SUCCESS("Statistics successfully cleaned up! %0% entries removed!"),
         COMMAND_RELOAD_SUCCESS("Configuration reloaded!"),
         COMMAND_SET_SUCCESS("Set %0% of player %1% to %2%!"),
@@ -107,6 +109,7 @@ public class Language extends CoreLanguage {
         NO_PERMISSION_SHOW("No permission to see stats!"),
         NO_PERMISSION_TOP("No permission to view top players!"),
         NO_PERMISSION_TOPPLUS("No permission to view timed top players!"),
+        NO_PERMISSION_TOPWORLD("No permission to view timed top players per world!"),
         NO_PERMISSION_WIPE("No permission to wipe!"),
 
         PLAYER_ELO_ADDED("You got %0% ELO points! Your score is now: %1%"),
@@ -119,6 +122,8 @@ public class Language extends CoreLanguage {
 
         STATISTIC_HEADLINE_TOP("&cPVP Stats Top &7%0% &c%1%"),
         STATISTIC_HEADLINE_FLOP("&cPVP Stats Flop &7%0% &c%1%"),
+        STATISTIC_HEADLINE_TOPWORLD("&cPVP Stats Top &7%0% &c%1% in &e%2%"),
+        STATISTIC_HEADLINE_FLOPWORLD("&cPVP Stats Flop &7%0% &c%1% in &e%2%"),
         STATISTIC_HEADLINE_ELO("ELO"),
         STATISTIC_HEADLINE_DEATHS("Deaths"),
         STATISTIC_HEADLINE_KILLS("Kills"),

@@ -11,8 +11,12 @@ Command | Shorthand | Definition
 [/pvpstats show](commands/show.md) [player] | /stats !sh [player] | show the player's stats
 [/pvpstats top](commands/top.md) [amount] | /stats !t [amount] | show the top [amount] killers
 [/pvpstats top](commands/top.md) [type] [amount] | /stats !t [type] [amount] | show the top [amount] of a category
+[/pvpstats topplus](commands/topplus.md) [type] [days] {amount} | /stats !tp [type] [days] {amount} | show the top [amount] of a the top [type] players in the last [amount] days
+[/pvpstats topworld](commands/topworld.md) [type] [world] [days] {amount} | /stats !tw [type] {amount} | show the top [amount] of a the top  [type] players in the last [amount] days in world [world]
 
 Valid categories are: kills, deaths, streak, elo, ratio
+
+Note that the "topplus" command and the "topworld" command are made for database access and only use **kills**, **deaths** and **ratio**! YML will not work or be very slow!
 
 ***
 

@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.35 - properly apply command logic /pvpstats topplus kills [days] {amount} 
+- v1.11.36 - introduce /pvpstats topworld [type] [world] [days] {amount} - only works with specific stats - only for databases :P 
 - [read more](doc/changelog.md)
 
 ***
