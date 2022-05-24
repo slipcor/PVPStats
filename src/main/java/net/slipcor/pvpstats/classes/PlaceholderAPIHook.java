@@ -135,7 +135,70 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 }
                 return "";
             }
+        } else if (s.startsWith("topplus_")) {
+            try {
+
+                String[] split = s.split("_");
+                int pos = Integer.parseInt(split[2]);
+                int days = Integer.parseInt(split[3]);
+
+                String name = split[1].toUpperCase();
+
+                if (split.length > 4) {
+                    return Language.MSG.STATISTIC_HEADLINE_TOP.parse(
+                            String.valueOf(pos),
+                            stringToEntry.get(name).parse());
+                }
+
+                String[] top = LeaderboardBuffer.topPlus(pos, name, days);
+
+                if (top.length < pos) {
+                    return ""; // we do not have enough entries, return empty
+                }
+
+                return Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos), top[pos-1]);
+            } catch (Exception e) {
+                // let's ignore this for now
+                long now = System.currentTimeMillis();
+                if (now > lastError+10000) {
+                    PVPStats.getInstance().getLogger().warning("Placeholder not working, here is more info:");
+                    e.printStackTrace();
+                }
+                return "";
+            }
+        } else if (s.startsWith("topworld_")) {
+            try {
+
+                String[] split = s.split("_");
+                int pos = Integer.parseInt(split[2]);
+                String world = split[3];
+                int days = Integer.parseInt(split[4]);
+
+                String name = split[1].toUpperCase();
+
+                if (split.length > 5) {
+                    return Language.MSG.STATISTIC_HEADLINE_TOP.parse(
+                            String.valueOf(pos),
+                            stringToEntry.get(name).parse());
+                }
+
+                String[] top = LeaderboardBuffer.topWorld(pos, name, world, days);
+
+                if (top.length < pos) {
+                    return ""; // we do not have enough entries, return empty
+                }
+
+                return Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos), top[pos-1]);
+            } catch (Exception e) {
+                // let's ignore this for now
+                long now = System.currentTimeMillis();
+                if (now > lastError+10000) {
+                    PVPStats.getInstance().getLogger().warning("Placeholder not working, here is more info:");
+                    e.printStackTrace();
+                }
+                return "";
+            }
         }
-        return null;
+            return null;
     }
 }
