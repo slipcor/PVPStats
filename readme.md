@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.37 - try supporting topplus and topworld in placeholders 
+- v1.11.38 - try supporting topplus and topworld in placeholders, also in shorthands 
 - [read more](doc/changelog.md)
 
 ***
