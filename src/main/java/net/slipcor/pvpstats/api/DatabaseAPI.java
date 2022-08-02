@@ -139,6 +139,23 @@ public final class DatabaseAPI {
                 TextFormatter.explainNewbieStatus(null, victim);
                 return;
             }
+
+            final int streak = PlayerStatisticsBuffer.getStreak(victim.getUniqueId());
+
+            if (streak > 0) {
+                Bukkit.getScheduler().runTaskLaterAsynchronously(
+                        PVPStats.getInstance(), new Runnable() {
+                            @Override
+                            public void run() {
+                                if (victim.getPlayer() != null) {
+                                    plugin.sendPrefixed(victim.getPlayer(),
+                                            Language.MSG.PLAYER_KILLSTREAK_ENDED.parse(String.valueOf(streak)));
+                                }
+                            }
+                        }, 1L
+                );
+            }
+
             incDeath(victim, PlayerStatisticsBuffer.getEloScore(victim.getUniqueId()));
 
             if (plugin.getSQLHandler().allowsAsync()) {
@@ -165,6 +182,23 @@ public final class DatabaseAPI {
             return;
         }
         // here we go, PVP!
+
+        final int streak = PlayerStatisticsBuffer.getStreak(victim.getUniqueId());
+
+        if (streak > 0) {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(
+                    PVPStats.getInstance(), new Runnable() {
+                        @Override
+                        public void run() {
+                            if (victim.getPlayer() != null) {
+                                plugin.sendPrefixed(victim.getPlayer(),
+                                        Language.MSG.PLAYER_KILLSTREAK_ENDED.parse(String.valueOf(streak)));
+                            }
+                        }
+                    }, 1L
+            );
+        }
+
         DEBUGGER.i("Counting kill by " + attacker.getName(), victim.getName());
         lastKill.put(attacker.getName(), victim.getName());
 

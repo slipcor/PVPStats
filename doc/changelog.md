@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.39 - add player message about broken killstreak
 - v1.11.38 - try supporting topplus and topworld in placeholders, also in shorthands
 - v1.11.37 - try supporting topplus and topworld in placeholders
 - v1.11.36 - introduce /pvpstats topworld [type] [world] [days] {amount} - only works with specific stats - only for databases :P

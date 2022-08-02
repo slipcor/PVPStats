@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.38 - try supporting topplus and topworld in placeholders, also in shorthands 
+- v1.11.39 - add player message about broken killstreak  
 - [read more](doc/changelog.md)
 
 ***
