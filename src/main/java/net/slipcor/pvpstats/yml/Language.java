@@ -116,6 +116,7 @@ public class Language extends CoreLanguage {
         PLAYER_ELO_REMOVED("You lost %0% ELO points! Your score is now: %1%"),
 
         PLAYER_KILLSTREAK_ENDED("Your killstreak of %0% was broken!"),
+        PLAYER_KILLSTREAK_ENDED_GLOBAL("%0% has just lost a killstreak of %1%"),
 
         PLAYER_NO_STATS("You do not have stats!"),
 
