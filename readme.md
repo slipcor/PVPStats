@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.40 - add broadcast message about broken killstreak - you can set player message or broadcast to empty string to deactivate them  
+- v1.11.41 - add streakBrokenThreshold to require a minimum streak value to announce it being broken  
 - [read more](doc/changelog.md)
 
 ***

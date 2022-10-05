@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.41 - add streakBrokenThreshold to require a minimum streak value to announce it being broken
 - v1.11.40 - add broadcast message about broken killstreak - you can set player message or broadcast to empty string to deactivate them
 - v1.11.39 - add player message about broken killstreak
 - v1.11.38 - try supporting topplus and topworld in placeholders, also in shorthands
