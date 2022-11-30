@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.41 - add streakBrokenThreshold to require a minimum streak value to announce it being broken  
+- v1.11.42 - add %value% placeholder for streak announcements and commands  
 - [read more](doc/changelog.md)
 
 ***

@@ -175,7 +175,8 @@ public class PVPStats extends CorePlugin {
                     if (!message.isEmpty()) {
                         debugger.i("message: " + message);
                         String replacement = Language.colorize(message)
-                                .replace("%player%", PlayerHandler.getPlayerName(player));
+                                .replace("%player%", PlayerHandler.getPlayerName(player))
+                                .replace("%value%", String.valueOf(value));
                         debugger.i("message replaced to " + replacement);
                         if (message.contains("%killed%")) {
                             String lastKill = DatabaseAPI.getLastKilled(player.getName());
@@ -213,7 +214,8 @@ public class PVPStats extends CorePlugin {
                     if (!command.isEmpty()) {
                         debugger.i("command: " + command);
                         String replacement = Language.colorize(command)
-                                .replace("%player%", PlayerHandler.getPlayerName(player));
+                                .replace("%player%", PlayerHandler.getPlayerName(player))
+                                .replace("%value%", String.valueOf(value));
                         debugger.i("command replaced to " + replacement);
                         if (command.contains("%killed%")) {
                             String lastKill = DatabaseAPI.getLastKilled(player.getName());
