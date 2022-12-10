@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.44 - quick fix to now just show headlines   
+- v1.11.45 - another quick fix to now just show headlines   
 - [read more](doc/changelog.md)
 
 ***
