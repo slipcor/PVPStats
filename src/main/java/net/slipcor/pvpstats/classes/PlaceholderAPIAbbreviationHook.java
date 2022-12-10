@@ -6,6 +6,7 @@ import net.slipcor.pvpstats.PVPStats;
 import net.slipcor.pvpstats.api.LeaderboardBuffer;
 import net.slipcor.pvpstats.api.PlayerStatisticsBuffer;
 import net.slipcor.pvpstats.yml.Language;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 
 import java.util.HashMap;
@@ -96,9 +97,9 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
                     return ""; // we do not have enough entries, return empty
                 }
                 if (s.endsWith("_n")) {
-                    return top[pos-1].split(":")[0];
+                    return ChatColor.stripColor(top[pos-1].split(":")[0]);
                 } else if (s.endsWith("_v")) {
-                    return top[pos-1].split(":")[1].substring(1);
+                    return ChatColor.stripColor(top[pos-1].split(":")[1].substring(1));
                 }
 
                 return Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos), top[pos-1]);
@@ -130,9 +131,9 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
                     return ""; // we do not have enough entries, return empty
                 }
                 if (s.endsWith("_n")) {
-                    return top[pos-1].split(":")[0];
+                    return ChatColor.stripColor(top[pos-1].split(":")[0]);
                 } else if (s.endsWith("_v")) {
-                    return top[pos-1].split(":")[1].substring(1);
+                    return ChatColor.stripColor(top[pos-1].split(":")[1].substring(1));
                 }
 
                 return Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos), top[pos-1]);
