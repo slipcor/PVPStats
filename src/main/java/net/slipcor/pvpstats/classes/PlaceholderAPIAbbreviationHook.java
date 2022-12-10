@@ -118,7 +118,7 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
                 int pos = Integer.parseInt(s.split("_")[2]);
                 String name = split[1].toUpperCase();
 
-                if (split.length > 3) {
+                if (split.length > 3 && !(s.endsWith("_n") || s.endsWith("_v"))) {
                     return Language.MSG.STATISTIC_HEADLINE_FLOP.parse(
                             String.valueOf(pos),
                             stringToEntry.get(name).parse());

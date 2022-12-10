@@ -84,7 +84,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 int pos = Integer.parseInt(s.split("_")[2]);
                 String name = split[1].toUpperCase();
 
-                if (split.length > 3) {
+                if (split.length > 3 && !(s.endsWith("_name") || s.endsWith("_value"))) {
                     return Language.MSG.STATISTIC_HEADLINE_TOP.parse(
                             String.valueOf(pos),
                             stringToEntry.get(name).parse());

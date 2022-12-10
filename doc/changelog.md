@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.44 - quick fix to now just show headlines
 - v1.11.43 - attempt to add top/flop placeholder specifications for raw values, append _value or _name (or _v and _v respectively for shorthands)
 - v1.11.42 - add %value% placeholder for streak announcements and commands
 - v1.11.41 - add streakBrokenThreshold to require a minimum streak value to announce it being broken
