@@ -95,6 +95,11 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
                 if (top.length < pos) {
                     return ""; // we do not have enough entries, return empty
                 }
+                if (s.endsWith("_name")) {
+                    return top[pos-1].split(":")[0];
+                } else if (s.endsWith("_value")) {
+                    return top[pos-1].split(":")[1].substring(1);
+                }
 
                 return Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos), top[pos-1]);
             } catch (Exception e) {
@@ -123,6 +128,11 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
 
                 if (top.length < pos) {
                     return ""; // we do not have enough entries, return empty
+                }
+                if (s.endsWith("_n")) {
+                    return top[pos-1].split(":")[0];
+                } else if (s.endsWith("_v")) {
+                    return top[pos-1].split(":")[1].substring(1);
                 }
 
                 return Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos), top[pos-1]);
