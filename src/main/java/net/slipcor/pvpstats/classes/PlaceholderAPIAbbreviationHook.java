@@ -79,7 +79,7 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
 
         if (s.startsWith("t_")) {
             try {
-
+                // t_kills_1_n
                 String[] split = s.split("_");
                 int pos = Integer.parseInt(s.split("_")[2]);
                 String name = split[1].toUpperCase();
@@ -95,9 +95,9 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
                 if (top.length < pos) {
                     return ""; // we do not have enough entries, return empty
                 }
-                if (s.endsWith("_name")) {
+                if (s.endsWith("_n")) {
                     return top[pos-1].split(":")[0];
-                } else if (s.endsWith("_value")) {
+                } else if (s.endsWith("_v")) {
                     return top[pos-1].split(":")[1].substring(1);
                 }
 
