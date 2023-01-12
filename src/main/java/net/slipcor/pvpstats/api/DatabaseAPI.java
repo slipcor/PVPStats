@@ -252,36 +252,62 @@ public final class DatabaseAPI {
         if (incKill(attacker, newA)) {
             DEBUGGER.i("increasing kill", attacker.getName());
 
-            Bukkit.getScheduler().runTaskLaterAsynchronously(
-                    PVPStats.getInstance(), new Runnable() {
-                        @Override
-                        public void run() {
-                            if (attacker.getPlayer() != null) {
-                                plugin.sendPrefixed(attacker.getPlayer(),
-                                        Language.MSG.PLAYER_ELO_ADDED.parse(String.valueOf(newA - oldA), String.valueOf(newA)));
+            if (!plugin.config().getBoolean(Config.Entry.ELO_ANNOUNCE_PUBLIC)) {
+                Bukkit.getScheduler().runTaskLaterAsynchronously(
+                        PVPStats.getInstance(), new Runnable() {
+                            @Override
+                            public void run() {
+                                if (attacker.getPlayer() != null) {
+                                    plugin.sendPrefixed(attacker.getPlayer(),
+                                            Language.MSG.PLAYER_ELO_ADDED.parse(String.valueOf(newA - oldA), String.valueOf(newA)));
+                                }
                             }
-                        }
-                    }, 1L
-            );
+                        }, 1L
+                );
+            }
 
             PlayerStatisticsBuffer.setEloScore(attacker.getUniqueId(), newA);
         }
         if (incDeath(victim, newP)) {
             DEBUGGER.i("increasing death", victim.getName());
 
+            if (!plugin.config().getBoolean(Config.Entry.ELO_ANNOUNCE_PUBLIC)) {
+                Bukkit.getScheduler().runTaskLaterAsynchronously(
+                        PVPStats.getInstance(), new Runnable() {
+                            @Override
+                            public void run() {
+                                    plugin.sendPrefixed(victim.getPlayer(),
+                                            Language.MSG.PLAYER_ELO_REMOVED.parse(String.valueOf(oldP - newP), String.valueOf(newP)));
+                            }
+                        }, 1L
+                );
+            }
+
+            PlayerStatisticsBuffer.setEloScore(victim.getUniqueId(), newP);
+        }
+
+        if (plugin.config().getBoolean(Config.Entry.ELO_ANNOUNCE_PUBLIC) && victim.getPlayer() != null && attacker.getPlayer() != null) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(
                     PVPStats.getInstance(), new Runnable() {
                         @Override
                         public void run() {
-                            if (victim.getPlayer() != null) {
-                                plugin.sendPrefixed(victim.getPlayer(),
-                                        Language.MSG.PLAYER_ELO_REMOVED.parse(String.valueOf(oldP - newP), String.valueOf(newP)));
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                if (p != null) {
+                                    plugin.sendPrefixed(p,
+                                            Language.MSG.PLAYER_ELO_EXCHANGE_PUBLIC_1.parse(
+                                                    attacker.getPlayer().getName(), victim.getPlayer().getName(),
+                                                    String.valueOf(newA - oldA), String.valueOf(oldP - newP)
+                                            ));
+                                    plugin.sendPrefixed(p,
+                                            Language.MSG.PLAYER_ELO_EXCHANGE_PUBLIC_2.parse(
+                                                    attacker.getPlayer().getName(), victim.getPlayer().getName(),
+                                                    String.valueOf(newA), String.valueOf(newP)
+                                            ));
+                                }
                             }
                         }
                     }, 1L
             );
-
-            PlayerStatisticsBuffer.setEloScore(victim.getUniqueId(), newP);
         }
         if (plugin.getSQLHandler().allowsAsync()) {
             Bukkit.getScheduler().runTaskAsynchronously(PVPStats.getInstance(), new DatabaseKillAddition(

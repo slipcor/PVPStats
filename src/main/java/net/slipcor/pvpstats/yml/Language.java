@@ -115,6 +115,9 @@ public class Language extends CoreLanguage {
         PLAYER_ELO_ADDED("You got %0% ELO points! Your score is now: %1%"),
         PLAYER_ELO_REMOVED("You lost %0% ELO points! Your score is now: %1%"),
 
+        PLAYER_ELO_EXCHANGE_PUBLIC_1("%0% received %2% ELO points, %1% lost %3% ELO points."),
+        PLAYER_ELO_EXCHANGE_PUBLIC_2("%0% now has %1% ELO points, %2% now has %3% ELO points."),
+
         PLAYER_KILLSTREAK_ENDED("Your killstreak of %0% was broken!"),
         PLAYER_KILLSTREAK_ENDED_GLOBAL("%0% has just lost a killstreak of %1%"),
 

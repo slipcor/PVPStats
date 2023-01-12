@@ -125,6 +125,8 @@ public class Config extends CoreConfig {
         ELO(Type.COMMENT, "eloscore", null,
                 "=== [ ELO Score Settings ] ==="),
         ELO_ACTIVE(Type.BOOLEAN, "eloscore.active", false, null),
+        ELO_ANNOUNCE_PUBLIC(Type.BOOLEAN, "eloscore.announce-public", false,
+                "should we announce ELO point changes publicly?"),
         ELO_MINIMUM(Type.INT, "eloscore.minimum", 18,
                 "min possible ELO score"),
         ELO_DEFAULT(Type.INT, "eloscore.default", 1500,

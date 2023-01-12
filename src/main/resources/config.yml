@@ -97,6 +97,8 @@ leaderboards: []
 # === [ ELO Score Settings ] ===
 eloscore:
   active: false
+  # should we announce ELO point changes publicly?
+  announce-public: false
   # min possible ELO score
   minimum: 18
   # starting ELO score
