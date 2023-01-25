@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.48 - add a config setting to announce ELO publicly, and related language nodes   
+- v1.11.49 - add "currentstreak" logic for placeholders and thus top/flop stats   
 - [read more](doc/changelog.md)
 
 ***

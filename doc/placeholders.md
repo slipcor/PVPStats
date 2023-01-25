@@ -71,5 +71,6 @@ slipcorpvpstats_topworld_kills_5_**world**_**3**0 | sps_tw_kills_5_**world**_**3
 Valid statistical entries instead of "kills" for the above lists are:
 * **deaths** (🟡 sorting ascending by default! 🟡)
 * **streak** (maximum streak)
+* **currentstreak** (current streak value)
 * **elo** (ELO score)
 * **k-d** (kill/death ratio, can be defined to fancy things in the config)

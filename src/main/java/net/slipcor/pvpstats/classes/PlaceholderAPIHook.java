@@ -28,6 +28,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         stringToEntry.put("KILLS", Language.MSG.STATISTIC_HEADLINE_KILLS);
         stringToEntry.put("DEATHS", Language.MSG.STATISTIC_HEADLINE_DEATHS);
         stringToEntry.put("STREAK", Language.MSG.STATISTIC_HEADLINE_STREAK);
+        stringToEntry.put("CURRENTSTREAK", Language.MSG.STATISTIC_HEADLINE_CURRENTSTREAK);
         stringToEntry.put("RATIO", Language.MSG.STATISTIC_HEADLINE_RATIO);
         stringToEntry.put("ELO", Language.MSG.STATISTIC_HEADLINE_ELO);
     }
