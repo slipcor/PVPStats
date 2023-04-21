@@ -191,7 +191,9 @@ public final class DatabaseAPI {
 
         final int streak = PlayerStatisticsBuffer.getStreak(victim.getUniqueId());
 
-        if (streak > 0) {
+        final int threshold = plugin.config().getInt(Config.Entry.STATISTICS_STREAK_BROKEN_THRESHOLD);
+
+        if ((threshold == 0 && streak > 0) || (threshold > 0 && streak >= threshold)) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(
                     PVPStats.getInstance(), new Runnable() {
                         @Override

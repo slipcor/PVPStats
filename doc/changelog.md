@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.50 - add getHandlerList for hooking into our event system
 - v1.11.49 - add "currentstreak" logic for placeholders and thus top/flop stats
 - v1.11.48 - add a config setting to announce ELO publicly, and related language nodes
 - v1.11.47 - add top/flop placeholder specifications for raw values, append _value or _name (or _v and _v respectively for shorthands)

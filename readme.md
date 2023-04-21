@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.49 - add "currentstreak" logic for placeholders and thus top/flop stats   
+- v1.11.50 - add getHandlerList for hooking into our event system
 - [read more](doc/changelog.md)
 
 ***
