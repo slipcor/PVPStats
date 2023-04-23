@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.51 - address the fact that all stats are not actually world based
 - v1.11.50 - add getHandlerList for hooking into our event system
 - v1.11.49 - add "currentstreak" logic for placeholders and thus top/flop stats
 - v1.11.48 - add a config setting to announce ELO publicly, and related language nodes

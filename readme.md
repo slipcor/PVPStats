@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.50 - add getHandlerList for hooking into our event system
+- v1.11.51 - address the fact that all stats are not actually world based
 - [read more](doc/changelog.md)
 
 ***

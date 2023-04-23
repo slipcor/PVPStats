@@ -158,7 +158,7 @@ public class LeaderboardBuffer {
             last *= -1; // now we know that seconds have passed, are they enough?
             if (last > PVPStats.getInstance().config().getInt(Config.Entry.STATISTICS_LEADERBOARD_REFRESH)) {
 
-                String[] array = DatabaseAPI.topPlus(PVPStats.getInstance().config().getInt(Config.Entry.STATISTICS_LIST_LENGTH), type, days);
+                String[] array = DatabaseAPI.topWorld(PVPStats.getInstance().config().getInt(Config.Entry.STATISTICS_LIST_LENGTH), type, world, days);
                 if (array == null) {
                     array = new String[0];
                 }

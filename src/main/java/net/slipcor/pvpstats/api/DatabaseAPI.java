@@ -978,7 +978,7 @@ public final class DatabaseAPI {
         final List<String> sortedValues = new ArrayList<>();
 
         try {
-            result = plugin.getSQLHandler().getTopPlusSorted(limit, sort, days);
+            result = plugin.getSQLHandler().getTopWorldSorted(limit, sort, world, days);
         } catch (SQLException e) {
             e.printStackTrace();
         }
