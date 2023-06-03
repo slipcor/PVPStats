@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.51 - address the fact that all stats are not actually world based
+- v1.11.52 - hook into both short and regular placeholders 
 - [read more](doc/changelog.md)
 
 ***

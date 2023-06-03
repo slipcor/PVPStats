@@ -595,13 +595,8 @@ public class PVPStats extends CorePlugin {
         }
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            if (configHandler.getBoolean(Config.Entry.STATISTICS_SHORT_PLACEHOLDERS)) {
-                getLogger().info("PVPStats - PlaceholderAPI found - trying to use short placeholders");
-                new PlaceholderAPIAbbreviationHook().register();
-            } else {
-                getLogger().info("PVPStats - PlaceholderAPI found.");
-                new PlaceholderAPIHook().register();
-            }
+            new PlaceholderAPIAbbreviationHook().register();
+            new PlaceholderAPIHook().register();
         }
 
         loadDebugger("debug", Bukkit.getConsoleSender());
