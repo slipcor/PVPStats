@@ -2,10 +2,6 @@
 
 These are the placeholders you can use where PAPI Placeholders are supported:
 
-**🔴 Shorthand needs to be enabled in the config: 🔴
-`/pvpstats config set shortPlaceholders true`**
-Please note that you can only either use long OR short placeholders.
-
 🟡 if you use [MVdWPlaceholderAPI](https://www.spigotmc.org/resources/mvdwplaceholderapi.11182/), you need to prefix the placeholders with `placeholderapi_` 🟡
 
 ## Player based statistics

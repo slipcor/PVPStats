@@ -140,8 +140,8 @@ public class PlayerListener implements Listener {
         }
         Player attacker = event.getEntity().getKiller();
 
-        if (attacker == null) {
-            Debugger.i("Killer is null", player);
+        if (attacker == null || attacker.equals(event.getEntity())) {
+            Debugger.i("Killer is null or self", player);
 
             if (lastDamage.containsKey(player.getUniqueId())) {
                 PlayerDamageHistory history = lastDamage.get(player.getUniqueId());
@@ -158,6 +158,11 @@ public class PlayerListener implements Listener {
                     Debugger.i("Kill should be counted", event.getEntity());
                     DatabaseAPI.AkilledB(null, event.getEntity());
                 }
+                return;
+            }
+
+            if (attacker.equals(event.getEntity())) {
+                Debugger.i("Killer is the player themselves!", player);
                 return;
             }
         }

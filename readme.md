@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.52 - hook into both short and regular placeholders 
+- v1.11.53 - attempt to prevent players damaging and then killing themselves for the win 
 - [read more](doc/changelog.md)
 
 ***
