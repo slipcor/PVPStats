@@ -70,3 +70,12 @@ Valid statistical entries instead of "kills" for the above lists are:
 * **currentstreak** (current streak value)
 * **elo** (ELO score)
 * **k-d** (kill/death ratio, can be defined to fancy things in the config)
+
+Note that all these placeholders can be extended to only return the NAME and the VALUE of the specific place.
+
+Examples (based on the above Top X list example):
+
+Placeholder | Shorthand       | Meaning
+------------- |-----------------| -------------
+slipcorpvpstats_top_kills_1_name | sps_f_kills_1_n | SLiPCoR
+slipcorpvpstats_top_kills_1_value | sps_f_kills_1_v | 100
