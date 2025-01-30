@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.53 - attempt to prevent players damaging and then killing themselves for the win 
+- v1.11.54 - catch null values in some PAPI implementations 
 - [read more](doc/changelog.md)
 
 ***

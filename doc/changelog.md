@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.54 - catch null values in some PAPI implementations
 - v1.11.53 - attempt to prevent players damaging and then killing themselves for the win
 - v1.11.52 - hook into both short and regular placeholders
 - v1.11.51 - address the fact that all stats are not actually world based
