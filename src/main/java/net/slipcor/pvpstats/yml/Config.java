@@ -90,6 +90,8 @@ public class Config extends CoreConfig {
                 "count dying from other player's tamed pets for death count and resetting of streaks"),
         STATISTICS_CHECK_ABUSE(Type.BOOLEAN, "statistics.checkAbuse", true,
                 "prevent players from getting kills from the same victim"),
+        STATISTICS_ABUSE_COMPLEX(Type.BOOLEAN, "statistics.abuseComplex", false,
+                "prevent players from getting kills from the same victim, remembering more than one kill"),
         STATISTICS_CHECK_NEWBIES(Type.BOOLEAN, "statistics.checkNewbies", true,
                 "prevent stats for players with the permission 'pvpstats.newbie'"),
         STATISTICS_ABUSE_SECONDS(Type.INT, "statistics.abuseSeconds", -1,

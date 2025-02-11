@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.55 - catch null values in some PAPI implementations 
+- v1.11.56 - introduce complex abuse check which allows for several victims at the same time 
 - [read more](doc/changelog.md)
 
 ***

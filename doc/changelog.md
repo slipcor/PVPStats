@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.56 - introduce complex abuse check which allows for several victims at the same time
 - v1.11.55 - catch null values in some PAPI implementations
 - v1.11.53 - attempt to prevent players damaging and then killing themselves for the win
 - v1.11.52 - hook into both short and regular placeholders

@@ -75,33 +75,67 @@ public final class DatabaseAPI {
         }
 
         if (attacker != null && victim != null && plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_ABUSE)) {
-            DEBUGGER.i("- checking abuse");
-            if (lastKill.containsKey(attacker.getName()) && lastKill.get(attacker.getName()).equals(victim.getName())) {
-                TextFormatter.explainAbusePrevention(attacker, victim);
-                DEBUGGER.i("> OUT: " + victim.getName());
-                return; // no logging!
-            }
 
-            lastKill.put(attacker.getName(), victim.getName());
-            int abusesec = plugin.config().getInt(Config.Entry.STATISTICS_ABUSE_SECONDS);
-            if (abusesec > 0) {
-                final String finalAttacker = attacker.getName();
-                class RemoveLater implements Runnable {
+            if (plugin.config().getBoolean(Config.Entry.STATISTICS_ABUSE_COMPLEX)) {
+                DEBUGGER.i("- checking abuse complex");
 
-                    @Override
-                    public void run() {
-                        lastKill.remove(finalAttacker);
-                        killTask.remove(finalAttacker);
+                if (lastKill.containsKey(attacker.getName() + ';' + attacker.getName())) {
+                    TextFormatter.explainAbusePrevention(attacker, victim);
+                    DEBUGGER.i("> OUT: " + victim.getName());
+                    return; // no logging!
+                }
+
+                lastKill.put(attacker.getName() + ';' + attacker.getName(), victim.getName());
+                int abusesec = plugin.config().getInt(Config.Entry.STATISTICS_ABUSE_SECONDS);
+                if (abusesec > 0) {
+                    final String finalAttacker = attacker.getName() + ';' + attacker.getName();
+                    class RemoveLater implements Runnable {
+
+                        @Override
+                        public void run() {
+                            lastKill.remove(finalAttacker);
+                            killTask.remove(finalAttacker);
+                        }
+
+                    }
+                    BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, new RemoveLater(), abusesec * 20L);
+
+                    if (killTask.containsKey(finalAttacker)) {
+                        killTask.get(finalAttacker).cancel();
                     }
 
+                    killTask.put(finalAttacker, task);
                 }
-                BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, new RemoveLater(), abusesec * 20L);
+            } else {
+                DEBUGGER.i("- checking abuse simple");
 
-                if (killTask.containsKey(attacker.getName())) {
-                    killTask.get(attacker.getName()).cancel();
+                if (lastKill.containsKey(attacker.getName()) && lastKill.get(attacker.getName()).equals(victim.getName())) {
+                    TextFormatter.explainAbusePrevention(attacker, victim);
+                    DEBUGGER.i("> OUT: " + victim.getName());
+                    return; // no logging!
                 }
 
-                killTask.put(attacker.getName(), task);
+                lastKill.put(attacker.getName(), victim.getName());
+                int abusesec = plugin.config().getInt(Config.Entry.STATISTICS_ABUSE_SECONDS);
+                if (abusesec > 0) {
+                    final String finalAttacker = attacker.getName();
+                    class RemoveLater implements Runnable {
+
+                        @Override
+                        public void run() {
+                            lastKill.remove(finalAttacker);
+                            killTask.remove(finalAttacker);
+                        }
+
+                    }
+                    BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, new RemoveLater(), abusesec * 20L);
+
+                    if (killTask.containsKey(attacker.getName())) {
+                        killTask.get(attacker.getName()).cancel();
+                    }
+
+                    killTask.put(attacker.getName(), task);
+                }
             }
         }
 
