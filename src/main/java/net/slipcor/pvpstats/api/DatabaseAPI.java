@@ -44,6 +44,7 @@ public final class DatabaseAPI {
     public static CoreDebugger DEBUGGER;
 
     private static final Map<String, String> lastKill = new HashMap<>();
+    private static final Map<String, String> lastKillComplex = new HashMap<>();
     private static final Map<String, BukkitTask> killTask = new HashMap<>();
 
     private static final TextComponent DATABASE_CONNECTED = new TextComponent("Warning: Database is not connected! Kills will not be recorded.");
@@ -79,32 +80,35 @@ public final class DatabaseAPI {
             if (plugin.config().getBoolean(Config.Entry.STATISTICS_ABUSE_COMPLEX)) {
                 DEBUGGER.i("- checking abuse complex");
 
-                if (lastKill.containsKey(attacker.getName() + ';' + attacker.getName())) {
+                if (lastKillComplex.containsKey(attacker.getName() + ';' + attacker.getName())) {
                     TextFormatter.explainAbusePrevention(attacker, victim);
                     DEBUGGER.i("> OUT: " + victim.getName());
                     return; // no logging!
                 }
 
-                lastKill.put(attacker.getName() + ';' + attacker.getName(), victim.getName());
+                lastKillComplex.put(attacker.getName() + ';' + attacker.getName(), victim.getName());
+                lastKill.put(attacker.getName(), victim.getName());
                 int abusesec = plugin.config().getInt(Config.Entry.STATISTICS_ABUSE_SECONDS);
                 if (abusesec > 0) {
-                    final String finalAttacker = attacker.getName() + ';' + attacker.getName();
+                    final String finalComplexAttacker = attacker.getName() + ';' + attacker.getName();
+                    final String finalAttacker = attacker.getName();
                     class RemoveLater implements Runnable {
 
                         @Override
                         public void run() {
+                            lastKillComplex.remove(finalComplexAttacker);
                             lastKill.remove(finalAttacker);
-                            killTask.remove(finalAttacker);
+                            killTask.remove(finalComplexAttacker);
                         }
 
                     }
                     BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, new RemoveLater(), abusesec * 20L);
 
-                    if (killTask.containsKey(finalAttacker)) {
-                        killTask.get(finalAttacker).cancel();
+                    if (killTask.containsKey(finalComplexAttacker)) {
+                        killTask.get(finalComplexAttacker).cancel();
                     }
 
-                    killTask.put(finalAttacker, task);
+                    killTask.put(finalComplexAttacker, task);
                 }
             } else {
                 DEBUGGER.i("- checking abuse simple");
@@ -130,11 +134,11 @@ public final class DatabaseAPI {
                     }
                     BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, new RemoveLater(), abusesec * 20L);
 
-                    if (killTask.containsKey(attacker.getName())) {
-                        killTask.get(attacker.getName()).cancel();
+                    if (killTask.containsKey(finalAttacker)) {
+                        killTask.get(finalAttacker).cancel();
                     }
 
-                    killTask.put(attacker.getName(), task);
+                    killTask.put(finalAttacker, task);
                 }
             }
         }

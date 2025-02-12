@@ -49,6 +49,8 @@ statistics:
   deathsDescending: false
   # seconds to wait before allowing to kill the same player again to count (-1 will never reset)
   abuseSeconds: -1
+  # prevent players from getting kills from the same victim, remembering more than one kill
+  abuseComplex: false
   # save every kill - is never read internally, so only for web stats or alike
   collectPrecise: true
   # player meta that marks players as not counting, for example 'NPC' for most plugins that add them

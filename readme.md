@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.56 - introduce complex abuse check which allows for several victims at the same time 
+- v1.11.57 - improve complex abuse check 
 - [read more](doc/changelog.md)
 
 ***
