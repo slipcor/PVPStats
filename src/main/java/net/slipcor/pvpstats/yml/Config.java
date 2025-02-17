@@ -163,7 +163,7 @@ public class Config extends CoreConfig {
                 "=== [ Other Features ] ==="),
         OTHER_DISPLAYNAMES(Type.BOOLEAN, "other.displayNames", false, "use players' display names"),
 
-        OTHER_AVOID_PLAYER_LOOKUP(Type.BOOLEAN, "avoidPlayerLookup", false, "avoid possibly costly Mojang API lookup for unknown player names"),
+        OTHER_AVOID_PLAYER_LOOKUP(Type.BOOLEAN, "other.avoidPlayerLookup", false, "avoid possibly costly Mojang API lookup for unknown player names"),
         OTHER_PVPARENA(Type.BOOLEAN, "other.PVPArena", false, "count PVP Arena deaths"),
         OTHER_OP_MESSAGES(Type.BOOLEAN, "other.OPMessages", true, "provide helpful debug messages for new installations"),
 
