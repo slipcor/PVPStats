@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.59 - add alt abuse check, IP based, disabled by default for backwards compatibility, also allow to disable Mojang API player lookup and only return valid players for known names
 - v1.11.57 - improve complex abuse check
 - v1.11.56 - introduce complex abuse check which allows for several victims at the same time
 - v1.11.55 - catch null values in some PAPI implementations

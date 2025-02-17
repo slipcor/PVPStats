@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.57 - improve complex abuse check 
+- v1.11.59 - add alt abuse check, IP based, disabled by default for backwards compatibility, also allow to disable Mojang API player lookup and only return valid players for known names
 - [read more](doc/changelog.md)
 
 ***
