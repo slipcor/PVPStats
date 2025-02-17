@@ -90,6 +90,8 @@ public class Config extends CoreConfig {
                 "count dying from other player's tamed pets for death count and resetting of streaks"),
         STATISTICS_CHECK_ABUSE(Type.BOOLEAN, "statistics.checkAbuse", true,
                 "prevent players from getting kills from the same victim"),
+        STATISTICS_CHECK_ALT_ABUSE(Type.BOOLEAN, "statistics.checkAltAbuse", false,
+                "prevent players from getting kills from the same ip address (alts)"),
         STATISTICS_ABUSE_COMPLEX(Type.BOOLEAN, "statistics.abuseComplex", false,
                 "prevent players from getting kills from the same victim, remembering more than one kill"),
         STATISTICS_CHECK_NEWBIES(Type.BOOLEAN, "statistics.checkNewbies", true,
@@ -160,6 +162,8 @@ public class Config extends CoreConfig {
         OTHER(Type.COMMENT, "other", null,
                 "=== [ Other Features ] ==="),
         OTHER_DISPLAYNAMES(Type.BOOLEAN, "other.displayNames", false, "use players' display names"),
+
+        OTHER_AVOID_PLAYER_LOOKUP(Type.BOOLEAN, "avoidPlayerLookup", false, "avoid possibly costly Mojang API lookup for unknown player names"),
         OTHER_PVPARENA(Type.BOOLEAN, "other.PVPArena", false, "count PVP Arena deaths"),
         OTHER_OP_MESSAGES(Type.BOOLEAN, "other.OPMessages", true, "provide helpful debug messages for new installations"),
 

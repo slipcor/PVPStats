@@ -152,16 +152,16 @@ public class TextFormatter {
         return false;
     }
 
-    public static void explainAbusePrevention(OfflinePlayer attacker, OfflinePlayer victim) {
+    public static void explainAbusePrevention(OfflinePlayer attacker, OfflinePlayer victim, boolean alt) {
         List<TextComponent> message = new ArrayList<>();
 
-        String abuseNode = Config.Entry.STATISTICS_CHECK_ABUSE.getNode();
+        String abuseNode = alt ? Config.Entry.STATISTICS_CHECK_ALT_ABUSE.getNode() : Config.Entry.STATISTICS_CHECK_ABUSE.getNode();
 
         message.add(new TextComponent(PlayerHandler.getPlayerName(attacker)).setColor(ChatColor.YELLOW));
         message.add(new TextComponent(" killing "));
         message.add(new TextComponent(PlayerHandler.getPlayerName(victim)).setColor(ChatColor.YELLOW));
-        message.add(new TextComponent(" was not counted as it triggered the 'anti-abuse' system. You can configure " +
-                "the anti-abuse system with config nodes "));
+        message.add(new TextComponent(" was not counted as it triggered the 'anti-abuse' system" + ( alt ? " (alt-mode, IP based)" : "") +". You can configure " +
+                "this anti-abuse system with config nodes "));
         message.add(new TextComponent(abuseNode).setColor(ChatColor.AQUA).setUnderlined(true)
                 .setCommand("/pvpstats config set " + abuseNode + " false")
                 .setHoverText(new TextComponent("Click here to disable the abuse system completely!").setColor(ChatColor.RED)));

@@ -44,7 +44,9 @@ public final class DatabaseAPI {
     public static CoreDebugger DEBUGGER;
 
     private static final Map<String, String> lastKill = new HashMap<>();
+    private static final Map<String, String> lastKillAlt = new HashMap<>();
     private static final Map<String, String> lastKillComplex = new HashMap<>();
+    private static final Map<String, String> lastKillAltComplex = new HashMap<>();
     private static final Map<String, BukkitTask> killTask = new HashMap<>();
 
     private static final TextComponent DATABASE_CONNECTED = new TextComponent("Warning: Database is not connected! Kills will not be recorded.");
@@ -81,7 +83,7 @@ public final class DatabaseAPI {
                 DEBUGGER.i("- checking abuse complex");
 
                 if (lastKillComplex.containsKey(attacker.getName() + ';' + attacker.getName())) {
-                    TextFormatter.explainAbusePrevention(attacker, victim);
+                    TextFormatter.explainAbusePrevention(attacker, victim, false);
                     DEBUGGER.i("> OUT: " + victim.getName());
                     return; // no logging!
                 }
@@ -114,7 +116,7 @@ public final class DatabaseAPI {
                 DEBUGGER.i("- checking abuse simple");
 
                 if (lastKill.containsKey(attacker.getName()) && lastKill.get(attacker.getName()).equals(victim.getName())) {
-                    TextFormatter.explainAbusePrevention(attacker, victim);
+                    TextFormatter.explainAbusePrevention(attacker, victim, false);
                     DEBUGGER.i("> OUT: " + victim.getName());
                     return; // no logging!
                 }
@@ -128,6 +130,73 @@ public final class DatabaseAPI {
                         @Override
                         public void run() {
                             lastKill.remove(finalAttacker);
+                            killTask.remove(finalAttacker);
+                        }
+
+                    }
+                    BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, new RemoveLater(), abusesec * 20L);
+
+                    if (killTask.containsKey(finalAttacker)) {
+                        killTask.get(finalAttacker).cancel();
+                    }
+
+                    killTask.put(finalAttacker, task);
+                }
+            }
+        }
+        if (attacker != null && victim != null && plugin.config().getBoolean(Config.Entry.STATISTICS_CHECK_ALT_ABUSE)) {
+
+            if (plugin.config().getBoolean(Config.Entry.STATISTICS_ABUSE_COMPLEX)) {
+                DEBUGGER.i("- checking alt abuse complex");
+
+                if (lastKillAltComplex.containsKey(attacker.getPlayer().getAddress().toString() + ';' + attacker.getPlayer().getAddress().toString())) {
+                    TextFormatter.explainAbusePrevention(attacker, victim, true);
+                    DEBUGGER.i("> OUT: " + victim.getName());
+                    return; // no logging!
+                }
+
+                lastKillAltComplex.put(attacker.getPlayer().getAddress().toString() + ';' + attacker.getPlayer().getAddress().toString(), victim.getName());
+                lastKillAlt.put(attacker.getPlayer().getAddress().toString(), victim.getPlayer().getAddress().toString());
+                int abusesec = plugin.config().getInt(Config.Entry.STATISTICS_ABUSE_SECONDS);
+                if (abusesec > 0) {
+                    final String finalComplexAttacker = attacker.getPlayer().getAddress().toString() + ';' + attacker.getPlayer().getAddress().toString();
+                    final String finalAttacker = attacker.getPlayer().getAddress().toString();
+                    class RemoveLater implements Runnable {
+
+                        @Override
+                        public void run() {
+                            lastKillAltComplex.remove(finalComplexAttacker);
+                            lastKillAlt.remove(finalAttacker);
+                            killTask.remove(finalComplexAttacker);
+                        }
+
+                    }
+                    BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, new RemoveLater(), abusesec * 20L);
+
+                    if (killTask.containsKey(finalComplexAttacker)) {
+                        killTask.get(finalComplexAttacker).cancel();
+                    }
+
+                    killTask.put(finalComplexAttacker, task);
+                }
+            } else {
+                DEBUGGER.i("- checking alt abuse simple");
+
+                if (lastKillAlt.containsKey(attacker.getPlayer().getAddress().toString()) && lastKillAlt.get(attacker.getPlayer().getAddress().toString()).equals(victim.getPlayer().getAddress().toString())) {
+                    TextFormatter.explainAbusePrevention(attacker, victim, true);
+                    DEBUGGER.i("> OUT: " + victim.getPlayer().getAddress().toString());
+                    return; // no logging!
+                }
+
+                lastKillAlt.put(attacker.getPlayer().getAddress().toString(), victim.getPlayer().getAddress().toString());
+                int abusesec = plugin.config().getInt(Config.Entry.STATISTICS_ABUSE_SECONDS);
+                if (abusesec > 0) {
+                    final String finalAttacker = attacker.getPlayer().getAddress().toString();
+                    class RemoveLater implements Runnable {
+
+                        @Override
+                        public void run() {
+                            lastKillAlt.remove(finalAttacker);
                             killTask.remove(finalAttacker);
                         }
 

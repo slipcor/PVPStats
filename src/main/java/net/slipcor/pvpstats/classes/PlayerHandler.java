@@ -12,7 +12,7 @@ public class PlayerHandler {
     public static OfflinePlayer findPlayer(String value) {
         OfflinePlayer result = Bukkit.getServer().getPlayer(value);
 
-        if (result != null) {
+        if (result != null || PVPStats.getInstance().config().getBoolean(Config.Entry.OTHER_AVOID_PLAYER_LOOKUP)) {
             return result;
         }
 

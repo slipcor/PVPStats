@@ -43,6 +43,8 @@ statistics:
   createOnJoin: true
   # prevent players from getting kills from the same victim
   checkAbuse: true
+  # prevent players from getting kills from the same ip address (alts)
+  checkAltAbuse: false
   # prevent stats for players without the permission 'pvpstats.nonewbie'
   checkNewbies: true
   # order deaths descending by default (rather than TOP deaths being LESS deaths)
@@ -88,6 +90,8 @@ statistics:
 other:
   # use players' display names
   displayNames: false
+  # avoid possibly costly Mojang API lookup for unknown player names
+  avoidPlayerLookup: false
   # count PVP Arena deaths
   PVPArena: false
   OPMessages: true
