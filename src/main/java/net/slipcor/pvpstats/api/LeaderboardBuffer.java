@@ -33,6 +33,7 @@ public class LeaderboardBuffer {
         LASTCHECKEDTOP.put("CURRENTSTREAK", 0L);   // last time we queried "top currentstreak"
         LASTCHECKEDTOP.put("ELO", 0L);      // last time we queried "top elo"
         LASTCHECKEDTOP.put("K-D", 0L);      // last time we queried "top k-d"
+        LASTCHECKEDTOP.put("RATIO", 0L);      // last time we queried "top k-d"
 
         LASTCHECKEDFLOP.put("KILLS", 0L);    // last time we queried "flop kills"
         LASTCHECKEDFLOP.put("DEATHS", 0L);   // last time we queried "flop deaths"
@@ -40,6 +41,7 @@ public class LeaderboardBuffer {
         LASTCHECKEDFLOP.put("CURRENTSTREAK", 0L);   // last time we queried "flop currentstreak"
         LASTCHECKEDFLOP.put("ELO", 0L);      // last time we queried "flop elo"
         LASTCHECKEDFLOP.put("K-D", 0L);      // last time we queried "flop k-d"
+        LASTCHECKEDFLOP.put("RATIO", 0L);      // last time we queried "flop k-d"
 
     }
 

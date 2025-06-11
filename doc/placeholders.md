@@ -70,6 +70,7 @@ Valid statistical entries instead of "kills" for the above lists are:
 * **currentstreak** (current streak value)
 * **elo** (ELO score)
 * **k-d** (kill/death ratio, can be defined to fancy things in the config)
+* **ratio** same as above, kill/death ratio
 
 Note that all these placeholders can be extended to only return the NAME and the VALUE of the specific place.
 

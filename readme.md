@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.60 - fix node other.avoidPlayerLookup
+- v1.11.61 - support "ratio" as placeholder, because.. it works
 - [read more](doc/changelog.md)
 
 ***

@@ -998,6 +998,7 @@ public final class DatabaseAPI {
                 case "ELO":
                     order = "elo";
                     break;
+                case "RADIO":
                 case "K-D":
                     order = "`kills`/(`deaths`+1.0)";
                     break;
@@ -1215,6 +1216,7 @@ public final class DatabaseAPI {
                 case "ELO":
                     order = "elo";
                     break;
+                case "RATIO":
                 case "K-D":
                     order = "`kills`/(`deaths`+1.0)";
                     break;
