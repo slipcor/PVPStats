@@ -28,6 +28,7 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
         stringToEntry.put("KILLS", Language.MSG.STATISTIC_HEADLINE_KILLS);
         stringToEntry.put("DEATHS", Language.MSG.STATISTIC_HEADLINE_DEATHS);
         stringToEntry.put("STREAK", Language.MSG.STATISTIC_HEADLINE_STREAK);
+        stringToEntry.put("CURRENTSTREAK", Language.MSG.STATISTIC_HEADLINE_CURRENTSTREAK);
         stringToEntry.put("RATIO", Language.MSG.STATISTIC_HEADLINE_RATIO);
         stringToEntry.put("ELO", Language.MSG.STATISTIC_HEADLINE_ELO);
     }
@@ -54,34 +55,34 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, String s) {
-        if (player == null) {
-            return "PlayerIsNull";
-        }
         if (s == null) {
             return "PlaceholderIsNull";
         }
-        if (s.equals("k")) {
-            return String.valueOf(PlayerStatisticsBuffer.getKills(player.getUniqueId()));
-        }
 
-        if (s.equals("d")) {
-            return String.valueOf(PlayerStatisticsBuffer.getDeaths(player.getUniqueId()));
-        }
+        if (player != null) {
+            if (s.equals("k")) {
+                return String.valueOf(PlayerStatisticsBuffer.getKills(player.getUniqueId()));
+            }
 
-        if (s.equals("s")) {
-            return String.valueOf(PlayerStatisticsBuffer.getStreak(player.getUniqueId()));
-        }
+            if (s.equals("d")) {
+                return String.valueOf(PlayerStatisticsBuffer.getDeaths(player.getUniqueId()));
+            }
 
-        if (s.equals("m")) {
-            return String.valueOf(PlayerStatisticsBuffer.getMaxStreak(player.getUniqueId()));
-        }
+            if (s.equals("s")) {
+                return String.valueOf(PlayerStatisticsBuffer.getStreak(player.getUniqueId()));
+            }
 
-        if (s.equals("e")) {
-            return String.valueOf(PlayerStatisticsBuffer.getEloScore(player.getUniqueId()));
-        }
+            if (s.equals("m")) {
+                return String.valueOf(PlayerStatisticsBuffer.getMaxStreak(player.getUniqueId()));
+            }
 
-        if (s.equals("r")) {
-            return String.format("%.2f", PlayerStatisticsBuffer.getRatio(player.getUniqueId()));
+            if (s.equals("e")) {
+                return String.valueOf(PlayerStatisticsBuffer.getEloScore(player.getUniqueId()));
+            }
+
+            if (s.equals("r")) {
+                return String.format("%.2f", PlayerStatisticsBuffer.getRatio(player.getUniqueId()));
+            }
         }
 
         if (s.startsWith("t_")) {

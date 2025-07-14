@@ -57,7 +57,7 @@ This plugin will keep records of how many kills, deaths, kills in a row a player
 
 ## Changelog
 
-- v1.11.61 - support "ratio" as placeholder, because.. it works
+- v1.11.62 - actually fix the NPE in placeholders properly - and support global placeholders again
 - [read more](doc/changelog.md)
 
 ***
