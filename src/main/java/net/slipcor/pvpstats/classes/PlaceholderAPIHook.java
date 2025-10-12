@@ -161,7 +161,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
                 String name = split[1].toUpperCase();
 
-                if (split.length > 4) {
+                if (split.length > 4 && !(s.endsWith("_name") || s.endsWith("_value"))) {
                     return Language.MSG.STATISTIC_HEADLINE_TOP.parse(
                             String.valueOf(pos),
                             stringToEntry.get(name).parse());
@@ -171,6 +171,12 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
                 if (top.length < pos) {
                     return ""; // we do not have enough entries, return empty
+                }
+
+                if (s.endsWith("_name")) {
+                    return ChatColor.stripColor(top[pos-1].split(":")[0]);
+                } else if (s.endsWith("_value")) {
+                    return ChatColor.stripColor(top[pos-1].split(":")[1].substring(1));
                 }
 
                 return Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos), top[pos-1]);
@@ -185,6 +191,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             }
         } else if (s.startsWith("topworld_")) {
             try {
+                // topworld_kills_4_world_30
 
                 String[] split = s.split("_");
                 int pos = Integer.parseInt(split[2]);
@@ -193,7 +200,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
                 String name = split[1].toUpperCase();
 
-                if (split.length > 5) {
+                if (split.length > 5 && !(s.endsWith("_name") || s.endsWith("_value"))) {
                     return Language.MSG.STATISTIC_HEADLINE_TOP.parse(
                             String.valueOf(pos),
                             stringToEntry.get(name).parse());
@@ -203,6 +210,12 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
                 if (top.length < pos) {
                     return ""; // we do not have enough entries, return empty
+                }
+
+                if (s.endsWith("_name")) {
+                    return ChatColor.stripColor(top[pos-1].split(":")[0]);
+                } else if (s.endsWith("_value")) {
+                    return ChatColor.stripColor(top[pos-1].split(":")[1].substring(1));
                 }
 
                 return Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos), top[pos-1]);

@@ -1,5 +1,6 @@
 # v1.X Changelog
 
+- v1.11.63 - extend "name" and "value" feature to all placeholders
 - v1.11.62 - actually fix the NPE in placeholders properly - and support global placeholders again
 - v1.11.61 - support "ratio" as placeholder, because.. it works
 - v1.11.60 - fix node other.avoidPlayerLookup

@@ -162,7 +162,7 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
 
                 String name = split[1].toUpperCase();
 
-                if (split.length > 4) {
+                if (split.length > 4 && !(s.endsWith("_n") || s.endsWith("_v"))) {
                     return Language.MSG.STATISTIC_HEADLINE_TOP.parse(
                             String.valueOf(pos),
                             stringToEntry.get(name).parse());
@@ -172,6 +172,11 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
 
                 if (top.length < pos) {
                     return ""; // we do not have enough entries, return empty
+                }
+                if (s.endsWith("_n")) {
+                    return ChatColor.stripColor(top[pos-1].split(":")[0]);
+                } else if (s.endsWith("_v")) {
+                    return ChatColor.stripColor(top[pos-1].split(":")[1].substring(1));
                 }
 
                 return Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos), top[pos-1]);
@@ -194,7 +199,7 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
 
                 String name = split[1].toUpperCase();
 
-                if (split.length > 5) {
+                if (split.length > 5 && !(s.endsWith("_n") || s.endsWith("_v"))) {
                     return Language.MSG.STATISTIC_HEADLINE_TOP.parse(
                             String.valueOf(pos),
                             stringToEntry.get(name).parse());
@@ -204,6 +209,11 @@ public class PlaceholderAPIAbbreviationHook extends PlaceholderExpansion {
 
                 if (top.length < pos) {
                     return ""; // we do not have enough entries, return empty
+                }
+                if (s.endsWith("_n")) {
+                    return ChatColor.stripColor(top[pos-1].split(":")[0]);
+                } else if (s.endsWith("_v")) {
+                    return ChatColor.stripColor(top[pos-1].split(":")[1].substring(1));
                 }
 
                 return Language.MSG.STATISTIC_FORMAT_NUMBER.parse(String.valueOf(pos), top[pos-1]);
