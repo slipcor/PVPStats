@@ -426,6 +426,9 @@ public class PVPStats extends CorePlugin {
                     dbHandler.addKillVictim();
                 }
             }
+            if (dbHandler instanceof MySQLConnection) {
+                ((MySQLConnection) dbHandler).ensureUidIndex(dbTable);
+            }
         } else {
             getLogger().severe("Database connection failed");
             this.mySQL = false;

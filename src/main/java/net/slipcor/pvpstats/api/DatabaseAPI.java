@@ -699,7 +699,11 @@ public final class DatabaseAPI {
         }
 
         // read all the data from database
-        PlayerStatisticsBuffer.loadPlayer(player);
+        if (plugin.getSQLHandler().allowsAsync()) {
+            PlayerStatisticsBuffer.loadPlayerAsync(player);
+        } else {
+            PlayerStatisticsBuffer.loadPlayer(player);
+        }
     }
 
     private static DatabaseConnection connectToOther(String method, CommandSender sender) {

@@ -304,6 +304,29 @@ public final class PlayerStatisticsBuffer {
     }
 
     /**
+     * Same as loadPlayer, but query the database off the main thread and fill the buffer
+     * back on the main thread. Values that got loaded or changed in the meantime are kept.
+     * @param player the player whose stats to load
+     */
+    public static void loadPlayerAsync(final OfflinePlayer player) {
+        final UUID uuid = player.getUniqueId();
+        if (deaths.containsKey(uuid) && kills.containsKey(uuid)) {
+            return; // we already did it
+        }
+        final PVPStats plugin = PVPStats.getInstance();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            final PlayerStatistic statistic = DatabaseAPI.getAllStats(player);
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                deaths.putIfAbsent(uuid, statistic.getDeaths());
+                kills.putIfAbsent(uuid, statistic.getKills());
+                eloScore.putIfAbsent(uuid, statistic.getELO());
+                streaks.putIfAbsent(uuid, statistic.getCurrentStreak());
+                maxStreaks.putIfAbsent(uuid, statistic.getMaxStreak());
+            });
+        });
+    }
+
+    /**
      * Force set a player's death count - this does NOT update the database!
      *
      * @param uuid  the player UUID to update

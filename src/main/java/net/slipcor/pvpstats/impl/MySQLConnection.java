@@ -30,6 +30,27 @@ public class MySQLConnection extends AbstractSQLConnection {
     }
 
     /**
+     * Add an index on the uid column if the table has none. Every stats lookup filters by uid,
+     * without it each one is a full table scan.
+     *
+     * @param table the table to check
+     */
+    public void ensureUidIndex(String table) {
+        try {
+            ResultSet result = databaseConnection.getMetaData().getIndexInfo(databaseConnection.getCatalog(), null, table, false, false);
+            while (result.next()) {
+                if ("uid".equalsIgnoreCase(result.getString("COLUMN_NAME"))) {
+                    return;
+                }
+            }
+            Bukkit.getLogger().info("[PVPStats] Adding index on `uid` to table " + table);
+            executeQuery("ALTER TABLE `" + table + "` ADD INDEX `idx_uid` (`uid`);", true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Try to connect to the database
      *
      * @param printError should we print errors that we encounter?
